@@ -3,7 +3,6 @@
 import {
   GridColDef,
   GridRowModesModel,
-  GridSlotProps,
   GridToolbarContainer,
   useGridApiRef,
 } from "@mui/x-data-grid";
@@ -16,9 +15,12 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
+  IconButton,
+  InputAdornment,
   SnackbarCloseReason,
   TextField,
 } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
 import { useEffect, useMemo, useState } from "react";
 import EditMaillocationsForm from "./EditMaillocationsForm";
 import Maillocations from "./Maillocations";
@@ -28,6 +30,69 @@ import {
 } from "../ServiceHooks/services";
 import MySnackbar from "@/components/MySnackbar";
 import Loading from "@/components/Loading";
+
+interface EditToolbarProps {
+  locationSearchInput: string;
+  onSearchInputChange: (value: string) => void;
+  onSearch: () => void;
+  onClear: () => void;
+  showActiveOnly: boolean;
+  onActiveOnlyChange: (checked: boolean) => void;
+  onAddClick: () => void;
+}
+
+function EditToolbar({
+  locationSearchInput,
+  onSearchInputChange,
+  onSearch,
+  onClear,
+  showActiveOnly,
+  onActiveOnlyChange,
+  onAddClick,
+}: EditToolbarProps) {
+  return (
+    <GridToolbarContainer
+      sx={{ gap: 1, p: 1, flexWrap: "wrap", alignItems: "center" }}
+    >
+      <Button variant="text" onClick={onAddClick}>
+        Add
+      </Button>
+
+      <TextField
+        size="small"
+        label="Location"
+        value={locationSearchInput}
+        onChange={(e) => onSearchInputChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") onSearch();
+        }}
+        InputProps={{
+          endAdornment: locationSearchInput ? (
+            <InputAdornment position="end">
+              <IconButton size="small" onClick={onClear} edge="end">
+                <ClearIcon fontSize="small" />
+              </IconButton>
+            </InputAdornment>
+          ) : null,
+        }}
+      />
+
+      <Button variant="outlined" onClick={onSearch}>
+        Search
+      </Button>
+
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={showActiveOnly}
+            onChange={(e) => onActiveOnlyChange(e.target.checked)}
+          />
+        }
+        label="Active only"
+      />
+    </GridToolbarContainer>
+  );
+}
 
 export default function MaillocationsController() {
   const apiRef = useGridApiRef();
@@ -101,6 +166,12 @@ export default function MaillocationsController() {
     setPaginationModel((prev) => ({ ...prev, page: 0 }));
   };
 
+  const handleClear = () => {
+    setLocationSearchInput("");
+    setLocationSearchTerm("");
+    setPaginationModel((prev) => ({ ...prev, page: 0 }));
+  };
+
   const handleSnackbarClose = (
     _event?: React.SyntheticEvent | Event,
     reason?: SnackbarCloseReason,
@@ -116,54 +187,6 @@ export default function MaillocationsController() {
     setSave(false);
     setInitialMaillocation(emptyMailLocation);
   };
-
-  function EditToolbar(_props: GridSlotProps["toolbar"]) {
-    return (
-      <GridToolbarContainer
-        sx={{ gap: 1, p: 1, flexWrap: "wrap", alignItems: "center" }}
-      >
-        <Button
-          variant="text"
-          onClick={() => {
-            setInitialMaillocation(emptyMailLocation);
-            setSave(false);
-            setOpenForm(true);
-          }}
-        >
-          Add
-        </Button>
-
-        <TextField
-          size="small"
-          label="Location"
-          value={locationSearchInput}
-          onChange={(e) => setLocationSearchInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSearch();
-            }
-          }}
-        />
-
-        <Button variant="outlined" onClick={handleSearch}>
-          Search
-        </Button>
-
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={showActiveOnly}
-              onChange={(e) => {
-                setShowActiveOnly(e.target.checked);
-                setPaginationModel((prev) => ({ ...prev, page: 0 }));
-              }}
-            />
-          }
-          label="Active only"
-        />
-      </GridToolbarContainer>
-    );
-  }
 
   const cols: GridColDef[] = [
     {
@@ -245,6 +268,22 @@ export default function MaillocationsController() {
         setRowModesModel={setRowModesModel}
         setRows={setRows}
         toolbar={EditToolbar}
+        toolbarSlotProps={{
+          locationSearchInput,
+          onSearchInputChange: setLocationSearchInput,
+          onSearch: handleSearch,
+          onClear: handleClear,
+          showActiveOnly,
+          onActiveOnlyChange: (checked: boolean) => {
+            setShowActiveOnly(checked);
+            setPaginationModel((prev) => ({ ...prev, page: 0 }));
+          },
+          onAddClick: () => {
+            setInitialMaillocation(emptyMailLocation);
+            setSave(false);
+            setOpenForm(true);
+          },
+        }}
         paginationModel={paginationModel}
         handlePagination={setPaginationModel}
         sortModel={sortModel}

@@ -24,6 +24,7 @@ export default function Maillocations(props: {
   setRowModesModel: Dispatch<SetStateAction<GridRowModesModel>>;
   handleRowModesModelChange?: (newRowModesModel: GridRowModesModel) => void;
   toolbar?: any;
+  toolbarSlotProps?: Record<string, any>;
   handleRowEditStop?: GridEventListener<"rowEditStop">;
   handleProcessRowUpdate?: (newRow: GridRowModel) => Promise<any>;
   preProcessEditCellProps?: (params: any) => any;
@@ -65,7 +66,7 @@ export default function Maillocations(props: {
       onRowModesModelChange={props.handleRowModesModelChange}
       slotProps={{
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        toolbar: { setRows: setRows as any, setRowModesModel },
+        toolbar: { setRows: setRows as any, setRowModesModel, ...props.toolbarSlotProps },
       }}
       slots={{ toolbar: props.toolbar ?? null }}
       processRowUpdate={props.handleProcessRowUpdate}
