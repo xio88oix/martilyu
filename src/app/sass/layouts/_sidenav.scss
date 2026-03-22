@@ -1,0 +1,52 @@
+.sidenav {
+
+    &__text {
+        color: $color-text;
+    }
+
+    &__link {
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    &__list {
+        margin-top: 1rem;
+    }
+
+    &__listitem {
+        margin-bottom: 1rem;
+        margin-left: 2rem;
+    }
+
+    &__menu {
+        margin-left: 3rem;
+    }
+
+    &__closebutton {
+        background-color: transparent;
+        border: none;
+    }
+
+    &__closeicon {
+        cursor: pointer;
+    }
+
+    &__arrow {
+        font-size: 1.6rem;
+    }
+
+}
+
+.menuButton {
+    display: none;
+
+    @include respond(appbar) {
+        display: inline-flex;
+        top: 3rem;
+    }
+
+}
+
+.MuiDrawer-root.side-drawer .MuiPaper-root {
+    background-color: $color-secondary1;
+}

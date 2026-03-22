@@ -1,0 +1,373 @@
+@import "~@fontsource/oswald/index.css";
+// @use "~@fontsource/oswald/index.css";
+
+body {
+
+    line-height: 1.7;
+    color: $color-background-surface;
+
+}
+#group-by-label{
+    font-weight: 600 !important;
+}
+#quick-action-label{
+    font-weight: 600;
+}
+.MuiTypography-root.title{
+    font-family: "Oswald", sans-serif;
+    font-weight: 800;
+    font-size: 2.6rem;
+    letter-spacing: 0.1rem;
+    color: $color-primary2;
+}
+.body1 {
+    font-family: sans-serif;
+    font-weight: 400;
+    font-size: 1.6rem !important;
+    letter-spacing: 0rem;
+    //text-transform: lowercase;
+    text-decoration: none;
+    white-space: break-spaces;
+
+    /*&::first-letter {
+        text-transform: uppercase;
+    }*/
+}
+.body1-bold {
+    font-family: sans-serif;
+    font-weight: 600 !important;
+    font-size: 1.6rem !important;
+    letter-spacing: 0rem;
+    text-decoration: none;
+    white-space: break-spaces;
+}
+.list{
+    list-style-type: disc;
+}
+.body1-dark {
+    font-family: sans-serif;
+    font-weight: 400;
+    font-size: 1.6rem !important;
+    letter-spacing: 0rem;
+    text-decoration: none;
+    color: $color-primary2;
+}
+a {
+    font-family: sans-serif;
+    font-weight: 600;
+    font-size: 1.6rem;
+    letter-spacing: 0rem;
+
+    //text-transform: lowercase;
+
+    /*&:first-letter {
+        text-transform: uppercase;
+    }*/
+}
+
+h1 {
+    font-family: "Oswald", sans-serif;
+    font-weight: 500;
+    font-size: 8rem;
+    letter-spacing: 0rem;
+    color: $color-primary1;
+    line-height: 8.5rem;
+    //text-transform: lowercase;
+
+    /*&::first-letter {
+        text-transform: uppercase;
+    }*/
+
+
+}
+
+h2 {
+    font-family: "Oswald", sans-serif;
+    font-weight: 200;
+    font-size: 3.5rem;
+    letter-spacing: 0.025rem;
+    color: $color-primary1;
+
+}
+
+h3 {
+    font-family: "Oswald", sans-serif;
+    font-weight: 200;
+    font-size: 2.6rem;
+    letter-spacing: 0.1rem;
+    color: $color-primary2;
+    //text-transform: uppercase;
+}
+
+h4 {
+    font-family: "Oswald", sans-serif;
+    font-weight: 200;
+    font-size: 4rem;
+    letter-spacing: 0.05rem;
+    color: $color-primary2;
+    text-transform: uppercase;
+}
+
+.subtitle {
+    font-family: sans-serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 2rem;
+    letter-spacing: 0rem;
+    text-transform: lowercase;
+
+    &::first-letter {
+        text-transform: uppercase;
+    }
+}
+
+
+
+
+.caption {
+    font-family:  sans-serif;
+    font-weight: 200;
+    font-size: 2rem;
+    letter-spacing: 0.025rem;
+    text-transform: lowercase;
+
+    &::first-letter {
+        text-transform: uppercase;
+    }
+}
+
+.heading-logo-dark {
+    font-size: 4rem;
+    font-family: "Oswald", sans-serif;
+    text-transform: uppercase;
+    font-weight: 700;
+    display: inline-block;
+    background-image: linear-gradient(to right, rgba($color-logo-darkgrad1, .8),
+                                                rgba($color-logo-darkgrad2, .8),
+                                                rgba($color-logo-darkgrad3, .8),
+                                                rgba($color-logo-darkgrad4, .8),
+                                                rgba($color-logo-darkgrad5, .8) );
+    -webkit-background-clip: text;
+    color: transparent;
+    transition: all .2s;
+
+}
+
+.construction {
+    font-size: 4rem !important;
+    font-family: "Oswald", sans-serif !important;
+    text-transform: uppercase;
+    font-weight: 700 !important;
+    display: inline-block;
+    background-image: linear-gradient(to right, rgba($color-logo-lightgrad1, .8),
+                                                rgba($color-logo-lightgrad2, .8),
+                                                rgba($color-logo-lightgrad3, .8),
+                                                rgba($color-logo-lightgrad4, .8),
+                                                rgba($color-logo-lightgrad5, .8));
+    -webkit-background-clip: text;
+    color: transparent;
+    transition: all .2s;
+    margin-top: 2rem;
+
+
+}
+
+.heading-logo-light {
+    font-size: 4rem !important;
+    font-family: "Oswald", sans-serif !important;
+    text-transform: uppercase;
+    font-weight: 700 !important;
+    display: inline-block;
+    background-image: linear-gradient(to right, rgba($color-logo-lightgrad1, .8),
+                                                rgba($color-logo-lightgrad2, .8),
+                                                rgba($color-logo-lightgrad3, .8),
+                                                rgba($color-logo-lightgrad4, .8),
+                                                rgba($color-logo-lightgrad5, .8));
+    -webkit-background-clip: text;
+    color: transparent;
+    transition: all .2s;
+    margin-top: 2rem;
+
+    @include respond(navswitch2) {
+        display: none;
+    }
+}
+
+.logo {
+    //background-image: var(--logo);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    width: 20.3rem;
+    height: 22.3rem;
+  }
+
+.heading-tertiary {
+    font-size: $default-font-size;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.paragraph {
+    font-size: $default-font-size;
+
+    &:not(:last-child) {
+        margin-bottom: 3rem;
+    }
+}
+
+.bare-text-label {
+    font-weight: 700;
+}
+
+.standard-text {
+    font-size: $content-font-size;
+    font-weight: 200;
+}
+
+.text-onbackground {
+    color: $color-text;
+}
+.font-large {
+    font-size: 1.6rem !important;
+}
+
+.font-medium {
+    font-size: 1.3rem !important;
+}
+.radio-label{
+    width: 250px;
+}
+
+.font-smaill {
+    font-size: 1rem !important;
+}
+.sidenav-text {
+    text-transform: none;
+}
+
+//This is for the Radio group label when focused. We want to keep it as our first primary color
+.css-u4tvz2-MuiFormLabel-root.Mui-focused {
+    color: $color-primary1;
+}
+
+.MuiFormLabel-root.Mui-focused {
+    color: $color-primary1;
+}
+
+
+.MuiTypography-root {
+    font-family:sans-serif ;
+    font-weight: 400 ;
+    font-size: 1.5rem ;
+    letter-spacing: 0rem ;
+    text-decoration: none ;
+}
+.body1-bold .MuiTypography-root{
+    font-weight: 600 !important ;
+}
+.text-onbackground .MuiTypography-root {
+    font-family:sans-serif ;
+    font-weight: 400 ;
+    font-size: 1.5rem ;
+    letter-spacing: 0rem ;
+    text-decoration: none ;
+}
+
+.app-bar__user-profile .MuiTypography-root {
+    font-family:sans-serif ;
+    font-weight: 400 ;
+    font-size: 1.5rem ;
+    letter-spacing: 0rem ;
+    text-decoration: none ;
+}
+
+.font-medium .MuiTypography-root {
+    font-size: 1.3rem;
+}
+
+.font-small .MuiTypography-root {
+    font-size: 1rem;
+}
+
+
+.MuiInputBase-root {
+    font-family: sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 1.6rem !important;
+    letter-spacing: 0rem;
+    //text-transform: lowercase;
+    text-decoration: none !important;
+    color: $color-text !important;
+}
+#shipping-tab-panel-0 .MuiInputBase-root {
+    font-family: sans-serif;
+    font-weight: 400;
+    font-size: 1.6rem;
+    letter-spacing: 0rem;
+    //text-transform: lowercase;
+    text-decoration: none;
+    color: $color-text;
+}
+
+.MuiDialog-paper .MuiInputBase-root {
+    font-family: sans-serif;
+    font-weight: 400;
+    font-size: 1.3rem;
+    letter-spacing: 0rem;
+    //text-transform: lowercase;
+    text-decoration: none;
+    color: $color-text;
+}
+
+
+.MuiInputLabel-root {
+    font-family: sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 1.6rem !important;
+    letter-spacing: 0rem !important;
+    text-decoration: none !important;
+    color: $color-text !important;
+}
+.MuiDialog-paper .MuiInputLabel-root {
+    font-family: sans-serif;
+    font-weight: 400;
+    font-size: 1.3rem;
+    letter-spacing: 0rem;
+    text-decoration: none;
+    color: $color-text;
+}
+
+.css-batk84-MuiInputBase-root-MuiFilledInput-root {
+    border-bottom: .2rem solid $color-text;
+}
+
+//This class if for the textfield focus border color
+.css-batk84-MuiInputBase-root-MuiFilledInput-root::after {
+    border-bottom: .2rem solid $color-text;
+}
+
+//This class is for the chips text color, border, size and hover
+.MuiChip-root {
+    border: solid $color-primary2 .1rem !important;
+    font-family: sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 1.6rem !important;
+    color: $color-tertiary1 ;
+
+    &:hover  {
+        color: $color-white ;
+        background-color: $color-primary1;
+    }
+
+    //right: -4rem;
+    //height: '2.5rem',
+    display:flex;
+    margin-left: 1rem;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+
+.MuiTooltip-tooltip{
+    font-size: 1rem;
+}

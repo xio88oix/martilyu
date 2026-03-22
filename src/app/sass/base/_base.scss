@@ -1,0 +1,254 @@
+*,
+*::after,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+}
+
+html {
+    font-size: 62.5%;
+    background-color: $color-background-surface;
+    /*@include respond(tab-land) {
+        //width < 1200px
+        font-size: 56.25%; //1 rem = 9px, 9/16 = 56.25%
+    }
+
+    @include respond(tab-port) {
+        //width < 900px
+        font-size: 50%; //1 rem = 8px, 8/16 = 50%
+    }
+
+    @include respond(big-desktop) {
+
+        font-size: 64%; //1 rem = 12px, 12/16 = 75%
+    }*/
+
+    @include respond(break14) {
+        font-size: 62.5%;
+    }
+
+    @include respond(break13) {
+        font-size: 62.5%;
+    }
+
+    @include respond(break12) {
+        font-size: 62.5%;
+    }
+
+    @include respond(break11) {
+        font-size: 62.5%;
+    }
+
+    @include respond(break10) {
+        //width < 1850
+        font-size: 62.5%; //1 rem = 9.44px, 9.44/16 = 59%
+    }
+
+    @include respond(break9) {
+        //width < 1820
+        font-size: 62.5%; //1 rem = 9.12px, 9.12/16 = 57%
+    }
+
+    @include respond(break8) {
+        //width < 1754
+        font-size: 62.5%; //1 rem = 8.8px, 8.8/16 = 55%
+    }
+
+    @include respond(break7) {
+        //width < 1335
+        font-size: 62.5%; //1 rem = 8.48px, 8.48/16 = 53%
+    }
+
+    @include respond(break6) {
+        //width < 1286
+        font-size: 62.5%; //1 rem = 8.16px, 8.16/16 = 51%
+    }
+
+    @include respond(break5) {
+        //width < 1238
+        font-size: 62.5%; //1 rem = 7.84px, 7.84/16 = 49%
+    }
+
+    @include respond(break4) {
+        //width < 1189
+        font-size: 62.5%; //1 rem = 7.52px, 7.52/16 = 47%
+    }
+
+    @include respond(break3) {
+        //width < 1092
+        font-size: 62.5%; //1 rem = 9.6px, 9.6/16 = 43%
+    }
+
+    @include respond(break2) {
+        //width < 1044
+        font-size: 62.5%; //1 rem = 6.24px, 6.24/16 = 39%
+    }
+
+    @include respond(break1) {
+        //width < 946
+        font-size: 62.5%; //1 rem = 5.92px, 5.92/16 = 37%
+    }
+
+    @include respond(responsive) {
+        //width < 935
+        font-size: 62.5%;
+    }
+
+
+    @include respond(smallest) {
+        font-size: 62.5%;
+    }
+
+    @include respond(smallest8) {
+        font-size: 62.5%;
+    }
+
+    @include respond(smallest1) {
+        font-size: 62.5%;
+    }
+
+    @include respond(smallest2) {
+        font-size: 62.5%;
+    }
+
+    @include respond(smallest3) {
+        font-size: 62.5%;
+    }
+
+    @include respond(smallest4) {
+        font-size: 62.5%;
+    }
+
+    @include respond(smallest5) {
+        font-size: 62.5%;
+    }
+
+    @include respond(smallest6) {
+        font-size: 62.5%;
+    }
+
+    @include respond(smallest7) {
+        font-size: 62.5%;
+    }
+
+
+    @include respond(superlarge) {
+        //width < 2520
+        font-size: 62.5%; //1 rem = 9.6px, 9.6/16 = 60%
+    }
+
+
+}
+
+body {
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+ul {
+    list-style-type: none;
+    //margin-top: 1rem;
+}
+
+li {
+    list-style-type: none;
+
+}
+
+input::placeholder {
+    color: $color-text;
+    font-size: 1.6rem;
+}
+
+input:-moz-placeholder {
+    color: $color-text;
+    font-size: 2.6rem;
+}
+
+.construction-div {
+    height: 84vh;
+}
+
+.MuiMenuItem-root.Mui-selected {
+    font-weight: 600 !important;
+    font-size: 1.6rem !important;
+}
+
+.MuiMenuItem-root {
+    font-size: 1.6rem !important;
+}
+
+.MuiSelect-select{
+    font-size: 1.6rem !important;
+    align-content: center;
+}
+
+.MuiSelect-select.bold{
+    font-size: 1.6rem !important;
+    font-weight: 600 !important;
+}
+
+.MuiMenuItem-root:hover{
+    background-color: $color-secondary1 !important;
+}
+
+.MuiSelect-icon {
+    font-size: 2.6rem !important;
+}
+
+.MuiDataGrid-scrollbar{
+    position: absolute !important;
+    display: inline-block !important;
+    z-index: 6 !important;
+}
+
+.css-15wwp11-MuiTableHead-root {
+    display: table-header-group;
+    background-color: $color-primary1;
+}
+
+.css-1ygcj2i-MuiTableCell-root {
+    color: $color-white;
+}
+
+.css-1ex1afd-MuiTableCell-root {
+    color: $color-text;
+}
+
+.css-1wc848c-MuiFormHelperText-root {
+    font-family:  sans-serif;
+    font-weight: 200;
+    font-size: 1rem;
+    letter-spacing: 0.025rem;
+    text-transform: lowercase;
+}
+
+.css-pdct74-MuiTablePagination-selectLabel {
+    font-family:  sans-serif;
+    font-weight: 200;
+    font-size: 1rem;
+    letter-spacing: 0.025rem;
+    text-transform: lowercase;
+}
+
+.MuiBox-root{
+    max-height: inherit;
+}
+
+.autocomplete-multi-field{
+    max-width: 450px;
+}
+
+.dialog-field-width{
+    max-width: 450px;
+}
+
+.MuiFormHelperText-root{
+    font-size: 1.2rem !important;
+    text-transform: none;
+}
+
+.required-cell{
+    border: solid 2px red;
+}

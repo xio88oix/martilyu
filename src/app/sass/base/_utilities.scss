@@ -1,0 +1,50 @@
+.u-center-text {text-align: center;}
+.u-margin-bottom-small {margin-bottom: 1.5rem;}
+.u-margin-bottom-medium {margin-bottom: 4rem;}
+.u-margin-bottom-big {margin-bottom: 8rem;}
+.u-margin-top-big {margin-top: 8rem;}
+.u-margin-top-huge {margin-top: 10rem;}
+
+.u-padding-bottom-small {margin-bottom: 1.5rem;}
+.u-padding-bottom-medium {margin-bottom: 4rem;}
+.u-padding-bottom-big {margin-bottom: 8rem;}
+.u-padding-top-big {margin-top: 8rem;}
+.u-padding-top-huge {margin-top: 10rem;}
+
+.u-col3-container {padding-left: 25%; padding-bottom: 2%;
+    @include respond(break10) {
+        padding-left: 17%;
+    }
+
+    @include respond(break8) {
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+
+}
+.u-col6-container {padding-left: 2.5%;
+    @include respond(break5) {
+        padding-left: 1.5%;
+    }
+
+    @include respond(break4) {
+        padding-left: .5%;
+    }
+}
+
+.u-position {position: relative;}
+
+.u-emptycol {height: 1rem;}
+
+.u-flex {display: flex;}
+
+.u-spinner {animation: spin 2s linear infinite;}
+.u-stickout {z-index: 99;}
+
+.css-1d3z3hw-MuiOutlinedInput-notchedOutline {
+    border: none;
+}
+
+.MuiOutlinedInput-notchedOutline {
+    border: none !important;
+}

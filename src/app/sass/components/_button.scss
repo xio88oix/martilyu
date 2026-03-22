@@ -1,0 +1,107 @@
+.sidenav-button {
+    padding: 0rem;
+}
+
+.dialog-close-btn{
+    font-size: 2rem;
+    color: #23404F;
+}
+
+.dialog-close-btn:hover{
+    background-color: red;
+}
+
+.submit {
+
+    border: solid $color-text 0.2rem;
+    //color: $color-text;
+    margin: 1rem 0 3rem 0;
+    background-color: $color-primary1;
+
+    &:hover {
+        color: $color-text;
+    }
+}
+
+// .Mui-disabled{
+//     background-color: gray;
+// }
+
+.button {
+    font-family:  sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 1.6rem !important;
+    letter-spacing: 0.1rem !important;
+    text-transform: uppercase !important;
+    color: $color-background-surface !important;
+
+    &-dark {
+        font-family:  sans-serif !important;
+        font-weight: 600 !important;
+        font-size: 1.6rem !important;
+        letter-spacing: 0.1rem !important;
+        text-transform: uppercase !important;
+        color: $color-background-surface !important;
+        background-color: $color-primary1 !important;
+
+        &:hover {
+            background-color:#185ea5 !important;
+            color: $color-white !important;
+            border-color: $color-primary1 !important;
+        }
+        &.Mui-disabled{
+            background-color: gray !important;
+        }
+    }
+
+    &-light {
+        font-family:  sans-serif !important;
+        font-weight: 600 !important;
+        font-size: 1.6rem !important;
+        letter-spacing: 0.1rem !important;
+        text-transform: uppercase !important;
+        color: $color-text !important;
+        background-color: $color-background-surface !important;
+        border-color: $color-primary1 !important;
+
+        &:hover{
+            background-color: $color-secondary1 !important;
+            border-color: $color-secondary1 !important;
+        }
+    }
+
+    &-light-small {
+        font-family:  sans-serif !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
+        letter-spacing: 0.1rem !important;
+        text-transform: uppercase !important;
+        color: $color-text !important;
+        background-color: $color-background-surface !important;
+        border-color: $color-primary1 !important;
+
+        &:hover{
+            background-color: $color-secondary1 !important;
+            border-color: $color-secondary1 !important;
+        }
+    }
+
+    &-space {
+        margin-right: 1rem !important;
+    }
+
+    &-icon {
+        margin-top: 1rem !important;
+    }
+}
+
+
+
+//radio button checked
+// .css-1194b24-MuiButtonBase-root-MuiRadio-root.Mui-checked {
+//     color: #bf4d00;
+// }
+
+// .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.Mui-checked, .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.MuiCheckbox-indeterminate {
+//     color: #bf4d00;
+// }pp

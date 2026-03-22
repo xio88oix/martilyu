@@ -1,0 +1,25 @@
+.card {
+
+    border-radius: .3rem;
+    box-shadow: 0rem 1.5rem 4rem rgba($color-black, .2);
+    //height: auto;
+
+
+    &__useredit {
+        height: 41rem !important;
+    }
+
+    &__shipping-request-defaults {
+        height: 74rem !important;
+        padding: 0 2rem 0 2rem;
+
+        @include respond(break14) {
+            height: 76rem !important;
+        }
+    }
+
+    &__form {
+        width: 90%;
+        padding: 1rem;
+    }
+}

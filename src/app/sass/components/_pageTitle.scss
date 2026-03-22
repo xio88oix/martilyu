@@ -1,0 +1,16 @@
+.pageTitle{
+
+    display: flex;
+    flex-direction: column;
+    margin: 5rem;
+    min-height: 70vh;
+
+    h1{
+        font-size: 5rem;
+    }
+
+    &__headerBox{
+        margin-bottom: 2rem;
+    }
+
+}

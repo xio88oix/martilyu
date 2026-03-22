@@ -1,0 +1,192 @@
+.section-welcome {
+    height: 52rem;
+
+    background-image: linear-gradient(to right,
+                                        rgba($color-welcome-grad1, 1),
+                                        rgba($color-welcome-grad2, 1),
+                                        rgba($color-welcome-grad3, 1),
+                                        rgba($color-welcome-grad4, 1),
+                                        rgba($color-welcome-grad5, 1)),
+    url("/next/images/welcome3.png");
+    background-size: cover;
+    background-blend-mode: hard-light;
+    background-position: top;
+    position: relative;
+    padding-left: 2rem;
+    padding-top: 6rem;
+
+    &__search-container {
+        display: flex;
+        margin-top: 3rem;
+        min-width: 40rem;
+        max-width: 67.5rem;
+        background-color: $color-background-surface;
+        flex-flow: row;
+        border: .2rem solid $color-primary1;
+        border-radius: .6rem;
+        text-overflow: ellipsis;
+    }
+
+    &__search-select {
+        border: none;
+        padding-left: 0.5rem;
+        margin-left: .5rem;
+        color: $color-text;
+        width: 100%;
+        font-weight: bold;
+        flex-flow: row;
+        border-right: .2rem solid $color-primary1;
+        flex-shrink: 2;
+        text-overflow: ellipsis;
+
+    }
+
+    &__search-opt-inactive {
+        font-weight: normal;
+
+    }
+
+    &__search-field {
+        margin-left: 1rem;
+    }
+
+    &__search-icon-button {
+        color: $color-tertiary1;
+        font-size: 4rem !important;
+    }
+
+    &__description {
+        color: $color-primary1;
+    }
+
+}
+
+.section-tips-questions {
+
+    padding-top: 10rem;
+    padding-left: 6rem;
+    padding-right: 6rem;
+    background-color: $color-background-surface;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2rem;
+    width: 100%;
+
+
+    &__tips-card{
+        margin: 1rem;
+        border: 0;
+        background-color: $color-secondary2;
+        display: flex;
+        flex-direction: column;
+    }
+
+
+    &__tips-link{
+        color: $color-primary2;
+        font-size: 2.0rem;
+    }
+    &__tips-links-container{
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__tips-container{
+        display: flex;
+
+        @include respond(metricscard) {
+            flex-direction: column;
+        }
+    }
+
+
+
+}
+
+.section-metrics.hidden{
+    display: none;
+}
+
+.section-metrics {
+
+    display: flex;
+    justify-content: center;
+    margin-top: -29rem;
+    background-color: transparent;
+
+    &__container {
+        display: flex;
+        margin-top: 18rem;
+        z-index: 3;
+        width: 95%;
+        flex-direction: column;
+        padding: 2rem 0;
+        background-color: $color-background-surface;
+        box-shadow: 0 1.5rem 4rem rgba($color-black, .2);
+    }
+
+
+    &__inbox-card-container {
+        display: flex;
+
+        @include respond(metricscard) {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+
+    &__metrics-card {
+        display: flex;
+        flex-grow: 1;
+        justify-content: center;
+        background-color: $color-background-surface;
+
+        @include respond(metricscard) {
+            display: flex;
+            flex-grow: 1;
+            justify-content: center;
+            background-color: $color-background-surface;
+        }
+    }
+
+    &__metric-card-divider{
+        border-right: solid .5rem $color-tertiary1;
+        border-radius: 0;
+        display: flex;
+        flex-grow: 1;
+        justify-content: center;
+        background-color: $color-background-surface;
+
+        @include respond(metricscard) {
+            border: 0;
+            border-bottom: solid .3rem $color-tertiary1;
+            border-radius: 0;
+            display: flex;
+            flex-grow: 1;
+            justify-content: center;
+            background-color: $color-background-surface;
+        }
+    }
+
+
+
+    &__onbackground {
+        color: $color-text;
+        align-items: center;
+    }
+}
+
+.section-spinner {
+    height: 32%;
+    width: 94%;
+    z-index: 3;
+    position: absolute;
+    bottom: 27%;
+    left: 3%;
+    background-color: transparent;
+}
+
+.home-spinner {
+    padding-left: 13%;
+}

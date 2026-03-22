@@ -1,0 +1,48 @@
+.section-useredit {
+    margin-top: 6rem !important;
+    padding: 0 5rem 0 5rem !important;
+
+    &__box {
+        display: flex !important;
+        width: 100% !important;
+    }
+
+    &__button {
+        height: 5rem;
+        margin-left: auto !important;
+        margin-top: 2rem !important;
+        background-color: $color-primary1 !important;
+    }
+
+    &__button-sla {
+        background-color: $color-background-surface !important;
+        border: solid $color-text 0.2rem !important;
+        color: $color-text !important;
+        margin: 1rem 0 3rem 0 !important;
+
+        &:hover {
+            background-color: $color-secondary1 !important;
+        }
+    }
+
+    &__card{
+        background-color: $color-background-surface !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    &__field{
+        width:100%;
+    }
+
+}
+
+.sla-modal {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.MuiAutocomplete-noOptions{
+    font-size: 1.6rem;
+}

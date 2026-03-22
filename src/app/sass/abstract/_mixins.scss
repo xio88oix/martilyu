@@ -1,0 +1,176 @@
+@mixin clearfix {
+    &::after {
+        content:"";
+        display: table;
+        clear: both;
+    }
+}
+
+@mixin absCenter {
+    position: absolute;
+    top: 50%;
+    left: 17%;
+    //transform: translate(-50%, -50%);
+}
+
+//MEDIA QUERY MANAGER
+
+/*
+
+0 - 600px: Phone
+
+600 - 900px: Tablet portrait
+
+900 - 1200px: Tablet landscape
+
+[1200 - 1800] is where our normal styles supply
+
+1800px + : Big Desktop
+
+$breakpoint argument choices:
+
+- phone
+
+- tab-port
+
+- tab-land
+
+- big-desktop
+
+ORDER: Base + typography > general layout + grid > page layout > components
+
+1rem = 16px
+
+*/
+
+@mixin respond($breakpoint) {
+
+    @if $breakpoint == smallest7 {
+        @media(max-width: 15.9rem) { @content };
+    }
+
+    @if $breakpoint == smallest6 {
+        @media(max-width: 16.89rem) { @content };
+    }
+
+    @if $breakpoint == smallest5 {
+        @media(max-width: 19.65rem) { @content };
+    }
+
+    @if $breakpoint == smallest4 {
+        @media(max-width: 21.22rem) { @content };
+    }
+
+    @if $breakpoint == smallest3 {
+        @media(max-width: 24.37rem) { @content };
+    }
+
+    @if $breakpoint == smallest2 {
+        @media(max-width: 26.63rem) { @content };
+    }
+
+    @if $breakpoint == smallest1 {
+        @media(max-width: 28.3rem) { @content };
+    }
+
+    @if $breakpoint == smallest8 {
+        @media(max-width: 32rem) { @content };
+    }
+
+    @if $breakpoint == smallest {
+        @media(max-width: 57.19rem) { @content }; //915px
+    }
+
+    @if $breakpoint == responsive {
+        @media(max-width: 58.44rem) { @content }; //935px
+    }
+
+    @if $breakpoint == break1 {
+        @media(max-width: 59.13rem) { @content }; //946px
+    }
+
+    @if $breakpoint == break2 {
+        @media(max-width: 65.25rem) { @content }; //1044px
+    }
+
+    @if $breakpoint == break3 {
+        @media(max-width: 68.25rem) { @content }; //1092px
+    }
+
+    @if $breakpoint == break4 {
+        @media(max-width: 74.31rem) { @content }; //1189px
+    }
+
+    @if $breakpoint == break5 {
+        @media(max-width: 77.38rem) { @content }; //1238px
+    }
+
+    @if $breakpoint == break6 {
+        @media(max-width: 80.38rem) { @content }; //1286px
+    }
+
+    @if $breakpoint == break7 {
+        @media(max-width: 83.44rem) { @content }; //1335px
+    }
+
+    @if $breakpoint == break8 {
+        @media(max-width: 109.63rem) { @content }; //1754px
+    }
+
+    @if $breakpoint == break9 {
+        @media(max-width: 113.75rem) { @content }; //1820px
+    }
+
+    @if $breakpoint == break10 {
+        @media(max-width: 115.63rem) { @content }; //1850px
+    }
+
+    @if $breakpoint == break11 {
+        @media(max-width: 120.38rem) { @content }; //1926px
+    }
+
+    @if $breakpoint == break11a {
+        @media(max-width: 125.31rem) { @content }; //2005px
+    }
+
+    @if $breakpoint == break12 {
+        @media(max-width: 141.56rem) { @content }; //2239px
+    }
+
+    @if $breakpoint == break12a {
+        @media(max-width: 143rem) { @content }; //2288px
+    }
+
+    @if $breakpoint == break13 {
+        @media(max-width: 148.87rem) { @content };
+    }
+
+    @if $breakpoint == break14 {
+        @media(max-width: 155.25rem) { @content }; //2484px
+    }
+
+    @if $breakpoint == superlarge {
+        @media(min-width: 157.5rem) { @content }; //2520px
+    }
+
+    @if $breakpoint == metricscard {
+        @media(max-width: 76.5rem) { @content };
+    }
+
+    @if $breakpoint == navswitch {
+        @media(max-width: 107.5rem) { @content };
+    }
+
+    @if $breakpoint == navswitch2 {
+        @media(max-width: 113.6rem) { @content };
+    }
+
+    @if $breakpoint == navmenu {
+        @media(max-width: 103.38rem) { @content }; //1654px
+    }
+
+    @if $breakpoint == appbar {
+        @media(max-width: 113.6rem) { @content }; //2028px
+    }
+
+}

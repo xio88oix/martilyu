@@ -1,0 +1,44 @@
+select {
+    width: 33rem;
+    height: 5rem;
+    border-radius: 1rem 0 0 1rem;
+    background-color: $color-background-surface;
+    border: solid $color-primary1;
+    position: absolute;
+    //top: 4rem;
+}
+
+.select-option {
+    background: $color-background-surface;
+    width: 33rem;
+    height: 5rem;
+    font-size: 1.6rem;
+}
+
+.select-input {
+    width: 44rem;
+    height: 5rem;
+    border-radius: 0 1rem 1rem 0;
+    border: solid $color-primary1;
+    background-color: $color-background-surface;
+    font-size: 1.6rem;
+    padding-left: 1rem;
+
+    &__button {
+        color: $color-tertiary1;
+        font-size: 4rem;
+    }
+
+
+}
+
+.select-span {
+    position: relative;
+}
+
+/*.css-1dmqq7i-MuiNativeSelect-select-MuiInputBase-input-MuiInput-input:not([multiple]
+) option:hover {
+    background-color: $color-secondary1;
+}*/
+
+//option:hover {background-color: $color-secondary1 }
