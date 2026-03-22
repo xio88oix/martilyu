@@ -15,9 +15,12 @@ export default function NavBar() {
   const router = useRouter();
   const [referenceAnchor, setReferenceAnchor] =
     useState<HTMLElement | null>(null);
+  const [receivingAnchor, setReceivingAnchor] =
+    useState<HTMLElement | null>(null);
 
   const handleNavigate = (href: string) => {
     setReferenceAnchor(null);
+    setReceivingAnchor(null);
     router.push(href);
   };
 
@@ -42,6 +45,23 @@ export default function NavBar() {
         >
           <MenuItem onClick={() => handleNavigate("/viewmaillocations")}>
             Mail Locations
+          </MenuItem>
+        </Menu>
+
+        {/* Receiving menu */}
+        <Button
+          color="inherit"
+          onClick={(e) => setReceivingAnchor(e.currentTarget)}
+        >
+          Receiving
+        </Button>
+        <Menu
+          anchorEl={receivingAnchor}
+          open={Boolean(receivingAnchor)}
+          onClose={() => setReceivingAnchor(null)}
+        >
+          <MenuItem onClick={() => handleNavigate("/viewreceivingform")}>
+            Receiving
           </MenuItem>
         </Menu>
       </Toolbar>
