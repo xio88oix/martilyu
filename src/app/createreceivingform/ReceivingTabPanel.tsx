@@ -8,46 +8,7 @@ import PreviousReceiptsController from "./PreviousReceiptsController";
 import DraftReceiptsController from "./DraftReceiptsController";
 import BoxAttributesGridController from "./BoxAttributesGridController";
 import LineItemsGridController from "./LineItemsGridController";
-
-// NOTE: WarningAlert is not yet present in CustomComponents — inline stub until that file is converted.
-
-// ---------------------------------------------------------------------------
-// WarningAlert stub
-// ---------------------------------------------------------------------------
-
-interface WarningAlertProps {
-  open: boolean;
-  onClose: () => void;
-  title: string;
-  message: string | null;
-}
-
-function WarningAlert({ open, onClose, title, message }: WarningAlertProps) {
-  // TODO: replace stub with real WarningAlert from @/components/CustomComponents
-  if (!open) return null;
-  return (
-    <Box
-      sx={{
-        p: 2,
-        mb: 1,
-        backgroundColor: "#fff3cd",
-        border: "1px solid #ffc107",
-        borderRadius: 1,
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "flex-start",
-      }}
-    >
-      <Box>
-        <strong>{title}</strong>
-        {message && <p style={{ margin: "4px 0 0" }}>{message}</p>}
-      </Box>
-      <button type="button" onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer" }}>
-        ✕
-      </button>
-    </Box>
-  );
-}
+import { WarningAlert } from "@/components/CustomComponents";
 
 // ---------------------------------------------------------------------------
 // ReceivingData shape
@@ -196,11 +157,11 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
         open={specialHandlingWarningOpen}
         onClose={handleSpecialHandlingWarningClose}
         title="Special Handling"
-        message={shipMessage}
+        message={shipMessage ?? ""}
       />
       <Tabs
         // Uncomment below two lines for vertical tab panel
-        // orientation="vertical"
+        orientation="vertical"
         variant="scrollable"
         value={value}
         onChange={handleChange}
@@ -224,7 +185,10 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
         {/* <PackagesPanel /> */}
       </ReceivingPanel>
       <ReceivingPanel value={value} index={1} flex={true}>
-        <NewReceivingForm data={props.data ?? {}} type={props.type} />
+        <NewReceivingForm
+          data={(props.data ?? {}) as Record<string, unknown>}
+          type={props.type ?? undefined}
+        />
       </ReceivingPanel>
       <ReceivingPanel value={value} index={2}>
         <PreviousReceiptsController data={props.data?.previousReceipts ?? []} />

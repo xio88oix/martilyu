@@ -25,6 +25,8 @@ import dayjs from "dayjs";
 // NOTE: AdvancedSearchShippingRequests is not yet present in ../viewshippingrequests/.
 // NOTE: PreviousReceiptsGrid is a sibling component to be converted from PreviousReceiptsGrid.pdf.
 
+import PreviousReceiptsGrid from "./PreviousReceiptsGrid";
+
 // ---------------------------------------------------------------------------
 // Temporary inline stubs — replace with real imports once companion files exist
 // ---------------------------------------------------------------------------
@@ -69,17 +71,17 @@ function AdvancedSearchShippingRequests() {
 }
 
 // TODO: replace stub with real PreviousReceiptsGrid converted from PreviousReceiptsGrid.pdf
-interface PreviousReceiptsGridProps {
-  rowsData: unknown[];
-  cols: unknown[];
-  rowModesModel: GridRowModesModel;
-  setRowModesModel: React.Dispatch<React.SetStateAction<GridRowModesModel>>;
-  setRows: React.Dispatch<React.SetStateAction<unknown[]>>;
-}
+// interface PreviousReceiptsGridProps {
+//   rowsData: unknown[];
+//   cols: unknown[];
+//   rowModesModel: GridRowModesModel;
+//   setRowModesModel: React.Dispatch<React.SetStateAction<GridRowModesModel>>;
+//   setRows: React.Dispatch<React.SetStateAction<unknown[]>>;
+// }
 
-function PreviousReceiptsGrid(_props: PreviousReceiptsGridProps) {
-  return null;
-}
+// function PreviousReceiptsGrid(_props: PreviousReceiptsGridProps) {
+//   return null;
+// }
 
 // ---------------------------------------------------------------------------
 // Component

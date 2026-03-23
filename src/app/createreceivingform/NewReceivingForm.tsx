@@ -1,170 +1,25 @@
 "use client";
-// TODO: Replace the stubs below with real imports once these are added to CustomComponents.tsx:
-// import {
-//   CheckboxLarge,
-//   CustomTextField,
-//   HintBox,
-//   MyDatePicker,
-//   RadioLarge,
-//   SearchField,
-//   StyledTextField,
-// } from "@/components/CustomComponents";
-import React from "react";
+import {
+  CheckboxLarge,
+  CustomTextField,
+  HintBox,
+  MyDatePicker,
+  RadioLarge,
+  SearchField,
+  StyledTextField,
+} from "@/components/CustomComponents";
 import {
   Autocomplete,
   Box,
-  Checkbox,
   FormControl,
   FormControlLabel,
   FormLabel,
-  Radio,
   RadioGroup,
   Stack,
-  TextField,
 } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import dayjs from "dayjs";
 import { useState } from "react";
-
-// ---------------------------------------------------------------------------
-// Stubs for CustomComponents not yet implemented
-// Remove each stub once the real export lands in CustomComponents.tsx
-// ---------------------------------------------------------------------------
-
-interface CheckboxLargeProps {
-  checked: boolean;
-  onChange: () => void;
-}
-const CheckboxLarge: React.FC<CheckboxLargeProps> = ({ checked, onChange }) => (
-  <Checkbox checked={checked} onChange={onChange} />
-);
-
-interface CustomTextFieldProps {
-  className?: string;
-  label?: React.ReactNode;
-  variant?: string;
-  required?: boolean;
-  slotprops?: Record<string, unknown>;
-  inputProps?: Record<string, unknown>;
-  value?: unknown;
-  disabled?: boolean;
-  multiline?: boolean;
-  minRows?: number;
-}
-const CustomTextField: React.FC<CustomTextFieldProps> = ({
-  className,
-  label,
-  variant,
-  required,
-  value,
-  disabled,
-  multiline,
-  minRows,
-}) => (
-  <TextField
-    className={className}
-    label={label as string}
-    variant={(variant as "filled" | "outlined" | "standard") ?? "filled"}
-    required={required}
-    value={value as string ?? ""}
-    disabled={disabled}
-    multiline={multiline}
-    minRows={minRows}
-    fullWidth
-  />
-);
-
-interface HintBoxProps {
-  className?: string;
-  hint: string;
-}
-const HintBox: React.FC<HintBoxProps> = ({ className, hint }) => (
-  <Box className={className} sx={{ fontSize: "0.875rem", color: "text.secondary", py: 0.5 }}>
-    {hint}
-  </Box>
-);
-
-interface MyDatePickerProps {
-  required?: boolean;
-  label?: React.ReactNode;
-  className?: string;
-  value?: ReturnType<typeof dayjs> | null;
-  isDisabled?: boolean;
-  title?: string;
-}
-const MyDatePicker: React.FC<MyDatePickerProps> = ({ label, className, value, isDisabled }) => (
-  <TextField
-    className={className}
-    label={label as string}
-    variant="filled"
-    value={value ? value.format("MM/DD/YYYY HH:mm") : ""}
-    disabled={isDisabled}
-    fullWidth
-  />
-);
-
-interface RadioLargeProps {
-  className?: string;
-  value: string;
-  label: string;
-}
-const RadioLarge: React.FC<RadioLargeProps> = ({ className, value, label }) => (
-  <FormControlLabel
-    className={className}
-    value={value}
-    control={<Radio />}
-    label={label}
-  />
-);
-
-interface SearchFieldProps {
-  label?: React.ReactNode;
-  className?: string;
-  title?: string;
-  fullWidth?: boolean;
-  value?: unknown;
-  disable?: boolean;
-}
-const SearchField: React.FC<SearchFieldProps> = ({ label, className, value, disable }) => (
-  <TextField
-    className={className}
-    label={label as string}
-    variant="filled"
-    value={value as string ?? ""}
-    disabled={disable}
-    fullWidth
-  />
-);
-
-interface StyledTextFieldProps {
-  required?: boolean;
-  variant?: string;
-  label?: React.ReactNode;
-  className?: string;
-  helperText?: string;
-  disabled?: boolean;
-  [key: string]: unknown;
-}
-const StyledTextField: React.FC<StyledTextFieldProps> = ({
-  required,
-  variant,
-  label,
-  className,
-  helperText,
-  disabled,
-  ...rest
-}) => (
-  <TextField
-    required={required}
-    variant={(variant as "filled" | "outlined" | "standard") ?? "filled"}
-    label={label as string}
-    className={className}
-    helperText={helperText}
-    disabled={disabled}
-    fullWidth
-    {...(rest as object)}
-  />
-);
 
 // ---------------------------------------------------------------------------
 // Props

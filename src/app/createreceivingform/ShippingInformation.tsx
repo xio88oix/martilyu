@@ -1,53 +1,27 @@
 "use client";
 
+import { CustomTextField } from "@/components/CustomComponents";
 import { Box, Typography, Stack } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import dayjs from "dayjs";
-
-// NOTE: CustomTextField will be provided by @/components/CustomComponents once converted from its PDF.
-// NOTE: ReferenceTrackingGridController is a sibling component to be converted from ReferenceTrackingGridController.pdf.
-
-// ---------------------------------------------------------------------------
-// Temporary inline stubs — replace with real imports once companion files exist
-// ---------------------------------------------------------------------------
-
-interface CustomTextFieldProps {
-  label: string;
-  value?: string | number | null;
-  disabled?: boolean;
-}
-
-function CustomTextField({ label, value, disabled }: CustomTextFieldProps) {
-  // TODO: replace stub with real CustomTextField from @/components/CustomComponents
-  return (
-    <Box sx={{ display: "flex", flexDirection: "column", mb: 1 }}>
-      <label style={{ fontSize: "0.75rem", fontWeight: 600 }}>{label}</label>
-      <input
-        type="text"
-        defaultValue={value ?? ""}
-        disabled={disabled}
-        style={{ border: "1px solid #ccc", padding: "4px 8px", borderRadius: 4 }}
-      />
-    </Box>
-  );
-}
+import ReferenceTrackingGridController from "./ReferenceTrackingGridController";
 
 interface TrackingNumber {
   [key: string]: unknown;
 }
 
-interface ReferenceTrackingGridControllerProps {
-  data: TrackingNumber[];
-}
+// interface ReferenceTrackingGridControllerProps {
+//   data: TrackingNumber[];
+// }
 
-function ReferenceTrackingGridController({ data }: ReferenceTrackingGridControllerProps) {
-  // TODO: replace stub with real ReferenceTrackingGridController converted from ReferenceTrackingGridController.pdf
-  return (
-    <Box sx={{ p: 1 }}>
-      <p>ReferenceTrackingGridController — {data.length} row(s)</p>
-    </Box>
-  );
-}
+// function ReferenceTrackingGridController({ data }: ReferenceTrackingGridControllerProps) {
+//   // TODO: replace stub with real ReferenceTrackingGridController converted from ReferenceTrackingGridController.pdf
+//   return (
+//     <Box sx={{ p: 1 }}>
+//       <p>ReferenceTrackingGridController — {data.length} row(s)</p>
+//     </Box>
+//   );
+// }
 
 // ---------------------------------------------------------------------------
 // Data shape for the shipping information form

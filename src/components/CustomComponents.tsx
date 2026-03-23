@@ -286,8 +286,8 @@ export const CustomClearIcon = (props: unknown) => (
   </IconButton>
 );
 
-export const CustomTextField = (props: unknown) => (
-  <StyledTextField fullWidth variant="filled" {...(props as object)} />
+export const CustomTextField = (props: TextFieldProps) => (
+  <StyledTextField fullWidth variant="filled" {...props} />
 );
 
 // export const CustomDateTextField = (props: any) => (
@@ -838,21 +838,13 @@ export function WarningAlert(props: {
 }
 
 export function CustomToolbar(props: {
-  readOnlyData: { title: string; value: unknown }[];
-  buttons: {
-    name: string;
-    handleClick?: () => void;
-    disabled?: boolean;
-    isMenu?: boolean;
-    isCustomComponent?: boolean;
-    anchorEl?: HTMLElement | null;
-    setAnchorEl?: (el: HTMLElement | null) => void;
-    menuItems?: { title: string; handleClick: () => void }[];
-  }[];
+  readOnlyData: any[];
+  buttons: any[];
   smallButtons?: boolean;
   isCustomComponent?: boolean;
-  data?: unknown;
+  data?: any;
 }) {
+  const [anchorEl, setAnchorEl] = useState(null);
   return (
     <AppBar className="appbar" position="static">
       <Toolbar sx={{ flexWrap: "wrap" }} disableGutters>

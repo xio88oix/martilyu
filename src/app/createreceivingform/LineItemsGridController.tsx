@@ -6,12 +6,14 @@ import {
   GridEventListener,
   GridRowEditStopReasons,
   GridRowId,
+  GridRowModel,
   GridRowModesModel,
   GridColDef,
   GridToolbarContainer,
   GridRenderCellParams,
   useGridApiContext,
 } from "@mui/x-data-grid";
+import LineItemsGrid from "./LineItemsGrid";
 import { useEffect, useRef, useState } from "react";
 import {
   Box,
@@ -25,25 +27,6 @@ import MySnackbar from "@/components/MySnackbar";
 // Stub retained here so the import resolves; replace once services.tsx exports this hook.
 // import { useFetchShippingRegions } from "../ServiceHooks/services";
 
-// ---------------------------------------------------------------------------
-// Stub — replace with real import once LineItemsGrid.pdf is converted
-// ---------------------------------------------------------------------------
-interface LineItemsGridProps {
-  rowsData: LineItemRow[];
-  cols: GridColDef[];
-  rowModesModel: GridRowModesModel;
-  setRowModesModel: React.Dispatch<React.SetStateAction<GridRowModesModel>>;
-  setRows: React.Dispatch<React.SetStateAction<LineItemRow[]>>;
-  handleRowModesModelChange: (model: GridRowModesModel) => void;
-  toolbar: React.ElementType;
-  handleRowEditStop: GridEventListener<"rowEditStop">;
-}
-
-function LineItemsGrid(_props: LineItemsGridProps) {
-  // TODO: replace stub with real LineItemsGrid component converted from LineItemsGrid.pdf
-  return <Box sx={{ p: 2 }}>LineItemsGrid — stub</Box>;
-}
-// ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
 // Data types
@@ -237,7 +220,7 @@ export default function LineItemsGridController(
 ) {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [addDisabled, setAddDisabled] = useState(false);
-  const [rows, setRows] = useState<LineItemRow[]>(props.data ?? []);
+  const [rows, setRows] = useState<GridRowModel[]>(props.data ?? []);
   // apiResponse / setApiResponse are wired to handleProcessRowUpdate which is
   // commented out in the PDF pending API integration — retained to avoid refactor churn.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -289,7 +272,7 @@ export default function LineItemsGridController(
   // isRowValid / handleEditClick / handleCancelClick / handleUpdateClick are passed
   // as action-cell callbacks once LineItemsGrid is converted from its PDF.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const isRowValid = (row: LineItemRow) => {
+  const isRowValid = (row: GridRowModel) => {
     let valid = true;
 
     if (!row.description || String(row.description).trim() === "") {
@@ -431,8 +414,8 @@ export default function LineItemsGridController(
         open={openSnackbar}
         onClose={handleClose}
         autoHideDuration={8000}
-        message={message}
-        severity={severity}
+        message={message ?? ""}
+        severity={(severity ?? "info") as "error" | "info" | "success" | "warning"}
       />
       <BackdropLoader open={openLoader} />
       <Box className="simpleGrid__headerBox">
