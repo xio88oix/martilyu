@@ -1,10 +1,11 @@
 "use client";
 
 import { Box, CircularProgress } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ReceivingTabPanel from "./ReceivingTabPanel";
 import { CustomToolbar } from "@/components/CustomComponents";
+import { useUserContext } from "@/app/hooks/useUserContext";
 
 // NOTE: CustomToolbar will be provided by CustomComponents once converted from its PDF.
 // NOTE: useFetchReceivingData and useFetchReceivingForm are service hooks to be added to ServiceHooks/services.tsx.
@@ -108,6 +109,35 @@ function useFetchReceivingData(
 interface FetchFormResult {
   formData: { data: ReceivingFormData | null } | null;
   loading: boolean;
+}
+
+function toNumber(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+function toStringValue(value: unknown): string | null {
+  return typeof value === "string" ? value : null;
+}
+
+function toArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function hasValue(value: unknown): boolean {
+  if (value === null || value === undefined) {
+    return false;
+  }
+  if (typeof value === "string") {
+    return value.trim().length > 0;
+  }
+  return true;
 }
 
 function useFetchReceivingForm(
@@ -393,6 +423,22 @@ export default function ReceivingFormPage() {
   const [packageId, setPackageId] = useState<number | null>(null);
 
   const {
+    user,
+    displayName,
+    isWMAUser,
+    isLOCUser,
+    isCurrentStationSet,
+    isFranUser,
+    isCurrentBuildingSet,
+    isAtLocBuilding,
+    isAtLocBuildingX,
+    currentBuilding,
+    currentStation,
+    showAptic,
+    printReceivingLabel,
+  } = useUserContext();
+
+  const {
     formData,
     loading: recFormLoading,
   } = useFetchReceivingForm(recId, recDate, son, ponum, packageId);
@@ -425,6 +471,55 @@ export default function ReceivingFormPage() {
     }
   }, [loading, recFormLoading]);
 
+  const receivingBusinessState = useMemo(() => {
+    const record = (recFormData ?? {}) as Record<string, unknown>;
+
+    const statusId = toNumber(record.status_id);
+    const sotypeId = toNumber(record.sotypeId ?? record.soTypeid ?? record.sotypeid);
+    const tasktypeId = toNumber(record.tasktypeid);
+    const idValue = toNumber(record.id);
+    const sonId = toNumber(record.sonid);
+    const recIdValue = record.recid ?? record.receivingid;
+    const recid = toNumber(recIdValue);
+    const draftMaxBoxId = toNumber(record.draftmaxboxid) ?? 0;
+    const sonMaxBoxId = toNumber(record.sonmaxboxid) ?? 0;
+
+    const isNewReceiving =
+      idValue === null ||
+      (idValue !== null && sonId !== null && idValue === sonId) ||
+      statusId === 1;
+
+    return {
+      handDelivery: toStringValue(record.handdelivery) === "1",
+      bcsReceiving: type === "b1",
+      cpsReceiving: type === "b3" || (statusId === 1 && hasValue(record.cps)),
+      apticReceiving: showAptic && sotypeId === 1 && tasktypeId === 1,
+      recid,
+      allowPackages: record.allow_packages,
+      isPreviousReceipt: !isNewReceiving,
+      draftReceipts: toArray(record.draftReceipts).length > 1,
+      previousReceipts: toArray(record.previousReceipts).length > 1,
+      fromIncomingCargo:
+        toStringValue(record.receivdfromincomingcargo ?? record.receivedfromincomingcargo) ===
+        "Y"
+          ? "Yes"
+          : "No",
+      hhLite: !isLOCUser && !isFranUser,
+      received: hasValue(recIdValue),
+      draft: statusId === 1,
+      boxIdOutOfSync: draftMaxBoxId > 0 && sonMaxBoxId > draftMaxBoxId,
+      isBfheld: toStringValue(record.rcvbfheld) === "1",
+      isCrypto: toStringValue(record.rcvcrypto) === "1",
+      existingDiscrepant: toNumber(record.route) === 2,
+      isNewReceiving,
+      isPreviousReceiving: idValue !== null || statusId === 2,
+      isApticReceiving:
+        showAptic && sotypeId !== null && sotypeId === 1 && tasktypeId !== null && tasktypeId === 1,
+    };
+  }, [recFormData, type, showAptic, isLOCUser, isFranUser]);
+
+  void receivingBusinessState;
+
   const buttons: ToolbarButton[] = [
     { name: "Submit", handleClick: () => {} },
     { name: "Ordered Items", handleClick: () => {} },
@@ -440,7 +535,7 @@ export default function ReceivingFormPage() {
   return !recFormLoading ? (
     <Box className="pageTitle form__section">
       <Box className="pageTitle__headerBox">
-        <h1>{`New Receiving- ${son}`}</h1>
+        <h1>{`New Receiving- ${son} (${displayName})`}</h1>
       </Box>
       <CustomToolbar readOnlyData={[]} buttons={buttons} smallButtons={true} />
       <Box
@@ -473,3 +568,4 @@ export default function ReceivingFormPage() {
     </>
   );
 }
+
