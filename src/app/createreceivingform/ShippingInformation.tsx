@@ -48,8 +48,11 @@ interface ShippingInformationData {
   containsbfheld?: string | null;
   containshazmat?: string | null;
   containslithiumbatt?: string | null;
+  containsconcealmentdvc?: string | null;
   refrigerationreq?: string | null;
   freezingreq?: string | null;
+  receivedfromincomingcargo?: string | null;
+  receivdfromincomingcargo?: string | null;
   trackingNumbers?: TrackingNumber[];
 }
 
@@ -217,7 +220,7 @@ export default function ShippingInformation({ data, type }: ShippingInformationP
               <Grid2>
                 <CustomTextField
                   label="Concealment Device:"
-                  value="NO"
+                  value={data?.containsconcealmentdvc ?? "NO"}
                   disabled
                 />
               </Grid2>
@@ -272,6 +275,15 @@ export default function ShippingInformation({ data, type }: ShippingInformationP
                   disabled
                 />
               </Grid2>
+              {(data?.receivedfromincomingcargo ?? data?.receivdfromincomingcargo) === "Y" && (
+                <Grid2>
+                  <CustomTextField
+                    label="Received From Incoming Cargo:"
+                    value="Yes"
+                    disabled
+                  />
+                </Grid2>
+              )}
             </Stack>
           </Grid2>
         </div>
