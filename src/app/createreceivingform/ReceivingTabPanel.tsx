@@ -3,7 +3,7 @@
 import { Box, Tab, Tabs } from "@mui/material";
 import { ReactNode, useEffect, useState } from "react";
 import ShippingInformation from "./ShippingInformation";
-import NewReceivingForm from "./NewReceivingForm";
+import NewReceivingForm, { type ReceivingBusinessState } from "./NewReceivingForm";
 import PreviousReceiptsController from "./PreviousReceiptsController";
 import DraftReceiptsController from "./DraftReceiptsController";
 import BoxAttributesGridController from "./BoxAttributesGridController";
@@ -77,6 +77,7 @@ function allyProps(index: number) {
 interface ReceivingTabPanelProps {
   data: ReceivingData | null;
   type: string | null;
+  receivingBusinessState: ReceivingBusinessState;
 }
 
 export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
@@ -188,6 +189,7 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
         <NewReceivingForm
           data={(props.data ?? {}) as Record<string, unknown>}
           type={props.type ?? undefined}
+          receivingBusinessState={props.receivingBusinessState}
         />
       </ReceivingPanel>
       <ReceivingPanel value={value} index={2}>

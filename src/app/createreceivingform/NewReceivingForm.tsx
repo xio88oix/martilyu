@@ -20,39 +20,46 @@ import {
 import Grid2 from "@mui/material/Unstable_Grid2";
 import dayjs from "dayjs";
 import { useState } from "react";
+import { useUserContext } from "@/app/hooks/useUserContext";
 
 // ---------------------------------------------------------------------------
-// Props
+// Route constants
 // ---------------------------------------------------------------------------
 
-interface NewReceivingFormData {
-  nobox?: string;
-  nolines?: string;
-  handdelivery?: string;
-  cps?: string;
-  datein?: string;
-  dateout?: string;
-  pieces?: unknown;
-  weight?: unknown;
-  licount?: unknown;
-  lilist?: unknown;
-  route?: string | null;
-  carrier?: string;
-  packing_slip_provided?: string;
-  rcvrefrigerationreq?: string;
-  rcvfreezingreq?: string;
-  rcvbfheld?: string;
-  rcvcrypto?: string;
-  prefixcode?: string | null;
-  deliveryrecipient?: unknown;
-  remarks?: string;
-  deliverydate?: string;
-  status_id?: number | null;
+const LOCAL_DELIVERY = "LOCAL_DELIVERY";
+const CUSTOMER_PICKUP = "CUSTOMER_PICKUP";
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+export interface ReceivingBusinessState {
+  handDelivery: boolean;
+  bcsReceiving: boolean;
+  cpsReceiving: boolean;
+  apticReceiving: boolean;
+  recid: number | null;
+  allowPackages: unknown;
+  isPreviousReceipt: boolean;
+  draftReceipts: boolean;
+  previousReceipts: boolean;
+  fromIncomingCargo: string;
+  hhLite: boolean;
+  received: boolean;
+  draft: boolean;
+  boxIdOutOfSync: boolean;
+  isBfheld: boolean;
+  isCrypto: boolean;
+  existingDiscrepant: boolean;
+  isNewReceiving: boolean;
+  isPreviousReceiving: boolean;
+  isApticReceiving: boolean;
 }
 
 interface NewReceivingFormProps {
-  data: NewReceivingFormData;
+  data: Record<string, unknown>;
   type?: string;
+  receivingBusinessState: ReceivingBusinessState;
 }
 
 // ---------------------------------------------------------------------------
@@ -60,41 +67,77 @@ interface NewReceivingFormProps {
 // ---------------------------------------------------------------------------
 
 export default function NewReceivingForm(props: NewReceivingFormProps) {
-  const [bypassBox, setBypassBox] = useState(
-    props.data?.nobox === "0" ? false : true
-  );
+  const { data, type, receivingBusinessState: bs } = props;
+  const { isLOCUser, isWMAUser, isFranUser } = useUserContext();
+
+  const [bypassBox, setBypassBox] = useState(data?.nobox === "0" ? false : true);
   const handleBypassBox = () => setBypassBox((prev) => !prev);
 
-  const [nolines, setNoLines] = useState(props.data?.nolines ?? "0");
-  const handleChangeLines = () => {
-    let newVal: string;
-    if (nolines === "0") {
-      newVal = "1";
-    } else {
-      newVal = "0";
-    }
-    setNoLines(newVal);
-  };
+  const [nolines, setNoLines] = useState((data?.nolines as string) ?? "0");
+  const handleChangeLines = () => setNoLines((prev) => (prev === "0" ? "1" : "0"));
 
   const [handdelivery, setHandDelivery] = useState(
-    props.data?.handdelivery ?? "0"
+    (data?.handdelivery as string) ?? "0"
   );
   const handleHandDelivery = () =>
-    setHandDelivery((prev) => {
-      if (prev === "0") {
-        return "1";
-      }
-      return "0";
-    });
+    setHandDelivery((prev) => (prev === "0" ? "1" : "0"));
 
-  const [cps, setCPS] = useState(props.data?.cps ?? "0");
-  const handleCPS = () =>
-    setCPS((prev) => {
-      if (prev === "0") {
-        return "1";
-      }
-      return "0";
-    });
+  const [cps, setCPS] = useState((data?.cps as string) ?? "0");
+  const handleCPS = () => setCPS((prev) => (prev === "0" ? "1" : "0"));
+
+  const route = (data?.route as string) ?? null;
+  const isHandDelivery = handdelivery === "1";
+
+  // ---------------------------------------------------------------------------
+  // Derived disable / hide flags from analysis doc Section 4
+  // ---------------------------------------------------------------------------
+
+  // Date/Time In — editable when (!received || draft)
+  const dateInDisabled = bs.received && !bs.draft;
+
+  // Pieces — complex disable logic
+  const piecesDisabled =
+    (bs.apticReceiving && bs.received && !bs.draft) ||
+    (((bs.hhLite || isWMAUser || route === LOCAL_DELIVERY) ||
+      (type === "b1" && !isLOCUser)) &&
+      !bs.cpsReceiving &&
+      !bs.draft) ||
+    (bs.draft && bs.boxIdOutOfSync && !bs.apticReceiving);
+
+  // Weight — disabled for hhLite, WMA users, or b3 (unless draft)
+  const weightDisabled =
+    bs.hhLite || isWMAUser || (type === "b3" && !bs.draft);
+
+  // Route — only LOC users can edit, under specific conditions
+  const routeEnabled =
+    isLOCUser &&
+    type !== "b3" &&
+    ((bs.received && bs.existingDiscrepant) || !route || bs.draft);
+
+  // Packing List Provided — required for LOC; disabled when received and not draft
+  const packingSlipDisabled = bs.received && !bs.draft;
+  const packingSlipRequired = isLOCUser;
+
+  // LOC-only fields: Refrigeration, Freezing, BFHELD, Crypto, Bypass Box
+  const showLocOnlyFields = isLOCUser;
+
+  // Bypass Box — disabled when received (and not draft) OR route not local/pickup
+  const noboxDisabled =
+    (bs.received && !bs.draft) ||
+    (route !== LOCAL_DELIVERY && route !== CUSTOMER_PICKUP);
+
+  // No Line Item Receiving — disabled unless type b5 and not a completed receipt
+  const nolinesDisabled = (!bs.draft && bs.received) || type !== "b5";
+
+  // Hand Delivery — disabled for LOC users or when already received
+  const handDeliveryDisabled = isLOCUser || bs.received;
+
+  // BASIS Prefix — shown and required only for b1
+  const prefixHidden = type !== "b1";
+
+  // Do Not Send To Genesis — hidden for non-FRAN users; disabled when received
+  const qtyAdjHidden = !isFranUser;
+  const qtyAdjDisabled = bs.received;
 
   return (
     <>
@@ -110,29 +153,55 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   required={true}
                   label={"Date/Time In:"}
                   className="dialog-field-width"
-                  value={props.data?.datein ? dayjs(props.data.datein) : null}
-                  isDisabled={true}
+                  value={
+                    data?.receiveddate
+                      ? dayjs(data.receiveddate as string)
+                      : null
+                  }
+                  isDisabled={dateInDisabled}
                 />
               </Grid2>
               <Grid2>
                 <MyDatePicker
-                  required={true}
                   label={"Date/Time Out:"}
                   className="dialog-field-width"
-                  value={props.data?.dateout ? dayjs(props.data.dateout) : null}
+                  value={
+                    data?.dateout ? dayjs(data.dateout as string) : null
+                  }
                   isDisabled={true}
                 />
               </Grid2>
+              {bs.apticReceiving && (
+                <>
+                  <Grid2>
+                    <CustomTextField
+                      className="dialog-field-width"
+                      label={"Total Received Pieces"}
+                      variant="filled"
+                      value={data?.taskreceivepieces}
+                      disabled
+                    />
+                  </Grid2>
+                  <Grid2>
+                    <CustomTextField
+                      className="dialog-field-width"
+                      label={"Tasking Package Pieces"}
+                      variant="filled"
+                      value={data?.taskpackages}
+                      disabled
+                    />
+                  </Grid2>
+                </>
+              )}
               <Grid2>
                 <CustomTextField
                   className="dialog-field-width"
                   label={"Pieces"}
                   variant="filled"
                   required
-                  slotprops={{ htmlInput: { maxLength: 128 } }}
-                  inputProps={{ inputMode: "number" }}
-                  value={props.data?.pieces}
-                  disabled
+                  inputProps={{ inputMode: "numeric", maxLength: 4 }}
+                  value={data?.pieces}
+                  disabled={piecesDisabled}
                 />
               </Grid2>
               <Grid2>
@@ -147,10 +216,9 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   label={"Weight"}
                   variant="filled"
                   required
-                  slotprops={{ htmlInput: { maxLength: 128 } }}
-                  inputProps={{ inputMode: "number" }}
-                  value={props.data?.weight}
-                  disabled
+                  inputProps={{ inputMode: "numeric", maxLength: 5 }}
+                  value={data?.weight}
+                  disabled={weightDisabled}
                 />
               </Grid2>
             </Stack>
@@ -161,9 +229,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   className="dialog-field-width"
                   label={"Item Count"}
                   variant="filled"
-                  slotprops={{ htmlInput: { maxLength: 128 } }}
-                  inputProps={{ inputMode: "number" }}
-                  value={props.data?.licount}
+                  value={data?.licount}
                   disabled
                 />
               </Grid2>
@@ -172,8 +238,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   className="dialog-field-width"
                   label={"Item List"}
                   variant="filled"
-                  slotprops={{ htmlInput: { maxLength: 128 } }}
-                  value={props.data?.lilist}
+                  value={data?.lilist}
                   disabled
                 />
               </Grid2>
@@ -181,16 +246,16 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                 <Autocomplete
                   className="dialog-field-width"
                   options={["item1", "item2", "item3"]}
-                  value={props.data?.route ?? null}
+                  value={route ?? null}
+                  disabled={!routeEnabled}
                   renderInput={(params) => (
                     <StyledTextField
-                      required
+                      required={isLOCUser || type === "b1"}
                       {...params}
                       variant="filled"
                       label={"Route"}
                       className="section-useredit__field body1 text-onbackground"
                       helperText="Select a Route"
-                      disabled
                     />
                   )}
                   slotProps={{
@@ -206,7 +271,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                 <Autocomplete
                   className="dialog-field-width"
                   options={["item1", "item2", "item3"]}
-                  value={props.data?.carrier ?? "SON"}
+                  value={(data?.carrier as string) ?? "SON"}
                   renderInput={(params) => (
                     <StyledTextField
                       {...params}
@@ -231,35 +296,37 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
 
         {/* ----------------------------------------------------------------
             Section 2 — Packing List, Refrigeration, Freezing, BFHELD, Crypto,
-                        Bypass Box/Piece, No Line Item Receiving
+                        Bypass Box/Piece (LOC only)
         ---------------------------------------------------------------- */}
         <div className="form-section">
           <Grid2 columnGap={1} columnSpacing={2} rowSpacing={1} container>
             <Stack flexGrow={1}>
-              <Grid2>
-                <HintBox
-                  className="dialog-field-width"
-                  hint="Packing list may appear within 60 days of receiving."
-                />
-              </Grid2>
+              {isLOCUser && (
+                <Grid2>
+                  <HintBox
+                    className="dialog-field-width"
+                    hint="Packing list may appear within 60 days of receiving."
+                  />
+                </Grid2>
+              )}
 
               {/* Packing List Provided? */}
               <Grid2>
                 <FormControl
                   sx={{ flexDirection: "row", alignItems: "center", width: "100%" }}
                   className="section-useredit__general-form"
-                  disabled
+                  disabled={packingSlipDisabled}
                 >
                   <FormLabel
-                    required
+                    required={packingSlipRequired}
                     className="body1 text-onbackground font-medium"
                   >
                     Packing List Provided?
                   </FormLabel>
                   <RadioGroup
                     sx={{ flexDirection: "row", margin: "0 1rem" }}
-                    name="radio-button-group-crypto"
-                    value={props.data?.packing_slip_provided}
+                    name="radio-button-group-packing"
+                    value={data?.packing_slip_provided}
                   >
                     <RadioLarge
                       className="text-onbackground font-medium"
@@ -275,171 +342,172 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                 </FormControl>
               </Grid2>
 
-              {/* Refrigeration Required? */}
-              <Grid2>
-                <FormControl
-                  sx={{ flexDirection: "row", alignItems: "center", width: "100%" }}
-                  className="section-useredit__general-form"
-                  disabled
-                >
-                  <FormLabel
-                    required
-                    className="body1 text-onbackground font-medium"
-                  >
-                    Refrigeration Required?
-                  </FormLabel>
-                  <RadioGroup
-                    value={props.data?.rcvrefrigerationreq}
-                    sx={{ flexDirection: "row", margin: "0 1rem" }}
-                    name="radio-button-group-crypto"
-                  >
-                    <RadioLarge
-                      className="text-onbackground font-medium"
-                      value="1"
-                      label="Yes"
-                    />
-                    <RadioLarge
-                      className="text-onbackground font-medium"
-                      value="0"
-                      label="No"
-                    />
-                  </RadioGroup>
-                </FormControl>
-              </Grid2>
+              {/* LOC-only: Refrigeration, Freezing, BFHELD, Crypto */}
+              {showLocOnlyFields && (
+                <>
+                  <Grid2>
+                    <FormControl
+                      sx={{ flexDirection: "row", alignItems: "center", width: "100%" }}
+                      className="section-useredit__general-form"
+                    >
+                      <FormLabel
+                        required
+                        className="body1 text-onbackground font-medium"
+                      >
+                        Refrigeration Required?
+                      </FormLabel>
+                      <RadioGroup
+                        value={data?.rcvrefrigerationreq}
+                        sx={{ flexDirection: "row", margin: "0 1rem" }}
+                        name="radio-button-group-refrigeration"
+                      >
+                        <RadioLarge
+                          className="text-onbackground font-medium"
+                          value="1"
+                          label="Yes"
+                        />
+                        <RadioLarge
+                          className="text-onbackground font-medium"
+                          value="0"
+                          label="No"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </Grid2>
 
-              {/* Freezing Required? */}
-              <Grid2>
-                <FormControl
-                  sx={{ flexDirection: "row", alignItems: "center", width: "100%" }}
-                  className="section-useredit__general-form"
-                  disabled
-                >
-                  <FormLabel
-                    required
-                    className="body1 text-onbackground font-medium"
-                  >
-                    Freezing Required?
-                  </FormLabel>
-                  <RadioGroup
-                    value={props.data?.rcvfreezingreq}
-                    sx={{ flexDirection: "row", margin: "0 1rem" }}
-                    name="radio-button-group-crypto"
-                  >
-                    <RadioLarge
-                      className="text-onbackground font-medium"
-                      value="1"
-                      label="Yes"
-                    />
-                    <RadioLarge
-                      className="text-onbackground font-medium"
-                      value="0"
-                      label="No"
-                    />
-                  </RadioGroup>
-                </FormControl>
-              </Grid2>
+                  <Grid2>
+                    <FormControl
+                      sx={{ flexDirection: "row", alignItems: "center", width: "100%" }}
+                      className="section-useredit__general-form"
+                    >
+                      <FormLabel
+                        required
+                        className="body1 text-onbackground font-medium"
+                      >
+                        Freezing Required?
+                      </FormLabel>
+                      <RadioGroup
+                        value={data?.rcvfreezingreq}
+                        sx={{ flexDirection: "row", margin: "0 1rem" }}
+                        name="radio-button-group-freezing"
+                      >
+                        <RadioLarge
+                          className="text-onbackground font-medium"
+                          value="1"
+                          label="Yes"
+                        />
+                        <RadioLarge
+                          className="text-onbackground font-medium"
+                          value="0"
+                          label="No"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </Grid2>
 
-              {/* BFHELD? */}
-              <Grid2>
-                <FormControl
-                  disabled
-                  sx={{ flexDirection: "row", alignItems: "center", width: "100%" }}
-                  className="section-useredit__general-form"
-                >
-                  <FormLabel
-                    required
-                    className="body1 text-onbackground font-medium"
-                  >
-                    BFHELD?
-                  </FormLabel>
-                  <RadioGroup
-                    value={props.data?.rcvbfheld}
-                    sx={{ flexDirection: "row", margin: "0 1rem" }}
-                    name="radio-button-group-crypto"
-                  >
-                    <RadioLarge
-                      className="text-onbackground font-medium"
-                      value="1"
-                      label="Yes"
-                    />
-                    <RadioLarge
-                      className="text-onbackground font-medium"
-                      value="0"
-                      label="No"
-                    />
-                  </RadioGroup>
-                </FormControl>
-              </Grid2>
+                  <Grid2>
+                    <FormControl
+                      sx={{ flexDirection: "row", alignItems: "center", width: "100%" }}
+                      className="section-useredit__general-form"
+                    >
+                      <FormLabel
+                        required
+                        className="body1 text-onbackground font-medium"
+                      >
+                        BFHELD?
+                      </FormLabel>
+                      <RadioGroup
+                        value={data?.rcvbfheld}
+                        sx={{ flexDirection: "row", margin: "0 1rem" }}
+                        name="radio-button-group-bfheld"
+                      >
+                        <RadioLarge
+                          className="text-onbackground font-medium"
+                          value="1"
+                          label="Yes"
+                        />
+                        <RadioLarge
+                          className="text-onbackground font-medium"
+                          value="0"
+                          label="No"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </Grid2>
 
-              {/* Crypto? */}
-              <Grid2>
-                <FormControl
-                  disabled
-                  sx={{ flexDirection: "row", alignItems: "center", width: "100%" }}
-                  className="section-useredit__general-form"
-                >
-                  <FormLabel
-                    required
-                    className="body1 text-onbackground font-medium"
-                  >
-                    Crypto?
-                  </FormLabel>
-                  <RadioGroup
-                    value={props.data?.rcvcrypto}
-                    sx={{ flexDirection: "row", margin: "0 1rem" }}
-                    name="radio-button-group-crypto"
-                  >
-                    <RadioLarge
-                      className="text-onbackground font-medium"
-                      value="1"
-                      label="Yes"
-                    />
-                    <RadioLarge
-                      className="text-onbackground font-medium"
-                      value="0"
-                      label="No"
-                    />
-                  </RadioGroup>
-                </FormControl>
-              </Grid2>
+                  <Grid2>
+                    <FormControl
+                      sx={{ flexDirection: "row", alignItems: "center", width: "100%" }}
+                      className="section-useredit__general-form"
+                    >
+                      <FormLabel
+                        required
+                        className="body1 text-onbackground font-medium"
+                      >
+                        Crypto?
+                      </FormLabel>
+                      <RadioGroup
+                        value={data?.rcvcrypto}
+                        sx={{ flexDirection: "row", margin: "0 1rem" }}
+                        name="radio-button-group-crypto"
+                      >
+                        <RadioLarge
+                          className="text-onbackground font-medium"
+                          value="1"
+                          label="Yes"
+                        />
+                        <RadioLarge
+                          className="text-onbackground font-medium"
+                          value="0"
+                          label="No"
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </Grid2>
+                </>
+              )}
             </Stack>
 
-            {/* Bypass Box/Piece + No Line Item Receiving */}
-            <Stack flexGrow={1}>
-              <Grid2>
-                <HintBox
-                  className="dialog-field-width"
-                  hint="Selecting this checkbox allows the user to bypass inputting BOX/PIECE information for this receving."
-                />
-              </Grid2>
-              <Grid2>
-                <FormControlLabel
-                  disabled
-                  key="checkbox1"
-                  className="text-onbackground"
-                  control={
-                    <CheckboxLarge
-                      checked={bypassBox}
-                      onChange={handleBypassBox}
-                    />
-                  }
-                  label={"Bypass Box/Piece Information:"}
-                />
-              </Grid2>
-            </Stack>
+            {/* Bypass Box/Piece — LOC only */}
+            {showLocOnlyFields && (
+              <Stack flexGrow={1}>
+                <Grid2>
+                  <HintBox
+                    className="dialog-field-width"
+                    hint="Selecting this checkbox allows the user to bypass inputting BOX/PIECE information for this receiving."
+                  />
+                </Grid2>
+                <Grid2>
+                  <FormControlLabel
+                    disabled={noboxDisabled}
+                    key="checkbox-nobox"
+                    className="text-onbackground"
+                    control={
+                      <CheckboxLarge
+                        checked={bypassBox}
+                        onChange={handleBypassBox}
+                      />
+                    }
+                    label={"Bypass Box/Piece Information:"}
+                  />
+                </Grid2>
+              </Stack>
+            )}
           </Grid2>
         </div>
 
         {/* ----------------------------------------------------------------
-            Section 3 — No Line Item Receiving, BASIS Prefix, Hand Delivery, DVV
+            Section 3 — No Line Item Receiving, BASIS Prefix, Hand Delivery,
+                        Do Not Send To Genesis, DVV Receiving
         ---------------------------------------------------------------- */}
         <div className="form-section">
           <Grid2 columnGap={1} columnSpacing={2} rowSpacing={1} container>
             <Stack flexGrow={1}>
               <Grid2>
                 <FormControlLabel
+                  disabled={nolinesDisabled}
                   title="Select No Line Item Receiving if line item information will not be entered in prior to submitting."
-                  key="checkbox1"
+                  key="checkbox-nolines"
                   className="text-onbackground"
                   control={
                     <CheckboxLarge
@@ -450,35 +518,37 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   label={"No Line Item Receiving:"}
                 />
               </Grid2>
-              <Grid2>
-                <Autocomplete
-                  className="dialog-field-width"
-                  options={["item1", "item2", "item3"]}
-                  value={props.data?.prefixcode}
-                  renderInput={(params) => (
-                    <StyledTextField
-                      required
-                      {...params}
-                      variant="filled"
-                      label={"BASIS Prefix"}
-                      className="section-useredit__field body1 text-onbackground"
-                      helperText="Select a BASIS Prefix Number"
-                      disabled
-                    />
-                  )}
-                  slotProps={{
-                    paper: {
-                      sx: {
-                        "& .MuiAutocomplete-listbox": { fontSize: "1.6rem" },
+              {!prefixHidden && (
+                <Grid2>
+                  <Autocomplete
+                    className="dialog-field-width"
+                    options={["item1", "item2", "item3"]}
+                    value={(data?.prefixcode as string) ?? null}
+                    renderInput={(params) => (
+                      <StyledTextField
+                        required
+                        {...params}
+                        variant="filled"
+                        label={"BASIS Prefix"}
+                        className="section-useredit__field body1 text-onbackground"
+                        helperText="Select a BASIS Prefix Number"
+                      />
+                    )}
+                    slotProps={{
+                      paper: {
+                        sx: {
+                          "& .MuiAutocomplete-listbox": { fontSize: "1.6rem" },
+                        },
                       },
-                    },
-                  }}
-                />
-              </Grid2>
+                    }}
+                  />
+                </Grid2>
+              )}
               <Grid2>
                 <FormControlLabel
-                  title="Only available for field receving process."
-                  key="checkbox1"
+                  disabled={handDeliveryDisabled}
+                  title="Only available for field receiving process."
+                  key="checkbox-handdelivery"
                   className="text-onbackground"
                   control={
                     <CheckboxLarge
@@ -489,26 +559,35 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   label={"Hand Delivery:"}
                 />
               </Grid2>
+              {!qtyAdjHidden && (
+                <Grid2>
+                  <FormControlLabel
+                    disabled={qtyAdjDisabled}
+                    key="checkbox-qtyadj"
+                    className="text-onbackground"
+                    control={
+                      <CheckboxLarge
+                        checked={(data?.qty_adjustment_only as string) === "1"}
+                        onChange={() => {}}
+                      />
+                    }
+                    label={"Do Not Send To Genesis:"}
+                  />
+                </Grid2>
+              )}
             </Stack>
 
             <Stack flexGrow={1}>
               <Grid2>
                 <FormControlLabel
-                  key="checkbox1"
+                  key="checkbox-cps"
                   className="text-onbackground"
                   control={
                     <CheckboxLarge checked={cps === "1"} onChange={handleCPS} />
                   }
                   label={"DVV Receiving:"}
                   title="Select for DVV Receiving"
-                  disabled={
-                    !(
-                      props.type === "b3" ||
-                      (props.data?.status_id !== null &&
-                        props.data?.status_id === 1 &&
-                        props.data?.cps)
-                    )
-                  }
+                  disabled={!bs.cpsReceiving}
                 />
               </Grid2>
             </Stack>
@@ -527,8 +606,9 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   className="dialog-field-width"
                   title="Only available for field receiving process."
                   fullWidth={true}
-                  value={props.data?.deliveryrecipient}
-                  disable={true}
+                  value={data?.deliveryrecipient}
+                  disable={!isHandDelivery}
+                  required={isHandDelivery}
                 />
               </Grid2>
               <Grid2>
@@ -538,9 +618,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   minRows={4}
                   label={"Receiving Remarks"}
                   variant="filled"
-                  slotprops={{ htmlInput: { maxLength: 128 } }}
-                  value={props.data?.remarks ?? ""}
-                  disabled
+                  value={(data?.remarks as string) ?? ""}
                 />
               </Grid2>
             </Stack>
@@ -550,12 +628,13 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                 <MyDatePicker
                   title="Only available for field receiving process."
                   label={"Hand Delivered Date:"}
+                  required={isHandDelivery}
                   value={
-                    props.data?.deliverydate
-                      ? dayjs(props.data.deliverydate)
+                    data?.deliverydate
+                      ? dayjs(data.deliverydate as string)
                       : null
                   }
-                  isDisabled={true}
+                  isDisabled={!isHandDelivery}
                 />
               </Grid2>
             </Stack>

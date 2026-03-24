@@ -518,8 +518,6 @@ export default function ReceivingFormPage() {
     };
   }, [recFormData, type, showAptic, isLOCUser, isFranUser]);
 
-  void receivingBusinessState;
-
   const buttons: ToolbarButton[] = [
     { name: "Submit", handleClick: () => {} },
     { name: "Ordered Items", handleClick: () => {} },
@@ -547,7 +545,11 @@ export default function ReceivingFormPage() {
         }}
       >
         {/* <ShippingInformation /> */}
-        <ReceivingTabPanel data={recFormData} type={type} />
+        <ReceivingTabPanel
+          data={recFormData}
+          type={type}
+          receivingBusinessState={receivingBusinessState}
+        />
       </Box>
     </Box>
   ) : (
