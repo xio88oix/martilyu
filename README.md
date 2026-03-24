@@ -20,6 +20,31 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## User context pattern
+
+Use the shared hook in `src/app/hooks/useUserContext.ts` instead of importing `useSelector` and user selectors in each page.
+
+```tsx
+import { useUserContext } from "@/app/hooks/useUserContext";
+
+export default function ExamplePage() {
+	const {
+		displayName,
+		isWMAUser,
+		isLOCUser,
+		isFranUser,
+		currentStation,
+		currentBuilding,
+		showAptic,
+		printReceivingLabel,
+	} = useUserContext();
+
+	return <div>{`Welcome ${displayName} (${isWMAUser ? "WMA" : "Non-WMA"})`}</div>;
+}
+```
+
+This keeps user-role logic centralized in the Redux slice and gives all pages a single typed interface.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

@@ -1,4 +1,5 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
+import userReducer from "@/app/slices/userSlice";
 
 // Placeholder slice — replace with real slices as features are added
 const appSlice = createSlice({
@@ -10,6 +11,7 @@ const appSlice = createSlice({
 export const store = configureStore({
   reducer: {
     app: appSlice.reducer,
+    user: userReducer,
   },
 });
 

@@ -82,6 +82,66 @@ const MOCK_BUILDINGS = [
   { id: 4, buildingName: 'North Campus' },
 ];
 
+// ============================================================
+// User
+// ============================================================
+
+export interface Station {
+  id: number;
+  stationName: string;
+  stationNumber: string;
+  active: boolean;
+}
+
+const MOCK_STATION = {
+  id: 9,
+  stationName: 'XOC',
+  stationNumber: "0903",
+  active: true,
+}
+
+export interface User {
+  displayName: string;
+  roles: string[];
+  rolesAsString: string;
+  preferencesAsJson: string;
+  currentStation: Station | null;
+  currentBuilding: Building | null;
+  defaultTabToOpen: string | null;
+  locuser: boolean;
+  enterpriseLocationId: number;
+}
+
+const MOCK_USER: User = {
+  displayName: 'John Doe',
+  roles: ['Admin', 'User', 'Developer'],
+  rolesAsString: "'Admin', 'User', 'Developer'",
+  preferencesAsJson: '{ "printReceivingLabel": "true", "showAptic": "true", "wmaUser": "true", "notifications": true }',
+  currentStation: MOCK_STATION,
+  currentBuilding: null,
+  defaultTabToOpen: null,
+  locuser: true,
+  enterpriseLocationId: 12345,
+};
+
+/**
+ * Stubs GET user.json
+ */
+export function useFetchUserData() {
+  const [userData, setUserData] = useState<User | null>(null);
+  const [userDataLoading, setUserDataLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setUserData(MOCK_USER);
+      setUserDataLoading(false);
+    }, 200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return { userData, userDataLoading };
+}
+
 /**
  * Stubs GET buildings.json
  * Returns a paginated list of buildings.
@@ -282,17 +342,17 @@ export interface ReceivingMovementDetailResponse {
     containsammo: string;
     final_destination: string;
     qty_adjustment_only: string | null;
-    deliverydate: string | null;
+    deliverydate: Date | null;
     lineItems: LineItem[];
-    genesis: string | null;
+    genesis: number | null;
     son: string;
-    status_id: string | null;
-    handling_priority_type_id: string | null;
+    status_id: number | null;
+    handling_priority_type_id: number | null;
     allow_packages: string;
     rcvfreezingreq: string;
-    id: string | null;
+    id: number | null;
     tireq: string;
-    receivingid: string | null;
+    receivingid: number | null;
     refrigerationreq: string;
     taskreceivepieces: string | null;
     draftReceipts: any[];
@@ -301,40 +361,40 @@ export interface ReceivingMovementDetailResponse {
     secureshipmentreq: string;
     nolines: string;
     sonid: number;
-    datereqatdest: string | null;
+    datereqatdest: Date | null;
     cps: string;
     rcvbfheld: string;
     nobox: string;
-    weight: string | null;
+    weight: number | null;
     trackingNumbers: any[];
     satellite_location: string | null;
-    received: string | null;
+    received: number | null;
     containscrypto: string;
     rcvrefrigerationreq: string;
     receiving_completed: string;
     taskutility: string | null;
-    route: string | null;
+    route: number | null;
     previousReceipts: any[];
     containslithiumbatt: string;
     containsconcealmentdvc: string;
-    boxid: string | null;
+    boxid: number | null;
     markpackship: string | null;
     backhaul: string;
     purpose: string | null;
-    licount: string | null;
+    licount: number | null;
     freezingreq: string;
     containsweapons: string;
-    taskstatusid: string | null;
-    receiveddate: number;
-    pieces: string | null;
-    carrier_id: string | null;
-    esmtid: string | null;
+    taskstatusid: number | null;
+    receiveddate: Date | null;
+    pieces: number | null;
+    carrier_id: number | null;
+    esmtid: number | null;
     draftmaxboxid: number;
     handdelivery: string;
     receivedfromincomincomingcargo: string | null;
     containshazmat: string;
     track: string | null;
-    genesispoid: string | null;
+    genesispoid: number | null;
     prefixcode: string | null;
     lilist: string | null;
     shiptoname: string | null;
@@ -342,23 +402,23 @@ export interface ReceivingMovementDetailResponse {
     rack: string | null;
     address: string | null;
     boxIds: number[];
-    dateout: number;
-    rtid: string | null;
-    packageId: string | null;
+    dateout: Date | null;
+    rtid: number | null;
+    packageId: number | null;
     bscdocnumber: string | null;
     shiptoaresid: string | null;
     containsAccountableProperty: boolean;
-    lptsid: string | null;
+    lptsid: number | null;
     carrier: string | null;
     taskpackages: string | null;
-    shiptostationid: string | null;
+    shiptostationid: number | null;
     cubiscanLocation: CubiscanLocation;
     ponum: string | null;
-    son_handling_priority_type_id: string | null;
+    son_handling_priority_type_id: number | null;
     assetReceivedItems: any[];
     rcvcrypto: string;
     sotypeid: number;
-    tasktypeid: string | null;
+    tasktypeid: number | null;
     remarks: string | null;
     deliveryrecipient: string | null;
     containsbfheld: string;
@@ -447,7 +507,7 @@ const mockReceivingMovementDetail: ReceivingMovementDetailResponse = {
     rcvrefrigerationreq: '0',
     receiving_completed: '0',
     taskutility: null,
-    route: null,
+    route: 12,
     previousReceipts: [],
     containslithiumbatt: 'NO',
     containsconcealmentdvc: 'NO',
@@ -459,7 +519,7 @@ const mockReceivingMovementDetail: ReceivingMovementDetailResponse = {
     freezingreq: 'NO',
     containsweapons: 'NO',
     taskstatusid: null,
-    receiveddate: 1773912090000,
+    receiveddate: new Date(1773912090000),
     pieces: null,
     carrier_id: null,
     esmtid: null,
@@ -476,7 +536,7 @@ const mockReceivingMovementDetail: ReceivingMovementDetailResponse = {
     rack: null,
     address: null,
     boxIds: [1066815],
-    dateout: 1773912090000,
+    dateout: new Date(1773912090000),
     rtid: null,
     packageId: null,
     bscdocnumber: null,
