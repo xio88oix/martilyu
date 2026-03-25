@@ -131,6 +131,7 @@ interface NewReceivingFormProps {
   data: Record<string, unknown>;
   type?: string;
   receivingBusinessState: ReceivingBusinessState;
+  onFormValidityChange?: (valid: boolean) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -138,7 +139,7 @@ interface NewReceivingFormProps {
 // ---------------------------------------------------------------------------
 
 export default function NewReceivingForm(props: NewReceivingFormProps) {
-  const { data, type, receivingBusinessState: bs } = props;
+  const { data, type, receivingBusinessState: bs, onFormValidityChange } = props;
   const { isLOCUser, isWMAUser, isFranUser } = useUserContext();
   const { data: routeLookupData, loading: routeLookupLoading } = useFetchAllRoute();
 
@@ -197,6 +198,27 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
 
   const routeLabel = selectedRoute?.shortDescription ?? null;
   const isHandDelivery = handdelivery === "1";
+
+  // ---------------------------------------------------------------------------
+  // Form validity — required fields per ReceivingForm-analysis.md Section 10
+  // ---------------------------------------------------------------------------
+
+  const formValid = useMemo(() => {
+    if (!data?.pieces || Number(data.pieces) <= 0) return false;
+    if (!data?.weight || Number(data.weight) <= 0) return false;
+    if (!selectedRoute) return false;
+    if (isLOCUser && !data?.packing_slip_provided) return false;
+    if (handdelivery === "1") {
+      if (!data?.deliveryrecipient) return false;
+      if (!data?.deliverydate) return false;
+    }
+    if (type === "b1" && !data?.prefixcode) return false;
+    return true;
+  }, [data, selectedRoute, isLOCUser, handdelivery, type]);
+
+  useEffect(() => {
+    onFormValidityChange?.(formValid);
+  }, [formValid, onFormValidityChange]);
 
   // ---------------------------------------------------------------------------
   // Derived disable / hide flags from analysis doc Section 4

@@ -1,11 +1,12 @@
 "use client";
 
-import { Box, CircularProgress } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { Alert, Box, CircularProgress, Snackbar } from "@mui/material";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ReceivingTabPanel from "./ReceivingTabPanel";
 import { CustomToolbar } from "@/components/CustomComponents";
 import { useUserContext } from "@/app/hooks/useUserContext";
+import { loadEnvironment } from "@/utils/EnvironmentUtils";
 
 // NOTE: CustomToolbar will be provided by CustomComponents once converted from its PDF.
 // NOTE: useFetchReceivingData and useFetchReceivingForm are service hooks to be added to ServiceHooks/services.tsx.
@@ -17,6 +18,7 @@ import { useUserContext } from "@/app/hooks/useUserContext";
 interface ToolbarButton {
   name: string;
   handleClick: () => void;
+  disabled?: boolean;
 }
 
 // interface CustomToolbarProps {
@@ -550,14 +552,114 @@ export default function ReceivingFormPage() {
     currentStation,
   ]);
 
+  // ---------------------------------------------------------------------------
+  // Form validity & submit gating
+  // ---------------------------------------------------------------------------
+
+  const [formValid, setFormValid] = useState(false);
+
+  const canSubmit = formValid &&
+    (receivingBusinessState.isNewReceiving || receivingBusinessState.draft);
+
+  // ---------------------------------------------------------------------------
+  // Save feedback (Snackbar)
+  // ---------------------------------------------------------------------------
+
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const [snackSeverity, setSnackSeverity] = useState<"success" | "error">("success");
+
+  const showSnack = useCallback((message: string, severity: "success" | "error") => {
+    setSnackMessage(message);
+    setSnackSeverity(severity);
+    setSnackOpen(true);
+  }, []);
+
+  // ---------------------------------------------------------------------------
+  // advancedValidationIssues — placeholder
+  // TODO: implement full checks per ReceivingForm-analysis.md Section 10
+  // ---------------------------------------------------------------------------
+
+  const advancedValidationIssues = useCallback((): string | null => {
+    return null;
+  }, []);
+
+  // ---------------------------------------------------------------------------
+  // onSave — mirrors ExtJS onSave + EditMaillocationsForm mock pattern
+  // ---------------------------------------------------------------------------
+
+  const onSave = useCallback(
+    async (draft: boolean) => {
+      if (!draft) {
+        const validationMessage = advancedValidationIssues();
+        if (validationMessage) {
+          showSnack(validationMessage, "error");
+          return;
+        }
+      }
+
+      const payload = {
+        ...recFormData,
+        draft,
+        isSubmitted: !draft,
+        routingneeded:
+          receivingBusinessState.isApticReceiving ||
+          (!draft && receivingBusinessState.isNewReceiving),
+      };
+
+      try {
+        const env = await loadEnvironment();
+        const baseUrl = env.api?.server || "";
+
+        let responseData: {
+          success: boolean;
+          data?: { id: number };
+          failureMessage?: string;
+        };
+
+        if (env.mock) {
+          responseData = {
+            success: true,
+            data: { id: recId ?? Date.now() },
+          };
+        } else {
+          const res = await fetch(`${baseUrl}receiving/movement`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          responseData = await res.json();
+        }
+
+        if (responseData.success) {
+          showSnack(
+            draft
+              ? "Receiving saved as draft."
+              : "Your receiving has been successfully submitted.",
+            "success",
+          );
+        } else {
+          showSnack(responseData.failureMessage || "Save failed. Please try again.", "error");
+        }
+      } catch {
+        showSnack("Network error. Please try again.", "error");
+      }
+    },
+    [advancedValidationIssues, recFormData, receivingBusinessState, recId, showSnack],
+  );
+
+  // ---------------------------------------------------------------------------
+  // Toolbar
+  // ---------------------------------------------------------------------------
+
   const buttons: ToolbarButton[] = [
-    { name: "Submit", handleClick: () => {} },
+    { name: "Submit", handleClick: () => onSave(false), disabled: !canSubmit },
     { name: "Ordered Items", handleClick: () => {} },
     { name: "Hand Receipt", handleClick: () => {} },
     { name: "Open Genesis Purchase Order", handleClick: () => {} },
     { name: "Print", handleClick: () => {} },
     { name: "Delivered To Customer", handleClick: () => {} },
-    { name: "Save As Draft", handleClick: () => {} },
+    { name: "Save As Draft", handleClick: () => onSave(true) },
     { name: "View Audit Log", handleClick: () => {} },
     { name: "Cancel Record", handleClick: () => {} },
   ];
@@ -581,8 +683,23 @@ export default function ReceivingFormPage() {
           data={recFormData}
           type={type}
           receivingBusinessState={receivingBusinessState}
+          onFormValidityChange={setFormValid}
         />
       </Box>
+      <Snackbar
+        open={snackOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackOpen(false)}
+          severity={snackSeverity}
+          variant="filled"
+        >
+          {snackMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   ) : (
     <>
