@@ -116,7 +116,7 @@ const MOCK_USER: User = {
   displayName: 'John Doe',
   roles: ['Admin', 'User', 'Developer'],
   rolesAsString: "'Admin', 'User', 'Developer'",
-  preferencesAsJson: '{ "printReceivingLabel": "true", "showAptic": "true", "wmaUser": "true", "notifications": true }',
+  preferencesAsJson: '{ "printReceivingLabel": "true", "showAptic": "true", "wmaUser": "false", "notifications": true }',
   currentStation: MOCK_STATION,
   currentBuilding: null,
   defaultTabToOpen: null,
@@ -914,6 +914,270 @@ export function useGetReceivingDiscrepancies(payload?: ReceivingDiscrepancyPaylo
 
   return { data, loading, error };
 }
+
+// ============================================================
+// Lookups - Route
+// ============================================================
+
+export interface RoutePayload {
+  _dc: number;
+  type: 'route';
+  activeOnly: boolean;
+  page: number;
+  start: number;
+  limit: number;
+}
+
+export interface Route {
+  active: boolean;
+  id: number;
+  longDescription: string | null;
+  shortDescription: string;
+}
+
+export interface RouteResponse {
+  count: number;
+  data: Route[];
+}
+
+const mockRouteResponse: RouteResponse = {
+  count: 22,
+  data: [
+    {
+      active: true,
+      id: 12,
+      longDescription: null,
+      shortDescription: 'GT',
+    },
+    {
+      active: false,
+      id: 13,
+      longDescription: null,
+      shortDescription: 'RCV',
+    },
+    {
+      active: true,
+      id: 16,
+      longDescription: null,
+      shortDescription: 'FREIGHT FORWARDER',
+    },
+    {
+      active: false,
+      id: 1,
+      longDescription: null,
+      shortDescription: 'CSC',
+    },
+    {
+      active: true,
+      id: 2,
+      longDescription: null,
+      shortDescription: 'DISCREPANT',
+    },
+    {
+      active: true,
+      id: 3,
+      longDescription: null,
+      shortDescription: 'FFTS',
+    },
+    {
+      active: true,
+      id: 4,
+      longDescription: null,
+      shortDescription: 'LOT',
+    },
+    {
+      active: false,
+      id: 5,
+      longDescription: null,
+      shortDescription: 'MASSY',
+    },
+    {
+      active: true,
+      id: 6,
+      longDescription: null,
+      shortDescription: 'PACKING',
+    },
+    {
+      active: false,
+      id: 7,
+      longDescription: null,
+      shortDescription: 'POUCH',
+    },
+    {
+      active: true,
+      id: 8,
+      longDescription: null,
+      shortDescription: 'PTI',
+    },
+    {
+      active: false,
+      id: 9,
+      longDescription: null,
+      shortDescription: 'SF',
+    },
+    {
+      active: true,
+      id: 10,
+      longDescription: null,
+      shortDescription: 'STOCK',
+    },
+    {
+      active: false,
+      id: 11,
+      longDescription: null,
+      shortDescription: 'WEPON',
+    },
+    {
+      active: true,
+      id: 15,
+      longDescription: null,
+      shortDescription: 'CUSTOMER PICKUP',
+    },
+    {
+      active: true,
+      id: 14,
+      longDescription: null,
+      shortDescription: 'LOCAL DELIVERY',
+    },
+    {
+      active: true,
+      id: 17,
+      longDescription: null,
+      shortDescription: 'LSB',
+    },
+    {
+      active: true,
+      id: 21,
+      longDescription: null,
+      shortDescription: 'LOCAL ONLY',
+    },
+    {
+      active: true,
+      id: 18,
+      longDescription: null,
+      shortDescription: 'PSB-POUCH',
+    },
+    {
+      active: true,
+      id: 20,
+      longDescription: null,
+      shortDescription: 'FIELD',
+    },
+    {
+      active: true,
+      id: 22,
+      longDescription: null,
+      shortDescription: 'ATRun',
+    },
+    {
+      active: true,
+      id: 23,
+      longDescription: null,
+      shortDescription: 'BXHELD',
+    },
+  ],
+};
+
+/**
+ * Stubs GET /lookups.json?type=route
+ * Returns available route lookup values.
+ */
+export function useFetchAllRoute(payload?: RoutePayload) {
+  const [data] = useState<RouteResponse>(mockRouteResponse);
+  const [loading] = useState(false);
+  const [error] = useState<string | null>(null);
+
+  return { data, loading, error };
+}
+
+
+
+// ============================================================
+// Lookups - Carrier
+// ============================================================
+
+export interface CarrierPayload {
+  _dc: number;
+  type: 'carrier';
+  activeOnly: boolean;
+  page: number;
+  start: number;
+  limit: number;
+}
+
+export interface Carrier {
+  active: boolean;
+  id: number;
+  longDescription: string | null;
+  shortDescription: string;
+}
+
+export interface CarrierResponse {
+  count: number;
+  data: Carrier[];
+}
+
+const mockCarrierResponse: CarrierResponse = {
+  count: 6,
+  data: [
+    {
+      active: true,
+      id: 8,
+      longDescription: null,
+      shortDescription: 'Other',
+    },
+    {
+      active: false,
+      id: 5,
+      longDescription: null,
+      shortDescription: 'SON',
+    },
+    {
+      active: false,
+      id: 11,
+      longDescription: null,
+      shortDescription: 'DAUGHTER',
+    },
+    {
+      active: false,
+      id: 12,
+      longDescription: null,
+      shortDescription: 'MOTHER',
+    },
+    {
+      active: false,
+      id: 13,
+      longDescription: null,
+      shortDescription: 'FATHER',
+    },
+    {
+      active: false,
+      id: 14,
+      longDescription: null,
+      shortDescription: 'GRANDSON',
+    },
+    {
+      active: false,
+      id: 15,
+      longDescription: null,
+      shortDescription: 'GRANDDAUGHTER',
+    },
+  ],
+};
+
+/**
+ * Stubs GET /lookups.json?type=carrier
+ * Returns available carrier lookup values.
+ */
+export function useFetchAllCarrier(payload?: CarrierPayload) {
+  const [data] = useState<CarrierResponse>(mockCarrierResponse);
+  const [loading] = useState(false);
+  const [error] = useState<string | null>(null);
+
+  return { data, loading, error };
+}
+
+
 
 // ============================================================
 // Logs

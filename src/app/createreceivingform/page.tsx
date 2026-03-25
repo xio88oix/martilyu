@@ -140,6 +140,20 @@ function hasValue(value: unknown): boolean {
   return true;
 }
 
+function isTruthyFlag(value: unknown): boolean {
+  if (typeof value === "boolean") {
+    return value;
+  }
+  if (typeof value === "number") {
+    return value === 1;
+  }
+  if (typeof value === "string") {
+    const normalized = value.trim().toUpperCase();
+    return normalized === "1" || normalized === "Y" || normalized === "YES" || normalized === "TRUE";
+  }
+  return false;
+}
+
 function useFetchReceivingForm(
   recId: number | null,
   recDate: Date | null,
@@ -483,11 +497,19 @@ export default function ReceivingFormPage() {
     const recid = toNumber(recIdValue);
     const draftMaxBoxId = toNumber(record.draftmaxboxid) ?? 0;
     const sonMaxBoxId = toNumber(record.sonmaxboxid) ?? 0;
+    const shipToAreaId = toNumber(record.shiptoaresid);
+    const shipToStationId = toNumber(record.shiptostationid);
+    const currentBuildingId = toNumber((currentBuilding as { id?: unknown } | null)?.id);
+    const currentStationId = toNumber(currentStation?.id);
 
     const isNewReceiving =
       idValue === null ||
       (idValue !== null && sonId !== null && idValue === sonId) ||
       statusId === 1;
+
+    const isWMADestination =
+      (shipToAreaId !== null && currentBuildingId !== null && shipToAreaId === currentBuildingId) ||
+      (shipToStationId !== null && currentStationId !== null && shipToStationId === currentStationId);
 
     return {
       handDelivery: toStringValue(record.handdelivery) === "1",
@@ -511,12 +533,22 @@ export default function ReceivingFormPage() {
       isBfheld: toStringValue(record.rcvbfheld) === "1",
       isCrypto: toStringValue(record.rcvcrypto) === "1",
       existingDiscrepant: toNumber(record.route) === 2,
+      isWMADestination,
+      locPackingRequired: isTruthyFlag(record.locPackingRequired ?? record.locpackingrequired),
       isNewReceiving,
       isPreviousReceiving: idValue !== null || statusId === 2,
       isApticReceiving:
         showAptic && sotypeId !== null && sotypeId === 1 && tasktypeId !== null && tasktypeId === 1,
     };
-  }, [recFormData, type, showAptic, isLOCUser, isFranUser]);
+  }, [
+    recFormData,
+    type,
+    showAptic,
+    isLOCUser,
+    isFranUser,
+    currentBuilding,
+    currentStation,
+  ]);
 
   const buttons: ToolbarButton[] = [
     { name: "Submit", handleClick: () => {} },

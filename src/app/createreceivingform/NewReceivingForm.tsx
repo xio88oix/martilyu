@@ -1,5 +1,9 @@
 "use client";
 import {
+  type Route,
+  useFetchAllRoute,
+} from "@/app/ServiceHooks/services";
+import {
   CheckboxLarge,
   CustomTextField,
   HintBox,
@@ -19,15 +23,80 @@ import {
 } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useUserContext } from "@/app/hooks/useUserContext";
 
 // ---------------------------------------------------------------------------
 // Route constants
 // ---------------------------------------------------------------------------
 
-const LOCAL_DELIVERY = "LOCAL_DELIVERY";
-const CUSTOMER_PICKUP = "CUSTOMER_PICKUP";
+const LOCAL_DELIVERY = "LOCAL DELIVERY";
+const CUSTOMER_PICKUP = "CUSTOMER PICKUP";
+
+const DEFAULT_ROUTE_ID = {
+  GT: 12,
+  PTI: 8,
+  LOCAL_DELIVERY: 14,
+  PSB_POUCH: 18,
+} as const;
+
+function normalizeRouteLabel(value: string): string {
+  return value.trim().toUpperCase();
+}
+
+function toRouteId(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (trimmed.length === 0) {
+      return null;
+    }
+
+    const parsed = Number(trimmed);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
+}
+
+function resolveRouteOption(routes: Route[], value: unknown): Route | null {
+  const routeId = toRouteId(value);
+  if (routeId !== null) {
+    return routes.find((route) => route.id === routeId) ?? null;
+  }
+
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const normalizedValue = normalizeRouteLabel(value);
+  return (
+    routes.find((route) => normalizeRouteLabel(route.shortDescription) === normalizedValue) ?? null
+  );
+}
+
+function getDefaultRouteId(bs: ReceivingBusinessState): number | null {
+  if (bs.isApticReceiving) {
+    return DEFAULT_ROUTE_ID.PTI;
+  }
+
+  if (bs.isNewReceiving && !bs.draft && (bs.isBfheld || bs.isCrypto)) {
+    return DEFAULT_ROUTE_ID.PSB_POUCH;
+  }
+
+  if (bs.isNewReceiving && !bs.draft && bs.isWMADestination && !bs.isBfheld && !bs.isCrypto) {
+    return DEFAULT_ROUTE_ID.LOCAL_DELIVERY;
+  }
+
+  if (bs.locPackingRequired) {
+    return DEFAULT_ROUTE_ID.GT;
+  }
+
+  return null;
+}
 
 // ---------------------------------------------------------------------------
 // Types
@@ -51,6 +120,8 @@ export interface ReceivingBusinessState {
   isBfheld: boolean;
   isCrypto: boolean;
   existingDiscrepant: boolean;
+  isWMADestination: boolean;
+  locPackingRequired: boolean;
   isNewReceiving: boolean;
   isPreviousReceiving: boolean;
   isApticReceiving: boolean;
@@ -69,6 +140,13 @@ interface NewReceivingFormProps {
 export default function NewReceivingForm(props: NewReceivingFormProps) {
   const { data, type, receivingBusinessState: bs } = props;
   const { isLOCUser, isWMAUser, isFranUser } = useUserContext();
+  const { data: routeLookupData, loading: routeLookupLoading } = useFetchAllRoute();
+
+  const routeOptions = routeLookupData?.data ?? [];
+  const routeRecordKey = useMemo(
+    () => JSON.stringify([data?.id, data?.receivingid, data?.sonid, data?.shippingOrderId]),
+    [data?.id, data?.receivingid, data?.sonid, data?.shippingOrderId]
+  );
 
   const [bypassBox, setBypassBox] = useState(data?.nobox === "0" ? false : true);
   const handleBypassBox = () => setBypassBox((prev) => !prev);
@@ -85,7 +163,39 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   const [cps, setCPS] = useState((data?.cps as string) ?? "0");
   const handleCPS = () => setCPS((prev) => (prev === "0" ? "1" : "0"));
 
-  const route = (data?.route as string) ?? null;
+  const existingRoute = useMemo(
+    () => resolveRouteOption(routeOptions, data?.route),
+    [routeOptions, data?.route]
+  );
+
+  const defaultRoute = useMemo(() => {
+    const defaultRouteId = getDefaultRouteId(bs);
+    return defaultRouteId === null
+      ? null
+      : routeOptions.find((route) => route.id === defaultRouteId) ?? null;
+  }, [bs, routeOptions]);
+
+  const [selectedRoute, setSelectedRoute] = useState<Route | null>(null);
+  const [routeOverridden, setRouteOverridden] = useState(false);
+
+  useEffect(() => {
+    setRouteOverridden(false);
+  }, [routeRecordKey]);
+
+  useEffect(() => {
+    if (routeOverridden) {
+      return;
+    }
+
+    setSelectedRoute(existingRoute ?? defaultRoute ?? null);
+  }, [defaultRoute, existingRoute, routeOverridden]);
+
+  const handleRouteChange = (_event: React.SyntheticEvent, newValue: Route | null) => {
+    setRouteOverridden(true);
+    setSelectedRoute(newValue);
+  };
+
+  const routeLabel = selectedRoute?.shortDescription ?? null;
   const isHandDelivery = handdelivery === "1";
 
   // ---------------------------------------------------------------------------
@@ -98,7 +208,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   // Pieces — complex disable logic
   const piecesDisabled =
     (bs.apticReceiving && bs.received && !bs.draft) ||
-    (((bs.hhLite || isWMAUser || route === LOCAL_DELIVERY) ||
+    (((bs.hhLite || isWMAUser || routeLabel === LOCAL_DELIVERY) ||
       (type === "b1" && !isLOCUser)) &&
       !bs.cpsReceiving &&
       !bs.draft) ||
@@ -112,7 +222,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   const routeEnabled =
     isLOCUser &&
     type !== "b3" &&
-    ((bs.received && bs.existingDiscrepant) || !route || bs.draft);
+    ((bs.received && bs.existingDiscrepant) || !existingRoute || bs.draft);
 
   // Packing List Provided — required for LOC; disabled when received and not draft
   const packingSlipDisabled = bs.received && !bs.draft;
@@ -124,7 +234,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   // Bypass Box — disabled when received (and not draft) OR route not local/pickup
   const noboxDisabled =
     (bs.received && !bs.draft) ||
-    (route !== LOCAL_DELIVERY && route !== CUSTOMER_PICKUP);
+    (routeLabel !== LOCAL_DELIVERY && routeLabel !== CUSTOMER_PICKUP);
 
   // No Line Item Receiving — disabled unless type b5 and not a completed receipt
   const nolinesDisabled = (!bs.draft && bs.received) || type !== "b5";
@@ -245,9 +355,13 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
               <Grid2>
                 <Autocomplete
                   className="dialog-field-width"
-                  options={["item1", "item2", "item3"]}
-                  value={route ?? null}
-                  disabled={!routeEnabled}
+                  options={routeOptions}
+                  value={selectedRoute}
+                  onChange={handleRouteChange}
+                  getOptionLabel={(option) => option.shortDescription}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  loading={routeLookupLoading}
+                  disabled={!routeEnabled || routeLookupLoading}
                   renderInput={(params) => (
                     <StyledTextField
                       required={isLOCUser || type === "b1"}
