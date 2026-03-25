@@ -7,6 +7,7 @@ import ReceivingTabPanel from "./ReceivingTabPanel";
 import { CustomToolbar } from "@/components/CustomComponents";
 import { useUserContext } from "@/app/hooks/useUserContext";
 import { loadEnvironment } from "@/utils/EnvironmentUtils";
+import { VALIDATION_MESSAGES } from "./receivingFormConstants";
 
 // NOTE: CustomToolbar will be provided by CustomComponents once converted from its PDF.
 // NOTE: useFetchReceivingData and useFetchReceivingForm are service hooks to be added to ServiceHooks/services.tsx.
@@ -576,13 +577,148 @@ export default function ReceivingFormPage() {
   }, []);
 
   // ---------------------------------------------------------------------------
-  // advancedValidationIssues — placeholder
-  // TODO: implement full checks per ReceivingForm-analysis.md Section 10
+  // advancedValidationIssues — per ReceivingForm-analysis.md Section 10
+  // Runs before every non-draft submit. Returns first error or null.
   // ---------------------------------------------------------------------------
 
   const advancedValidationIssues = useCallback((): string | null => {
+    const record = (recFormData ?? {}) as Record<string, unknown>;
+    const lineItems = (record.lineItems ?? []) as any[];
+    const boxAttributes = (record.boxAttributes ?? []) as any[];
+    const trackingNumbers = (record.trackingNumbers ?? []) as any[];
+    const pieces = Number(record.pieces) || 0;
+    const nolines = String(record.nolines ?? "0");
+    const nobox = String(record.nobox ?? "0");
+    const bs = receivingBusinessState;
+
+    // 1. Discrepancy properly routed
+    if (bs.existingDiscrepant) {
+      const hasDiscLines = lineItems.some(
+        (li: any) => li.discrepancy != null && li.discrepancy !== "",
+      );
+      if (!hasDiscLines) return VALIDATION_MESSAGES.routeMustChange;
+    }
+
+    // 2. Discrepant lines have reason
+    if (!bs.existingDiscrepant) {
+      const hasDiscLines = lineItems.some(
+        (li: any) => li.discrepancy != null && li.discrepancy !== "",
+      );
+      if (hasDiscLines) return VALIDATION_MESSAGES.missingDiscrepantReason;
+    }
+
+    // 3. Line item required
+    if (nolines !== "1" && lineItems.length === 0) {
+      return "At least one line item is required.";
+    }
+
+    // 4. RPGHELD/Crypto box mismatch
+    const totalBoxes = boxAttributes.filter(
+      (b: any) => (Number(b.boxId) || 0) > 0,
+    ).length;
+    if ((bs.isBfheld || bs.isCrypto || totalBoxes > 0) && pieces !== totalBoxes) {
+      if (bs.isBfheld) return VALIDATION_MESSAGES.rpgheldBoxMismatch;
+      if (bs.isCrypto) return VALIDATION_MESSAGES.cryptoBoxMismatch;
+      return VALIDATION_MESSAGES.totalBoxMismatch;
+    }
+
+    // 5. Box attribute DIM check
+    if (bs.isBfheld || bs.isCrypto) {
+      const allDimsOk = boxAttributes.every(
+        (b: any) =>
+          Number(b.length) > 0 &&
+          Number(b.width) > 0 &&
+          Number(b.height) > 0 &&
+          Number(b.weight) > 0,
+      );
+      if (!allDimsOk) {
+        return bs.isBfheld
+          ? VALIDATION_MESSAGES.rpgheldDimsMissing
+          : VALIDATION_MESSAGES.cryptoDimsMissing;
+      }
+    }
+
+    // 6-8. Box/Piece matching
+    if (pieces > 0 && nobox !== "1" && nolines !== "1") {
+      for (let i = 1; i <= pieces; i++) {
+        const boxNum = ("00" + i).slice(-3);
+        const found = lineItems.some((li: any) =>
+          (li.boxItems ?? []).some((bi: any) => String(bi.boxnum) === boxNum),
+        );
+        if (!found) return VALIDATION_MESSAGES.boxPieceNotFound + boxNum;
+      }
+    }
+
+    // 9. Line qty vs box qty mismatch
+    for (const li of lineItems) {
+      const recQty = Number(li.rec_qty) || 0;
+      if (recQty > 0 && (li.boxItems ?? []).length > 0) {
+        const boxQtySum = (li.boxItems as any[]).reduce(
+          (sum: number, bi: any) => sum + (Number(bi.qty) || 0),
+          0,
+        );
+        if (recQty !== boxQtySum) {
+          return VALIDATION_MESSAGES.lineQtyMismatch + li.line_number;
+        }
+      }
+    }
+
+    // 10. LOT bin check
+    const lotErrors: number[] = [];
+    for (const li of lineItems) {
+      if (
+        String(li.lottype).toUpperCase() === "LOT" &&
+        (Number(li.rec_qty) || 0) > 0
+      ) {
+        if (!li.binnum || !li.lotnum) {
+          lotErrors.push(li.line_number);
+        }
+      }
+    }
+    if (lotErrors.length > 0) {
+      return VALIDATION_MESSAGES.missingBinLot + lotErrors.join(", ");
+    }
+
+    // 12. Asset info missing
+    for (const li of lineItems) {
+      if (
+        String(li.rotating).toUpperCase() === "YES" &&
+        (Number(li.rec_qty) || 0) > 0
+      ) {
+        if (!li.assetItems || li.assetItems.length === 0) {
+          return VALIDATION_MESSAGES.assetInfoMissing;
+        }
+      }
+    }
+
+    // 13. Previous receipt line check
+    if (!bs.isNewReceiving) {
+      for (const li of lineItems) {
+        if (li.rl_id == null && (Number(li.rec_qty) || 0) > 0) {
+          return VALIDATION_MESSAGES.lineNotPrevReceived + li.line_number;
+        }
+      }
+    }
+
+    // 14. Return line validation
+    for (const li of lineItems) {
+      if (
+        String(li.transactiontype).toUpperCase() === "R" &&
+        (Number(li.rec_qty) || 0) > 0
+      ) {
+        if (!li.respoffcode) return VALIDATION_MESSAGES.responsibleOfficeRequired;
+      }
+    }
+
+    // 15. Blank reference number
+    for (const tn of trackingNumbers) {
+      if (!tn.reference_number || String(tn.reference_number).trim() === "") {
+        return VALIDATION_MESSAGES.blankReferenceNumber;
+      }
+    }
+
     return null;
-  }, []);
+  }, [recFormData, receivingBusinessState]);
 
   // ---------------------------------------------------------------------------
   // onSave — mirrors ExtJS onSave + EditMaillocationsForm mock pattern
