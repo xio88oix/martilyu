@@ -84,7 +84,7 @@ interface ReceivingTabPanelProps {
 }
 
 export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(1);
   const [prevRecieptsWarningOpen, setPrevRecieptsWarningOpen] = useState(false);
   const handlePrevRecieptWarningClose = () => {
     setPrevRecieptsWarningOpen(false);
