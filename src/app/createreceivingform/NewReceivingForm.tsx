@@ -1,6 +1,8 @@
 "use client";
 import {
+  type Carrier,
   type Route,
+  useFetchAllCarrier,
   useFetchAllRoute,
 } from "@/app/ServiceHooks/services";
 import {
@@ -142,8 +144,10 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   const { data, type, receivingBusinessState: bs, onFormValidityChange } = props;
   const { isLOCUser, isWMAUser, isFranUser } = useUserContext();
   const { data: routeLookupData, loading: routeLookupLoading } = useFetchAllRoute();
+  const { data: carrierLookupData, loading: carrierLookupLoading } = useFetchAllCarrier();
 
   const routeOptions = routeLookupData?.data ?? [];
+  const carrierOptions = carrierLookupData?.data ?? [];
   const routeRecordKey = useMemo(
     () => JSON.stringify([data?.id, data?.receivingid, data?.sonid, data?.shippingOrderId]),
     [data?.id, data?.receivingid, data?.sonid, data?.shippingOrderId]
@@ -194,6 +198,27 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   const handleRouteChange = (_event: React.SyntheticEvent, newValue: Route | null) => {
     setRouteOverridden(true);
     setSelectedRoute(newValue);
+  };
+
+  // Carrier — auto-select "SON" carrier on new receiving per ExtJS behavior
+  const existingCarrier = useMemo(
+    () => carrierOptions.find((c) => c.id === data?.carrier_id) ?? null,
+    [carrierOptions, data?.carrier_id]
+  );
+
+  const defaultCarrier = useMemo(
+    () => carrierOptions.find((c) => c.shortDescription.toUpperCase() === "SON") ?? null,
+    [carrierOptions]
+  );
+
+  const [selectedCarrier, setSelectedCarrier] = useState<Carrier | null>(null);
+
+  useEffect(() => {
+    setSelectedCarrier(existingCarrier ?? defaultCarrier ?? null);
+  }, [existingCarrier, defaultCarrier]);
+
+  const handleCarrierChange = (_event: React.SyntheticEvent, newValue: Carrier | null) => {
+    setSelectedCarrier(newValue);
   };
 
   const routeLabel = selectedRoute?.shortDescription ?? null;
@@ -307,7 +332,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                 <>
                   <Grid2>
                     <CustomTextField
-                      className="dialog-field-width"
+                      sx={{ minWidth: 220 }}
                       label={"Total Received Pieces"}
                       variant="filled"
                       value={data?.taskreceivepieces}
@@ -316,7 +341,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   </Grid2>
                   <Grid2>
                     <CustomTextField
-                      className="dialog-field-width"
+                      sx={{ minWidth: 220 }}
                       label={"Tasking Package Pieces"}
                       variant="filled"
                       value={data?.taskpackages}
@@ -325,18 +350,22 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   </Grid2>
                 </>
               )}
-              <Grid2>
+              <Grid2 sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
                 <CustomTextField
                   className="dialog-field-width"
                   label={"Pieces"}
                   variant="filled"
                   required
-                  inputProps={{ inputMode: "numeric", maxLength: 4 }}
+                  type="number"
+                  inputProps={{ min: 0, step: 1 }}
                   value={data?.pieces}
                   disabled={piecesDisabled}
+                  onKeyDown={(e: React.KeyboardEvent) => {
+                    if (["e", "E", ".", "-", "+"].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
-              </Grid2>
-              <Grid2>
                 <HintBox
                   className="dialog-field-width"
                   hint="Measurements must be recorded as whole numbers."
@@ -348,9 +377,15 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   label={"Weight"}
                   variant="filled"
                   required
-                  inputProps={{ inputMode: "numeric", maxLength: 5 }}
+                  type="number"
+                  inputProps={{ min: 0, step: "any" }}
                   value={data?.weight}
                   disabled={weightDisabled}
+                  onKeyDown={(e: React.KeyboardEvent) => {
+                    if (["e", "E", "-", "+"].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               </Grid2>
             </Stack>
@@ -391,7 +426,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                       variant="filled"
                       label={"Route"}
                       className="section-useredit__field body1 text-onbackground"
-                      helperText="Select a Route"
+                      helperText={!selectedRoute ? "Select a Route" : ""}
                     />
                   )}
                   slotProps={{
@@ -406,15 +441,18 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
               <Grid2>
                 <Autocomplete
                   className="dialog-field-width"
-                  options={["item1", "item2", "item3"]}
-                  value={(data?.carrier as string) ?? "SON"}
+                  options={carrierOptions}
+                  value={selectedCarrier}
+                  onChange={handleCarrierChange}
+                  getOptionLabel={(option) => option.shortDescription}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  loading={carrierLookupLoading}
                   renderInput={(params) => (
                     <StyledTextField
                       {...params}
                       variant="filled"
                       label={"Carrier"}
                       className="section-useredit__field body1 text-onbackground"
-                      disabled
                     />
                   )}
                   slotProps={{
@@ -437,25 +475,17 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
         <div className="form-section">
           <Grid2 columnGap={1} columnSpacing={2} rowSpacing={1} container>
             <Stack flexGrow={1}>
-              {isLOCUser && (
-                <Grid2>
-                  <HintBox
-                    className="dialog-field-width"
-                    hint="Packing list may appear within 60 days of receiving."
-                  />
-                </Grid2>
-              )}
-
               {/* Packing List Provided? */}
-              <Grid2>
+              <Grid2 sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                 <FormControl
-                  sx={{ flexDirection: "row", alignItems: "center", width: "100%" }}
+                  sx={{ flexDirection: "row", alignItems: "center" }}
                   className="section-useredit__general-form"
                   disabled={packingSlipDisabled}
                 >
                   <FormLabel
                     required={packingSlipRequired}
                     className="body1 text-onbackground font-medium"
+                    sx={{ minWidth: 220, textAlign: "right" }}
                   >
                     Packing List Provided?
                   </FormLabel>
@@ -476,6 +506,10 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                     />
                   </RadioGroup>
                 </FormControl>
+                <HintBox
+                  className="dialog-field-width"
+                  hint="Packing list may appear within 60 days of receiving."
+                />
               </Grid2>
 
               {/* LOC-only: Refrigeration, Freezing, BFHELD, Crypto */}
@@ -489,6 +523,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                       <FormLabel
                         required
                         className="body1 text-onbackground font-medium"
+                        sx={{ minWidth: 220, textAlign: "right" }}
                       >
                         Refrigeration Required?
                       </FormLabel>
@@ -519,6 +554,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                       <FormLabel
                         required
                         className="body1 text-onbackground font-medium"
+                        sx={{ minWidth: 220, textAlign: "right" }}
                       >
                         Freezing Required?
                       </FormLabel>
@@ -549,6 +585,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                       <FormLabel
                         required
                         className="body1 text-onbackground font-medium"
+                        sx={{ minWidth: 220, textAlign: "right" }}
                       >
                         BFHELD?
                       </FormLabel>
@@ -579,6 +616,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                       <FormLabel
                         required
                         className="body1 text-onbackground font-medium"
+                        sx={{ minWidth: 220, textAlign: "right" }}
                       >
                         Crypto?
                       </FormLabel>
@@ -602,58 +640,6 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   </Grid2>
                 </>
               )}
-            </Stack>
-
-            {/* Bypass Box/Piece — LOC only */}
-            {showLocOnlyFields && (
-              <Stack flexGrow={1}>
-                <Grid2>
-                  <HintBox
-                    className="dialog-field-width"
-                    hint="Selecting this checkbox allows the user to bypass inputting BOX/PIECE information for this receiving."
-                  />
-                </Grid2>
-                <Grid2>
-                  <FormControlLabel
-                    disabled={noboxDisabled}
-                    key="checkbox-nobox"
-                    className="text-onbackground"
-                    control={
-                      <CheckboxLarge
-                        checked={bypassBox}
-                        onChange={handleBypassBox}
-                      />
-                    }
-                    label={"Bypass Box/Piece Information:"}
-                  />
-                </Grid2>
-              </Stack>
-            )}
-          </Grid2>
-        </div>
-
-        {/* ----------------------------------------------------------------
-            Section 3 — No Line Item Receiving, BASIS Prefix, Hand Delivery,
-                        Do Not Send To Genesis, DVV Receiving
-        ---------------------------------------------------------------- */}
-        <div className="form-section">
-          <Grid2 columnGap={1} columnSpacing={2} rowSpacing={1} container>
-            <Stack flexGrow={1}>
-              <Grid2>
-                <FormControlLabel
-                  disabled={nolinesDisabled}
-                  title="Select No Line Item Receiving if line item information will not be entered in prior to submitting."
-                  key="checkbox-nolines"
-                  className="text-onbackground"
-                  control={
-                    <CheckboxLarge
-                      checked={nolines === "1"}
-                      onChange={handleChangeLines}
-                    />
-                  }
-                  label={"No Line Item Receiving:"}
-                />
-              </Grid2>
               {!prefixHidden && (
                 <Grid2>
                   <Autocomplete
@@ -680,101 +666,129 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   />
                 </Grid2>
               )}
-              <Grid2>
-                <FormControlLabel
-                  disabled={handDeliveryDisabled}
-                  title="Only available for field receiving process."
-                  key="checkbox-handdelivery"
-                  className="text-onbackground"
-                  control={
-                    <CheckboxLarge
-                      checked={handdelivery === "1"}
-                      onChange={handleHandDelivery}
-                    />
-                  }
-                  label={"Hand Delivery:"}
-                />
-              </Grid2>
-              {!qtyAdjHidden && (
-                <Grid2>
+            </Stack>
+
+            {/* Bypass Box/Piece — LOC only */}
+            {showLocOnlyFields && (
+              <Stack flexGrow={1}>
+                <Grid2 sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                   <FormControlLabel
-                    disabled={qtyAdjDisabled}
-                    key="checkbox-qtyadj"
+                    disabled={noboxDisabled}
+                    key="checkbox-nobox"
                     className="text-onbackground"
                     control={
                       <CheckboxLarge
-                        checked={(data?.qty_adjustment_only as string) === "1"}
-                        onChange={() => {}}
+                        checked={bypassBox}
+                        onChange={handleBypassBox}
                       />
                     }
-                    label={"Do Not Send To Genesis:"}
+                    label={"Bypass Box/Piece Information:"}
+                  />
+                  <HintBox
+                    className="dialog-field-width"
+                    hint="Selecting this checkbox allows the user to bypass inputting BOX/PIECE information for this receiving."
                   />
                 </Grid2>
-              )}
-            </Stack>
-
-            <Stack flexGrow={1}>
-              <Grid2>
-                <FormControlLabel
-                  key="checkbox-cps"
-                  className="text-onbackground"
-                  control={
-                    <CheckboxLarge checked={cps === "1"} onChange={handleCPS} />
-                  }
-                  label={"DVV Receiving:"}
-                  title="Select for DVV Receiving"
-                  disabled={!bs.cpsReceiving}
-                />
-              </Grid2>
-            </Stack>
+                <Grid2>
+                  <FormControlLabel
+                    disabled={nolinesDisabled}
+                    title="Select No Line Item Receiving if line item information will not be entered in prior to submitting."
+                    key="checkbox-nolines"
+                    className="text-onbackground"
+                    control={
+                      <CheckboxLarge
+                        checked={nolines === "1"}
+                        onChange={handleChangeLines}
+                      />
+                    }
+                    label={"No Line Item Receiving:"}
+                  />
+                </Grid2>
+                {!qtyAdjHidden && (
+                  <Grid2>
+                    <FormControlLabel
+                      disabled={qtyAdjDisabled}
+                      key="checkbox-qtyadj"
+                      className="text-onbackground"
+                      control={
+                        <CheckboxLarge
+                          checked={(data?.qty_adjustment_only as string) === "1"}
+                          onChange={() => {}}
+                        />
+                      }
+                      label={"Do Not Send To Genesis:"}
+                    />
+                  </Grid2>
+                )}
+                <Grid2>
+                  <FormControlLabel
+                    key="checkbox-cps"
+                    className="text-onbackground"
+                    control={
+                      <CheckboxLarge checked={cps === "1"} onChange={handleCPS} />
+                    }
+                    label={"DVV Receiving:"}
+                    title="Select for DVV Receiving"
+                    disabled={!bs.cpsReceiving}
+                  />
+                </Grid2>
+                <Grid2>
+                  <FormControlLabel
+                    disabled={handDeliveryDisabled}
+                    title="Only available for field receiving process."
+                    key="checkbox-handdelivery"
+                    className="text-onbackground"
+                    control={
+                      <CheckboxLarge
+                        checked={handdelivery === "1"}
+                        onChange={handleHandDelivery}
+                      />
+                    }
+                    label={"Hand Delivery:"}
+                  />
+                </Grid2>
+                <Grid2>
+                  <MyDatePicker
+                    title="Only available for field receiving process."
+                    label={"Hand Delivered Date:"}
+                    className="dialog-field-width"
+                    required={isHandDelivery}
+                    value={
+                      data?.deliverydate
+                        ? dayjs(data.deliverydate as string)
+                        : null
+                    }
+                    isDisabled={!isHandDelivery}
+                  />
+                </Grid2>
+                <Grid2>
+                  <SearchField
+                    label={"Delivered To"}
+                    className="dialog-field-width"
+                    title="Only available for field receiving process."
+                    fullWidth={true}
+                    value={data?.deliveryrecipient}
+                    disable={!isHandDelivery}
+                    required={isHandDelivery}
+                  />
+                </Grid2>
+              </Stack>
+            )}
           </Grid2>
         </div>
 
         {/* ----------------------------------------------------------------
-            Section 4 — Delivered To, Receiving Remarks, Hand Delivered Date
+            Section 4 — Receiving Remarks
         ---------------------------------------------------------------- */}
         <div className="form-section">
-          <Grid2 columnGap={1} columnSpacing={2} rowSpacing={1} container>
-            <Stack flexGrow={1}>
-              <Grid2>
-                <SearchField
-                  label={"Delivered To"}
-                  className="dialog-field-width"
-                  title="Only available for field receiving process."
-                  fullWidth={true}
-                  value={data?.deliveryrecipient}
-                  disable={!isHandDelivery}
-                  required={isHandDelivery}
-                />
-              </Grid2>
-              <Grid2>
-                <CustomTextField
-                  className="dialog-field-width"
-                  multiline
-                  minRows={4}
-                  label={"Receiving Remarks"}
-                  variant="filled"
-                  value={(data?.remarks as string) ?? ""}
-                />
-              </Grid2>
-            </Stack>
-
-            <Stack flexGrow={1}>
-              <Grid2>
-                <MyDatePicker
-                  title="Only available for field receiving process."
-                  label={"Hand Delivered Date:"}
-                  required={isHandDelivery}
-                  value={
-                    data?.deliverydate
-                      ? dayjs(data.deliverydate as string)
-                      : null
-                  }
-                  isDisabled={!isHandDelivery}
-                />
-              </Grid2>
-            </Stack>
-          </Grid2>
+          <CustomTextField
+            multiline
+            minRows={4}
+            label={"Receiving Remarks"}
+            variant="filled"
+            fullWidth
+            value={(data?.remarks as string) ?? ""}
+          />
         </div>
       </Box>
     </>

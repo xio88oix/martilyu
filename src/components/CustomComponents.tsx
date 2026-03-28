@@ -39,7 +39,13 @@ import {
 } from "@mui/material";
 import type { Breakpoint } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import React, { Dispatch, FC, ReactNode, SetStateAction, useState } from "react";
+import React, {
+  Dispatch,
+  FC,
+  ReactNode,
+  SetStateAction,
+  useState,
+} from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DataGrid } from "@mui/x-data-grid";
 import dayjs, { Dayjs } from "dayjs";
@@ -85,7 +91,10 @@ export function CheckboxLarge({
   ...rest
 }: {
   checked?: boolean;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void;
+  onChange?: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) => void;
   [key: string]: unknown;
 }) {
   return (
@@ -163,7 +172,7 @@ export const StyledPopper = styled(Popper)({
 export function MySimpleTextDialog(
   dialogContentText: string,
   buttonName?: string,
-  dialogTitle?: string
+  dialogTitle?: string,
 ) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
@@ -220,7 +229,8 @@ export const SearchField = (props: {
         props.handleChange
           ? props.handleChange
           : (e) => {
-              const val = (e as React.ChangeEvent<HTMLInputElement>).target.value;
+              const val = (e as React.ChangeEvent<HTMLInputElement>).target
+                .value;
               setSearchVal(val);
             }
       }
@@ -360,7 +370,16 @@ export const MyDatePicker = (props: {
           width: "100%",
         }}
         label={props.label}
-        onChange={props.onChange as ((value: Dayjs | null, context: import("@mui/x-date-pickers").PickerChangeHandlerContext<import("@mui/x-date-pickers").DateValidationError>) => void) | undefined}
+        onChange={
+          props.onChange as
+            | ((
+                value: Dayjs | null,
+                context: import("@mui/x-date-pickers").PickerChangeHandlerContext<
+                  import("@mui/x-date-pickers").DateValidationError
+                >,
+              ) => void)
+            | undefined
+        }
         slots={{
           openPickerButton: CustomCalendarIcon,
         }}
@@ -693,7 +712,7 @@ export function MyDialogNoButton(props: {
             >
               {props.advancedSearch
                 ? "Search"
-                : props.customSaveLabel ?? "Save"}
+                : (props.customSaveLabel ?? "Save")}
             </Button>
             <Button
               variant="outlined"
@@ -850,10 +869,7 @@ export function CustomToolbar(props: {
       <Toolbar sx={{ flexWrap: "wrap" }} disableGutters>
         {props.readOnlyData.map((rd) => {
           return (
-            <div
-              key={"appbar-item-" + rd.title}
-              className="appbar__items"
-            >
+            <div key={"appbar-item-" + rd.title} className="appbar__items">
               <Typography className="body1 appbar__item-title">
                 {rd.title}
               </Typography>
@@ -957,11 +973,9 @@ export function HoverHint(props: { hintMessage: string }) {
   );
 }
 
-export const LightTooltip = styled(
-  ({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} classes={{ popper: className }} />
-  )
-)(() => ({
+export const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(() => ({
   [`& .${tooltipClasses.tooltip}`]: {
     color: "rgba(0,0,0,0.87)",
     fontSize: "1.2rem",

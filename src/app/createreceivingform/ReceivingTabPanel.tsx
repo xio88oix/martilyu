@@ -3,7 +3,9 @@
 import { Box, Tab, Tabs } from "@mui/material";
 import { ReactNode, useEffect, useState } from "react";
 import ShippingInformation from "./ShippingInformation";
-import NewReceivingForm, { type ReceivingBusinessState } from "./NewReceivingForm";
+import NewReceivingForm, {
+  type ReceivingBusinessState,
+} from "./NewReceivingForm";
 import PreviousReceiptsController from "./PreviousReceiptsController";
 import DraftReceiptsController from "./DraftReceiptsController";
 import BoxAttributesGridController from "./BoxAttributesGridController";

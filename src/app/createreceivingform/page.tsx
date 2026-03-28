@@ -57,7 +57,7 @@ interface FetchDataResult {
 function useFetchReceivingData(
   id: string | null,
   type: string | null,
-  numberType: string | null
+  numberType: string | null,
 ): FetchDataResult {
   // TODO: replace stub with real API call via Axios
   const [data, setData] = useState<ReceivingFormData[] | null>(null);
@@ -68,7 +68,7 @@ function useFetchReceivingData(
       // TODO: remove mock — replace with real API response
       setData([
         {
-          shippingOrderId: 996753,  //"RECV-00001",
+          shippingOrderId: 996753, //"RECV-00001",
           son: id ?? "09999999",
           poNumber: null,
           receivedDate: null,
@@ -95,10 +95,8 @@ function useFetchReceivingData(
             id: 2,
             longDescription: "Submitted",
             shortDescription: "Submitted",
-            submitted: true 
-          }
-
-
+            submitted: true,
+          },
         },
       ]);
       setLoading(false);
@@ -152,7 +150,12 @@ function isTruthyFlag(value: unknown): boolean {
   }
   if (typeof value === "string") {
     const normalized = value.trim().toUpperCase();
-    return normalized === "1" || normalized === "Y" || normalized === "YES" || normalized === "TRUE";
+    return (
+      normalized === "1" ||
+      normalized === "Y" ||
+      normalized === "YES" ||
+      normalized === "TRUE"
+    );
   }
   return false;
 }
@@ -162,10 +165,12 @@ function useFetchReceivingForm(
   recDate: Date | null,
   son: string,
   ponum: string | null,
-  packageId: number | null
+  packageId: number | null,
 ): FetchFormResult {
   // TODO: replace stub with real API call via Axios
-  const [formData, setFormData] = useState<{ data: ReceivingFormData | null } | null>(null);
+  const [formData, setFormData] = useState<{
+    data: ReceivingFormData | null;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -232,7 +237,7 @@ function useFetchReceivingForm(
               rec_qty: null,
               rl_id: null,
               disc_cargo: null,
-              org_uom: "BOX"
+              org_uom: "BOX",
             },
             {
               rotating: null,
@@ -276,8 +281,8 @@ function useFetchReceivingForm(
               rec_qty: null,
               rl_id: null,
               disc_cargo: null,
-              org_uom: "BOX"
-            }            
+              org_uom: "BOX",
+            },
           ],
           genesis: null,
           handling_priority_type_id: null,
@@ -304,8 +309,8 @@ function useFetchReceivingForm(
               ponum: null,
               id: 1136394,
               lilsit: "1",
-              receivingid: 1136394
-            }
+              receivingid: 1136394,
+            },
           ],
           packing_slip_provided: null,
           sonmaxboxid: 0,
@@ -318,14 +323,15 @@ function useFetchReceivingForm(
           nobox: "0",
           weight: null,
           trackingNumbers: [
-          {
+            {
               objid: 3616686,
               shipping_order_id: 996753,
               comments: "Test Shipping Order Number Type",
               scanned_date: null,
               reference_number: "999999901",
-              reference_nbr_type_id: 1
-          }],
+              reference_nbr_type_id: 1,
+            },
+          ],
           satellite_location: null,
           received: null,
           containscrypto: "YES",
@@ -349,8 +355,8 @@ function useFetchReceivingForm(
               ponum: null,
               id: 1136394,
               lilsit: "1",
-              receivingid: 1136394
-            }
+              receivingid: 1136394,
+            },
           ],
           containslithiumbatt: "YES",
           containsconcealmentdvc: "YES",
@@ -377,10 +383,9 @@ function useFetchReceivingForm(
           shiptoname: null,
           boxAttributes: [],
           rack: null,
-          address: "123 Town Center Drive\nCorner Avenue\nDowntown City\nCloud Willow Oaks, Room: 36\r\nJohn Doe/PhL 5551234567\r\nAB/DEFG/HIJK/LMN\r\n\r\n",
-          boxIds: [
-            1040416
-          ],
+          address:
+            "123 Town Center Drive\nCorner Avenue\nDowntown City\nCloud Willow Oaks, Room: 36\r\nJohn Doe/PhL 5551234567\r\nAB/DEFG/HIJK/LMN\r\n\r\n",
+          boxIds: [1040416],
           dateout: 1774272344000,
           rtid: null,
           bscdocnumber: null,
@@ -394,12 +399,12 @@ function useFetchReceivingForm(
               databaseLocation: null,
               id: 11,
               longDescription: "Receiving Area",
-              shortDescription: "Receiving Area"
+              shortDescription: "Receiving Area",
             },
             id: 16,
             ipAddress: "1.10.20.30",
             longDescription: "Cube Rec 1",
-            shortDescription: "Cube Rec 1"
+            shortDescription: "Cube Rec 1",
           },
           ponum: null,
           son_handling_priority_type_id: null,
@@ -409,7 +414,7 @@ function useFetchReceivingForm(
           tasktypeid: null,
           remarks: null,
           deliveryrecipient: null,
-          containsbfheld: "NO"
+          containsbfheld: "NO",
         },
       });
       setLoading(false);
@@ -455,12 +460,17 @@ export default function ReceivingFormPage() {
     printReceivingLabel,
   } = useUserContext();
 
-  const {
-    formData,
-    loading: recFormLoading,
-  } = useFetchReceivingForm(recId, recDate, son, ponum, packageId);
+  const { formData, loading: recFormLoading } = useFetchReceivingForm(
+    recId,
+    recDate,
+    son,
+    ponum,
+    packageId,
+  );
 
-  const [recFormData, setRecFormData] = useState<ReceivingFormData | null>(null);
+  const [recFormData, setRecFormData] = useState<ReceivingFormData | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!loading) {
@@ -492,7 +502,9 @@ export default function ReceivingFormPage() {
     const record = (recFormData ?? {}) as Record<string, unknown>;
 
     const statusId = toNumber(record.status_id);
-    const sotypeId = toNumber(record.sotypeId ?? record.soTypeid ?? record.sotypeid);
+    const sotypeId = toNumber(
+      record.sotypeId ?? record.soTypeid ?? record.sotypeid,
+    );
     const tasktypeId = toNumber(record.tasktypeid);
     const idValue = toNumber(record.id);
     const sonId = toNumber(record.sonid);
@@ -502,7 +514,9 @@ export default function ReceivingFormPage() {
     const sonMaxBoxId = toNumber(record.sonmaxboxid) ?? 0;
     const shipToAreaId = toNumber(record.shiptoaresid);
     const shipToStationId = toNumber(record.shiptostationid);
-    const currentBuildingId = toNumber((currentBuilding as { id?: unknown } | null)?.id);
+    const currentBuildingId = toNumber(
+      (currentBuilding as { id?: unknown } | null)?.id,
+    );
     const currentStationId = toNumber(currentStation?.id);
 
     const isNewReceiving =
@@ -511,8 +525,12 @@ export default function ReceivingFormPage() {
       statusId === 1;
 
     const isWMADestination =
-      (shipToAreaId !== null && currentBuildingId !== null && shipToAreaId === currentBuildingId) ||
-      (shipToStationId !== null && currentStationId !== null && shipToStationId === currentStationId);
+      (shipToAreaId !== null &&
+        currentBuildingId !== null &&
+        shipToAreaId === currentBuildingId) ||
+      (shipToStationId !== null &&
+        currentStationId !== null &&
+        shipToStationId === currentStationId);
 
     return {
       handDelivery: toStringValue(record.handdelivery) === "1",
@@ -525,8 +543,9 @@ export default function ReceivingFormPage() {
       draftReceipts: toArray(record.draftReceipts).length > 1,
       previousReceipts: toArray(record.previousReceipts).length > 1,
       fromIncomingCargo:
-        toStringValue(record.receivdfromincomingcargo ?? record.receivedfromincomingcargo) ===
-        "Y"
+        toStringValue(
+          record.receivdfromincomingcargo ?? record.receivedfromincomingcargo,
+        ) === "Y"
           ? "Yes"
           : "No",
       hhLite: !isLOCUser && !isFranUser,
@@ -537,11 +556,17 @@ export default function ReceivingFormPage() {
       isCrypto: toStringValue(record.rcvcrypto) === "1",
       existingDiscrepant: toNumber(record.route) === 2,
       isWMADestination,
-      locPackingRequired: isTruthyFlag(record.locPackingRequired ?? record.locpackingrequired),
+      locPackingRequired: isTruthyFlag(
+        record.locPackingRequired ?? record.locpackingrequired,
+      ),
       isNewReceiving,
       isPreviousReceiving: idValue !== null || statusId === 2,
       isApticReceiving:
-        showAptic && sotypeId !== null && sotypeId === 1 && tasktypeId !== null && tasktypeId === 1,
+        showAptic &&
+        sotypeId !== null &&
+        sotypeId === 1 &&
+        tasktypeId !== null &&
+        tasktypeId === 1,
     };
   }, [
     recFormData,
@@ -559,7 +584,8 @@ export default function ReceivingFormPage() {
 
   const [formValid, setFormValid] = useState(false);
 
-  const canSubmit = formValid &&
+  const canSubmit =
+    formValid &&
     (receivingBusinessState.isNewReceiving || receivingBusinessState.draft);
 
   // ---------------------------------------------------------------------------
@@ -568,13 +594,18 @@ export default function ReceivingFormPage() {
 
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
-  const [snackSeverity, setSnackSeverity] = useState<"success" | "error">("success");
+  const [snackSeverity, setSnackSeverity] = useState<"success" | "error">(
+    "success",
+  );
 
-  const showSnack = useCallback((message: string, severity: "success" | "error") => {
-    setSnackMessage(message);
-    setSnackSeverity(severity);
-    setSnackOpen(true);
-  }, []);
+  const showSnack = useCallback(
+    (message: string, severity: "success" | "error") => {
+      setSnackMessage(message);
+      setSnackSeverity(severity);
+      setSnackOpen(true);
+    },
+    [],
+  );
 
   // ---------------------------------------------------------------------------
   // advancedValidationIssues — per ReceivingForm-analysis.md Section 10
@@ -616,7 +647,10 @@ export default function ReceivingFormPage() {
     const totalBoxes = boxAttributes.filter(
       (b: any) => (Number(b.boxId) || 0) > 0,
     ).length;
-    if ((bs.isBfheld || bs.isCrypto || totalBoxes > 0) && pieces !== totalBoxes) {
+    if (
+      (bs.isBfheld || bs.isCrypto || totalBoxes > 0) &&
+      pieces !== totalBoxes
+    ) {
       if (bs.isBfheld) return VALIDATION_MESSAGES.rpgheldBoxMismatch;
       if (bs.isCrypto) return VALIDATION_MESSAGES.cryptoBoxMismatch;
       return VALIDATION_MESSAGES.totalBoxMismatch;
@@ -706,7 +740,8 @@ export default function ReceivingFormPage() {
         String(li.transactiontype).toUpperCase() === "R" &&
         (Number(li.rec_qty) || 0) > 0
       ) {
-        if (!li.respoffcode) return VALIDATION_MESSAGES.responsibleOfficeRequired;
+        if (!li.respoffcode)
+          return VALIDATION_MESSAGES.responsibleOfficeRequired;
       }
     }
 
@@ -775,13 +810,22 @@ export default function ReceivingFormPage() {
             "success",
           );
         } else {
-          showSnack(responseData.failureMessage || "Save failed. Please try again.", "error");
+          showSnack(
+            responseData.failureMessage || "Save failed. Please try again.",
+            "error",
+          );
         }
       } catch {
         showSnack("Network error. Please try again.", "error");
       }
     },
-    [advancedValidationIssues, recFormData, receivingBusinessState, recId, showSnack],
+    [
+      advancedValidationIssues,
+      recFormData,
+      receivingBusinessState,
+      recId,
+      showSnack,
+    ],
   );
 
   // ---------------------------------------------------------------------------
@@ -855,4 +899,3 @@ export default function ReceivingFormPage() {
     </>
   );
 }
-

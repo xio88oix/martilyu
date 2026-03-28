@@ -62,11 +62,13 @@ export default function ReceiveCategoryGrid() {
   // Snack Bar
   const [snackBarOpen, setSnackBarOpen] = useState<boolean>(false);
   const [snackBarMessage, setSnackBarMessage] = useState<string>("");
-  const [snackBarSeverity, setSnackBarSeverity] = useState<"success" | "error" | "warning" | "info">("info");
+  const [snackBarSeverity, setSnackBarSeverity] = useState<
+    "success" | "error" | "warning" | "info"
+  >("info");
 
   const handleSnackbarClose = (
     event?: React.SyntheticEvent | Event,
-    reason?: SnackbarCloseReason
+    reason?: SnackbarCloseReason,
   ) => {
     if (reason === "clickaway") {
       setSnackBarOpen(false);
@@ -99,13 +101,19 @@ export default function ReceiveCategoryGrid() {
       } else if (type === "b5" && numberType === 0) {
         // TODO: remove mock — replace with real API call once backend is available
         const mockRows = [
-          { id: 1, son: filter, po: "PO-00001", ind: "REF-NPR-001", statusid: 2 },
+          {
+            id: 1,
+            son: filter,
+            po: "PO-00001",
+            ind: "REF-NPR-001",
+            statusid: 2,
+          },
         ];
         setRowsData(mockRows);
         setSearchLoading(false);
       } else {
         await fetch(
-          `${baseUrl}/receiving/movements?type=${type}&numberType=${numberType}&filter=${filter}`
+          `${baseUrl}/receiving/movements?type=${type}&numberType=${numberType}&filter=${filter}`,
         ).then((res) => {
           if (res.status !== 200) {
             setSnackBarOpen(true);
@@ -119,7 +127,7 @@ export default function ReceiveCategoryGrid() {
                 setSnackBarOpen(true);
                 setSnackBarSeverity("warning");
                 setSnackBarMessage(
-                  "The SON you are trying to receive is in Completed status. If you are receving this message in error, please submit a request to ESP.cia to report an issue."
+                  "The SON you are trying to receive is in Completed status. If you are receving this message in error, please submit a request to ESP.cia to report an issue.",
                 );
                 setSearchLoading(false);
                 setRowsData([]);
@@ -179,7 +187,7 @@ export default function ReceiveCategoryGrid() {
               <Grid2>
                 <ReceiveCategoryCard
                   title="Contract Receiving"
-                  imagePath="https://dev.hammerhead.cia/resources/images/Basis150.png"
+                  imagePath="beach.png"
                   details={contractReceivingDetails}
                   setSelected={setSelected}
                   selected={selected === "Contract Receiving" ? true : false}
@@ -188,19 +196,23 @@ export default function ReceiveCategoryGrid() {
               <Grid2>
                 <ReceiveCategoryCard
                   title="Data Voice Video Receiving"
-                  imagePath="https://dev.hammerhead.cia/resources/images/DVVLogo127.png"
+                  imagePath="cat.png"
                   details={dvvReceivingDetails}
                   setSelected={setSelected}
-                  selected={selected === "Data Voice Video Receiving" ? true : false}
+                  selected={
+                    selected === "Data Voice Video Receiving" ? true : false
+                  }
                 />
               </Grid2>
               <Grid2>
                 <ReceiveCategoryCard
                   title="Internal Agency Receiving"
-                  imagePath="https://dev.hammerhead.cia/resources/images/iar150.png"
+                  imagePath="flower.png"
                   details={iarDetails}
                   setSelected={setSelected}
-                  selected={selected === "Internal Agency Receiving" ? true : false}
+                  selected={
+                    selected === "Internal Agency Receiving" ? true : false
+                  }
                 />
               </Grid2>
             </Stack>
@@ -208,28 +220,36 @@ export default function ReceiveCategoryGrid() {
               <Grid2>
                 <ReceiveCategoryCard
                   title="Purchase Order Receiving"
-                  imagePath="https://dev.hammerhead.cia/resources/images/Genesis150.png"
+                  imagePath="rocket.png"
                   details={purchaseOrderReceivingDetails}
                   setSelected={setSelected}
-                  selected={selected === "Purchase Order Receiving" ? true : false}
+                  selected={
+                    selected === "Purchase Order Receiving" ? true : false
+                  }
                 />
               </Grid2>
               <Grid2>
                 <ReceiveCategoryCard
                   title="Non-Procurement / Ascent Receiving"
-                  imagePath="https://dev.hammerhead.cia/resources/images/npr150.png"
+                  imagePath="cookie.png"
                   details={nprDetails}
                   setSelected={setSelected}
-                  selected={selected === "Non-Procurement / Ascent Receiving" ? true : false}
+                  selected={
+                    selected === "Non-Procurement / Ascent Receiving"
+                      ? true
+                      : false
+                  }
                 />
               </Grid2>
               <Grid2>
                 <ReceiveCategoryCard
                   title="Package Acknowledgement"
-                  imagePath="https://dev.hammerhead.cia/resources/images/package150.png"
+                  imagePath="car.png"
                   details={packageAckDetails}
                   setSelected={setSelected}
-                  selected={selected === "Package Acknowledgement" ? true : false}
+                  selected={
+                    selected === "Package Acknowledgement" ? true : false
+                  }
                 />
               </Grid2>
             </Stack>
@@ -309,7 +329,9 @@ export default function ReceiveCategoryGrid() {
                           placeholder="Enter Number"
                           fullWidth={true}
                           value={filter ?? ""}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          onChange={(
+                            e: React.ChangeEvent<HTMLInputElement>,
+                          ) => {
                             setFilter(e.target?.value);
                           }}
                           inputProps={{

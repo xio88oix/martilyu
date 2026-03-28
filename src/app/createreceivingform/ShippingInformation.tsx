@@ -65,7 +65,10 @@ interface ShippingInformationProps {
 // Component
 // ---------------------------------------------------------------------------
 
-export default function ShippingInformation({ data, type }: ShippingInformationProps) {
+export default function ShippingInformation({
+  data,
+  type,
+}: ShippingInformationProps) {
   return (
     <>
       <Box sx={{ padding: "1rem" }}>
@@ -82,11 +85,7 @@ export default function ShippingInformation({ data, type }: ShippingInformationP
           >
             <Stack flexGrow={1}>
               <Grid2>
-                <CustomTextField
-                  label="SON:"
-                  value={data?.son}
-                  disabled
-                />
+                <CustomTextField label="SON:" value={data?.son} disabled />
               </Grid2>
               <Grid2>
                 <CustomTextField
@@ -275,7 +274,8 @@ export default function ShippingInformation({ data, type }: ShippingInformationP
                   disabled
                 />
               </Grid2>
-              {(data?.receivedfromincomingcargo ?? data?.receivdfromincomingcargo) === "Y" && (
+              {(data?.receivedfromincomingcargo ??
+                data?.receivdfromincomingcargo) === "Y" && (
                 <Grid2>
                   <CustomTextField
                     label="Received From Incoming Cargo:"
@@ -288,9 +288,7 @@ export default function ShippingInformation({ data, type }: ShippingInformationP
           </Grid2>
         </div>
 
-        <ReferenceTrackingGridController
-          data={data?.trackingNumbers ?? []}
-        />
+        <ReferenceTrackingGridController data={data?.trackingNumbers ?? []} />
       </Box>
     </>
   );
