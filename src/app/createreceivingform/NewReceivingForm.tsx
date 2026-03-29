@@ -168,6 +168,41 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   const [cps, setCPS] = useState((data?.cps as string) ?? "0");
   const handleCPS = () => setCPS((prev) => (prev === "0" ? "1" : "0"));
 
+  const [packingSlipProvided, setPackingSlipProvided] = useState(
+    (data?.packing_slip_provided as string) ?? "false"
+  );
+  const [refrigerationReq, setRefrigerationReq] = useState(
+    (data?.rcvrefrigerationreq as string) ?? "0"
+  );
+  const [freezingReq, setFreezingReq] = useState(
+    (data?.rcvfreezingreq as string) ?? "0"
+  );
+  const [bfheld, setBfheld] = useState(
+    (data?.rcvbfheld as string) ?? "0"
+  );
+  const [crypto, setCrypto] = useState(
+    (data?.rcvcrypto as string) ?? "0"
+  );
+
+  const [dateIn, setDateIn] = useState(
+    data?.receiveddate ? dayjs(data.receiveddate as string) : null
+  );
+  const [pieces, setPieces] = useState((data?.pieces as string) ?? "");
+  const [weight, setWeight] = useState((data?.weight as string) ?? "");
+  const [prefixCode, setPrefixCode] = useState(
+    (data?.prefixcode as string) ?? null
+  );
+  const [deliveryDate, setDeliveryDate] = useState(
+    data?.deliverydate ? dayjs(data.deliverydate as string) : null
+  );
+  const [deliveryRecipient, setDeliveryRecipient] = useState(
+    (data?.deliveryrecipient as string) ?? ""
+  );
+  const [qtyAdjOnly, setQtyAdjOnly] = useState(
+    (data?.qty_adjustment_only as string) ?? "0"
+  );
+  const [remarks, setRemarks] = useState((data?.remarks as string) ?? "");
+
   const existingRoute = useMemo(
     () => resolveRouteOption(routeOptions, data?.route),
     [routeOptions, data?.route]
@@ -229,17 +264,17 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   // ---------------------------------------------------------------------------
 
   const formValid = useMemo(() => {
-    if (!data?.pieces || Number(data.pieces) <= 0) return false;
-    if (!data?.weight || Number(data.weight) <= 0) return false;
+    if (!pieces || Number(pieces) <= 0) return false;
+    if (!weight || Number(weight) <= 0) return false;
     if (!selectedRoute) return false;
-    if (isLOCUser && !data?.packing_slip_provided) return false;
+    if (isLOCUser && !packingSlipProvided) return false;
     if (handdelivery === "1") {
-      if (!data?.deliveryrecipient) return false;
-      if (!data?.deliverydate) return false;
+      if (!deliveryRecipient) return false;
+      if (!deliveryDate) return false;
     }
-    if (type === "b1" && !data?.prefixcode) return false;
+    if (type === "b1" && !prefixCode) return false;
     return true;
-  }, [data, selectedRoute, isLOCUser, handdelivery, type]);
+  }, [pieces, weight, selectedRoute, isLOCUser, packingSlipProvided, handdelivery, deliveryRecipient, deliveryDate, type, prefixCode]);
 
   useEffect(() => {
     onFormValidityChange?.(formValid);
@@ -310,11 +345,8 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   required={true}
                   label={"Date/Time In:"}
                   className="dialog-field-width"
-                  value={
-                    data?.receiveddate
-                      ? dayjs(data.receiveddate as string)
-                      : null
-                  }
+                  value={dateIn}
+                  onChange={(val: unknown) => setDateIn(val as typeof dateIn)}
                   isDisabled={dateInDisabled}
                 />
               </Grid2>
@@ -358,7 +390,8 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   required
                   type="number"
                   inputProps={{ min: 0, step: 1 }}
-                  value={data?.pieces}
+                  value={pieces}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPieces(e.target.value)}
                   disabled={piecesDisabled}
                   onKeyDown={(e: React.KeyboardEvent) => {
                     if (["e", "E", ".", "-", "+"].includes(e.key)) {
@@ -379,7 +412,8 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   required
                   type="number"
                   inputProps={{ min: 0, step: "any" }}
-                  value={data?.weight}
+                  value={weight}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWeight(e.target.value)}
                   disabled={weightDisabled}
                   onKeyDown={(e: React.KeyboardEvent) => {
                     if (["e", "E", "-", "+"].includes(e.key)) {
@@ -492,7 +526,8 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   <RadioGroup
                     sx={{ flexDirection: "row", margin: "0 1rem" }}
                     name="radio-button-group-packing"
-                    value={data?.packing_slip_provided}
+                    value={packingSlipProvided}
+                    onChange={(e) => setPackingSlipProvided(e.target.value)}
                   >
                     <RadioLarge
                       className="text-onbackground font-medium"
@@ -528,7 +563,8 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                         Refrigeration Required?
                       </FormLabel>
                       <RadioGroup
-                        value={data?.rcvrefrigerationreq}
+                        value={refrigerationReq}
+                        onChange={(e) => setRefrigerationReq(e.target.value)}
                         sx={{ flexDirection: "row", margin: "0 1rem" }}
                         name="radio-button-group-refrigeration"
                       >
@@ -559,7 +595,8 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                         Freezing Required?
                       </FormLabel>
                       <RadioGroup
-                        value={data?.rcvfreezingreq}
+                        value={freezingReq}
+                        onChange={(e) => setFreezingReq(e.target.value)}
                         sx={{ flexDirection: "row", margin: "0 1rem" }}
                         name="radio-button-group-freezing"
                       >
@@ -590,7 +627,8 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                         BFHELD?
                       </FormLabel>
                       <RadioGroup
-                        value={data?.rcvbfheld}
+                        value={bfheld}
+                        onChange={(e) => setBfheld(e.target.value)}
                         sx={{ flexDirection: "row", margin: "0 1rem" }}
                         name="radio-button-group-bfheld"
                       >
@@ -621,7 +659,8 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                         Crypto?
                       </FormLabel>
                       <RadioGroup
-                        value={data?.rcvcrypto}
+                        value={crypto}
+                        onChange={(e) => setCrypto(e.target.value)}
                         sx={{ flexDirection: "row", margin: "0 1rem" }}
                         name="radio-button-group-crypto"
                       >
@@ -645,7 +684,8 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   <Autocomplete
                     className="dialog-field-width"
                     options={["item1", "item2", "item3"]}
-                    value={(data?.prefixcode as string) ?? null}
+                    value={prefixCode}
+                    onChange={(_: unknown, val: string | null) => setPrefixCode(val)}
                     renderInput={(params) => (
                       <StyledTextField
                         required
@@ -712,8 +752,8 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                       className="text-onbackground"
                       control={
                         <CheckboxLarge
-                          checked={(data?.qty_adjustment_only as string) === "1"}
-                          onChange={() => {}}
+                          checked={qtyAdjOnly === "1"}
+                          onChange={() => setQtyAdjOnly((prev) => (prev === "0" ? "1" : "0"))}
                         />
                       }
                       label={"Do Not Send To Genesis:"}
@@ -753,11 +793,8 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                     label={"Hand Delivered Date:"}
                     className="dialog-field-width"
                     required={isHandDelivery}
-                    value={
-                      data?.deliverydate
-                        ? dayjs(data.deliverydate as string)
-                        : null
-                    }
+                    value={deliveryDate}
+                    onChange={(val: unknown) => setDeliveryDate(val as typeof deliveryDate)}
                     isDisabled={!isHandDelivery}
                   />
                 </Grid2>
@@ -767,7 +804,8 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                     className="dialog-field-width"
                     title="Only available for field receiving process."
                     fullWidth={true}
-                    value={data?.deliveryrecipient}
+                    value={deliveryRecipient}
+                    handleChange={(e: unknown) => setDeliveryRecipient((e as React.ChangeEvent<HTMLInputElement>).target.value)}
                     disable={!isHandDelivery}
                     required={isHandDelivery}
                   />
@@ -787,7 +825,8 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
             label={"Receiving Remarks"}
             variant="filled"
             fullWidth
-            value={(data?.remarks as string) ?? ""}
+            value={remarks}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRemarks(e.target.value)}
           />
         </div>
       </Box>
