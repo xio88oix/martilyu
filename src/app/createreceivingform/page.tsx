@@ -472,6 +472,13 @@ export default function ReceivingFormPage() {
     null,
   );
 
+  const handleFormDataChange = useCallback(
+    (changes: Partial<Record<string, unknown>>) => {
+      setRecFormData((prev) => ({ ...(prev ?? {}), ...changes }));
+    },
+    [],
+  );
+
   useEffect(() => {
     if (!loading) {
       if (data && data.length > 0) {
@@ -782,6 +789,14 @@ export default function ReceivingFormPage() {
         const env = await loadEnvironment();
         const baseUrl = env.api?.server || "";
 
+        if (typeof window !== "undefined") {
+          console.info("[ReceivingForm] Submit payload preview", {
+            draft,
+            endpoint: `${baseUrl}receiving/movement`,
+            payload,
+          });
+        }
+
         let responseData: {
           success: boolean;
           data?: { id: number };
@@ -864,6 +879,7 @@ export default function ReceivingFormPage() {
           type={type}
           receivingBusinessState={receivingBusinessState}
           onFormValidityChange={setFormValid}
+          onDataChange={handleFormDataChange}
         />
       </Box>
       <Snackbar

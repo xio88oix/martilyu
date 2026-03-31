@@ -134,6 +134,7 @@ interface NewReceivingFormProps {
   type?: string;
   receivingBusinessState: ReceivingBusinessState;
   onFormValidityChange?: (valid: boolean) => void;
+  onDataChange?: (changes: Partial<Record<string, unknown>>) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -141,7 +142,13 @@ interface NewReceivingFormProps {
 // ---------------------------------------------------------------------------
 
 export default function NewReceivingForm(props: NewReceivingFormProps) {
-  const { data, type, receivingBusinessState: bs, onFormValidityChange } = props;
+  const {
+    data,
+    type,
+    receivingBusinessState: bs,
+    onFormValidityChange,
+    onDataChange,
+  } = props;
   const { isLOCUser, isWMAUser, isFranUser } = useUserContext();
   const { data: routeLookupData, loading: routeLookupLoading } = useFetchAllRoute();
   const { data: carrierLookupData, loading: carrierLookupLoading } = useFetchAllCarrier();
@@ -190,7 +197,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   const [pieces, setPieces] = useState((data?.pieces as string) ?? "");
   const [weight, setWeight] = useState((data?.weight as string) ?? "");
   const [prefixCode, setPrefixCode] = useState(
-    (data?.prefixcode as string) ?? null
+    (data?.prefixcode as string) ?? ""
   );
   const [deliveryDate, setDeliveryDate] = useState(
     data?.deliverydate ? dayjs(data.deliverydate as string) : null
@@ -279,6 +286,54 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   useEffect(() => {
     onFormValidityChange?.(formValid);
   }, [formValid, onFormValidityChange]);
+
+  useEffect(() => {
+    const parsedPieces = pieces === "" ? null : Number(pieces);
+    const parsedWeight = weight === "" ? null : Number(weight);
+
+    onDataChange?.({
+      pieces: Number.isFinite(parsedPieces) ? parsedPieces : null,
+      weight: Number.isFinite(parsedWeight) ? parsedWeight : null,
+      route: selectedRoute?.id ?? null,
+      carrier_id: selectedCarrier?.id ?? null,
+      handdelivery,
+      deliverydate: deliveryDate ? deliveryDate.valueOf() : null,
+      deliveryrecipient: deliveryRecipient,
+      rcvrefrigerationreq: refrigerationReq,
+      rcvfreezingreq: freezingReq,
+      rcvbfheld: bfheld,
+      rcvcrypto: crypto,
+      packing_slip_provided: packingSlipProvided,
+      nobox: bypassBox ? "1" : "0",
+      nolines,
+      cps,
+      qty_adjustment_only: qtyAdjOnly,
+      prefixcode: prefixCode || null,
+      remarks,
+      receiveddate: dateIn ? dateIn.valueOf() : null,
+    });
+  }, [
+    pieces,
+    weight,
+    selectedRoute,
+    selectedCarrier,
+    handdelivery,
+    deliveryDate,
+    deliveryRecipient,
+    refrigerationReq,
+    freezingReq,
+    bfheld,
+    crypto,
+    packingSlipProvided,
+    bypassBox,
+    nolines,
+    cps,
+    qtyAdjOnly,
+    prefixCode,
+    remarks,
+    dateIn,
+    onDataChange,
+  ]);
 
   // ---------------------------------------------------------------------------
   // Derived disable / hide flags from analysis doc Section 4
@@ -684,8 +739,10 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   <Autocomplete
                     className="dialog-field-width"
                     options={["item1", "item2", "item3"]}
-                    value={prefixCode}
-                    onChange={(_: unknown, val: string | null) => setPrefixCode(val)}
+                    value={prefixCode || null}
+                    onChange={(_: unknown, val: string | null) =>
+                      setPrefixCode(val ?? "")
+                    }
                     renderInput={(params) => (
                       <StyledTextField
                         required
