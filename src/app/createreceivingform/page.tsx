@@ -815,6 +815,7 @@ export default function ReceivingFormPage() {
             body: JSON.stringify(payload),
           });
           responseData = await res.json();
+          responseData.success = res.ok;
         }
 
         if (responseData.success) {
