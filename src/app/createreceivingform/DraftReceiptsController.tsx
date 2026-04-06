@@ -18,6 +18,7 @@ import DraftReceiptGrid from "./DraftReceiptsGrid";
 
 interface DraftReceiptsControllerProps {
   data: any[]; // TODO: improve typing — replace with the actual row interface
+  type?: string | null;
 }
 
 // NOTE: DraftReceiptsGrid is not yet converted. A minimal stub is provided below
@@ -166,6 +167,12 @@ export default function DraftReceiptsController(
         rowModesModel={rowModesModel}
         setRowModesModel={setRowModesModel}
         setRows={setRows}
+        onRowDoubleClick={(params) => {
+          const row = params.row;
+          window.open(
+            `/createreceivingform?recId=${row.receivingid ?? row.id}&son=${row.son}&poNumber=${row.ponum ?? ""}&type=${props.type ?? ""}`,
+          );
+        }}
       />
       <CustomFooter />
     </Box>

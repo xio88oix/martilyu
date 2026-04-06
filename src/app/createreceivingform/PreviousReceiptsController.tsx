@@ -87,7 +87,7 @@ function AdvancedSearchShippingRequests() {
 // Component
 // ---------------------------------------------------------------------------
 
-export default function PreviousReceiptsController(props: { data: unknown[] }) {
+export default function PreviousReceiptsController(props: { data: unknown[]; type?: string | null }) {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [rows, setRows] = useState(props.data ?? []);
   // groupBy / groupByOptions / GroupBySelect are wired up in the PDF source but not rendered in
@@ -271,6 +271,12 @@ export default function PreviousReceiptsController(props: { data: unknown[] }) {
         rowModesModel={rowModesModel}
         setRowModesModel={setRowModesModel}
         setRows={setRows}
+        onRowDoubleClick={(params: any) => {
+          const row = params.row;
+          window.open(
+            `/createreceivingform?recId=${row.receivingid ?? row.id}&son=${row.son}&poNumber=${row.ponum ?? ""}&type=${props.type ?? ""}`,
+          );
+        }}
       />
       <CustomFooter />
     </Box>

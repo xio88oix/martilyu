@@ -32,6 +32,7 @@ interface PreviousReceiptsGridProps {
   handleProcessRowUpdate?: (newRow: GridRowModel) => Promise<GridRowModel>;
   // TODO: improve typing — params shape depends on the specific column definition
   preProcessEditCellProps?: (params: unknown) => unknown;
+  onRowDoubleClick?: (params: any) => void;
 }
 
 export default function PreviousReceiptsGrid(
@@ -43,6 +44,7 @@ export default function PreviousReceiptsGrid(
   return (
     <>
       <MyDataGrid
+        onRowDoubleClick={props.onRowDoubleClick}
         rows={props.rowsData}
         cols={props.cols}
         initialState={{

@@ -29,6 +29,7 @@ interface DraftReceiptsGridProps {
   handleRowEditStop?: GridEventListener<"rowEditStop">;
   handleProcessRowUpdate?: (newRow: GridRowModel) => Promise<any>;
   preProcessEditCellProps?: (params: any) => any; // TODO: improve typing — params should be GridPreProcessEditCellProps
+  onRowDoubleClick?: (params: any) => void;
 }
 
 export default function DraftReceiptsGrid(props: DraftReceiptsGridProps) {
@@ -38,6 +39,7 @@ export default function DraftReceiptsGrid(props: DraftReceiptsGridProps) {
   return (
     <>
       <MyDataGrid
+        onRowDoubleClick={props.onRowDoubleClick}
         rows={props.rowsData}
         cols={props.cols}
         initialState={{

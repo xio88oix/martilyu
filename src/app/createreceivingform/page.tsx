@@ -10,7 +10,7 @@ import { loadEnvironment } from "@/utils/EnvironmentUtils";
 import { VALIDATION_MESSAGES } from "./receivingFormConstants";
 
 // NOTE: CustomToolbar will be provided by CustomComponents once converted from its PDF.
-// NOTE: useFetchReceivingData and useFetchReceivingForm are service hooks to be added to ServiceHooks/services.tsx.
+// NOTE: useFetchReceivingForm is a service hook to be added to ServiceHooks/services.tsx.
 
 // ---------------------------------------------------------------------------
 // Temporary inline stubs — replace with real imports once companion files exist
@@ -47,64 +47,6 @@ interface ReceivingFormData {
   receivedDate?: Date | null;
   packageId?: number | null;
   [key: string]: unknown;
-}
-
-interface FetchDataResult {
-  data: ReceivingFormData[] | null;
-  loading: boolean;
-}
-
-function useFetchReceivingData(
-  id: string | null,
-  type: string | null,
-  numberType: string | null,
-): FetchDataResult {
-  // TODO: replace stub with real API call via Axios
-  const [data, setData] = useState<ReceivingFormData[] | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // TODO: remove mock — replace with real API response
-      setData([
-        {
-          shippingOrderId: 996753, //"RECV-00001",
-          son: id ?? "09999999",
-          poNumber: null,
-          receivedDate: null,
-          packageId: null,
-          destination: "HQ Warehouse",
-          type: type ?? "",
-          numberType: numberType ?? "0",
-          //
-          refrigerationReq: true,
-          receiver: null,
-          freezingReq: true,
-          containsWeapons: true,
-          route: null,
-          statusId: 2,
-          referenceNumber: "999999901",
-          bscDocNumber: null,
-          constainshazmat: true,
-          finalDestinationName: "EUROPE - 0999",
-          receivedTime: null,
-          lilist: null,
-          status: {
-            active: true,
-            completed: false,
-            id: 2,
-            longDescription: "Submitted",
-            shortDescription: "Submitted",
-            submitted: true,
-          },
-        },
-      ]);
-      setLoading(false);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [id, type, numberType]);
-
-  return { data, loading };
 }
 
 interface FetchFormResult {
@@ -432,17 +374,13 @@ function useFetchReceivingForm(
 export default function ReceivingFormPage() {
   const [requestCreated, setRequestCreated] = useState(false);
   const searchParams = useSearchParams();
-  const id = searchParams.get("id") ?? "12345678";
   const type = searchParams.get("type");
-  const numberType = searchParams.get("numberType");
-
-  const { data, loading } = useFetchReceivingData(id, type, numberType);
-
-  const [recId, setRecId] = useState<number | null>(null);
-  const [son, setSon] = useState(id);
-  const [ponum, setPonum] = useState<string | null>(null);
-  const [recDate, setRecDate] = useState<Date | null>(null);
-  const [packageId, setPackageId] = useState<number | null>(null);
+  const recIdParam = searchParams.get("recId");
+  const recId = recIdParam ? Number(recIdParam) : null;
+  const son = searchParams.get("son") ?? "";
+  const ponum = searchParams.get("poNumber") || null;
+  const recDate: Date | null = null; // placeholder
+  const packageId: number | null = null; // placeholder
 
   const {
     user,
@@ -480,17 +418,6 @@ export default function ReceivingFormPage() {
   );
 
   const recFormInitialized = useRef(false);
-
-  // Seed lookup keys from the search/receiving data
-  useEffect(() => {
-    if (loading || !data || data.length === 0) return;
-    const d = data[0];
-    if (d.shippingOrderId) setRecId(d.shippingOrderId);
-    if (d.poNumber) setPonum(d.poNumber);
-    if (d.son) setSon(d.son);
-    if (d.receivedDate) setRecDate(d.receivedDate);
-    if (d.packageId) setPackageId(d.packageId);
-  }, [loading, data]);
 
   // Initialize recFormData exactly once from the form API
   useEffect(() => {

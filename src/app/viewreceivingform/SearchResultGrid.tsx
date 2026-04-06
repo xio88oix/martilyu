@@ -35,7 +35,7 @@ export default function SearchResultGrid(props: {
         onRowDoubleClick={(rows) => {
           console.log("the rows object is: ", rows);
           window.open(
-            `/createreceivingform?id=${rows.row.son}&type=${props.type}&numberType=${props.numberType}`,
+            `/createreceivingform?recId=${rows.row.id}&son=${rows.row.son}&poNumber=${rows.row.po ?? ""}&type=${props.type}`,
           );
         }}
         getRowId={(row) => (row.sonid ? row.sonid : row.id)}
