@@ -25,7 +25,7 @@ import {
 } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import dayjs from "dayjs";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useUserContext } from "@/app/hooks/useUserContext";
 
 // ---------------------------------------------------------------------------
@@ -287,11 +287,13 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
     onFormValidityChange?.(formValid);
   }, [formValid, onFormValidityChange]);
 
+  const prevDataChangeRef = useRef<string>("");
+
   useEffect(() => {
     const parsedPieces = pieces === "" ? null : Number(pieces);
     const parsedWeight = weight === "" ? null : Number(weight);
 
-    onDataChange?.({
+    const payload = {
       pieces: Number.isFinite(parsedPieces) ? parsedPieces : null,
       weight: Number.isFinite(parsedWeight) ? parsedWeight : null,
       route: selectedRoute?.id ?? null,
@@ -311,7 +313,13 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
       prefixcode: prefixCode || null,
       remarks,
       receiveddate: dateIn ? dateIn.valueOf() : null,
-    });
+    };
+
+    const key = JSON.stringify(payload);
+    if (key === prevDataChangeRef.current) return;
+    prevDataChangeRef.current = key;
+
+    onDataChange?.(payload);
   }, [
     pieces,
     weight,

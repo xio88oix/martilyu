@@ -1,7 +1,7 @@
 "use client";
 
 import { Alert, Box, CircularProgress, Snackbar } from "@mui/material";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ReceivingTabPanel from "./ReceivingTabPanel";
 import { CustomToolbar } from "@/components/CustomComponents";
@@ -479,31 +479,25 @@ export default function ReceivingFormPage() {
     [],
   );
 
+  const recFormInitialized = useRef(false);
+
+  // Seed lookup keys from the search/receiving data
   useEffect(() => {
-    if (!loading) {
-      if (data && data.length > 0) {
-        const d = data[0];
-        if (d.shippingOrderId) {
-          setRecId(d.shippingOrderId);
-        }
-        if (d.poNumber) {
-          setPonum(d.poNumber);
-        }
-        if (d.son) {
-          setSon(d.son);
-        }
-        if (d.receivedDate) {
-          setRecDate(d.receivedDate);
-        }
-        if (d.packageId) {
-          setPackageId(d.packageId);
-        }
-      }
-    }
-    if (!recFormLoading) {
-      setRecFormData(formData?.data ?? null);
-    }
-  }, [loading, recFormLoading]);
+    if (loading || !data || data.length === 0) return;
+    const d = data[0];
+    if (d.shippingOrderId) setRecId(d.shippingOrderId);
+    if (d.poNumber) setPonum(d.poNumber);
+    if (d.son) setSon(d.son);
+    if (d.receivedDate) setRecDate(d.receivedDate);
+    if (d.packageId) setPackageId(d.packageId);
+  }, [loading, data]);
+
+  // Initialize recFormData exactly once from the form API
+  useEffect(() => {
+    if (recFormLoading || !formData?.data || recFormInitialized.current) return;
+    recFormInitialized.current = true;
+    setRecFormData(formData.data);
+  }, [recFormLoading, formData]);
 
   const receivingBusinessState = useMemo(() => {
     const record = (recFormData ?? {}) as Record<string, unknown>;
@@ -876,7 +870,7 @@ export default function ReceivingFormPage() {
       >
         {/* <ShippingInformation /> */}
         <ReceivingTabPanel
-          data={recFormData}
+          data={formData?.data ?? null}
           type={type}
           receivingBusinessState={receivingBusinessState}
           onFormValidityChange={setFormValid}
