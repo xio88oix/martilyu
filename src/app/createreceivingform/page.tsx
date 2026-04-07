@@ -7,6 +7,7 @@ import ReceivingTabPanel from "./ReceivingTabPanel";
 import { CustomToolbar } from "@/components/CustomComponents";
 import { useUserContext } from "@/app/hooks/useUserContext";
 import { loadEnvironment } from "@/utils/EnvironmentUtils";
+import dayjs from "dayjs";
 import { VALIDATION_MESSAGES } from "./receivingFormConstants";
 
 // NOTE: CustomToolbar will be provided by CustomComponents once converted from its PDF.
@@ -704,6 +705,7 @@ export default function ReceivingFormPage() {
         routingneeded:
           receivingBusinessState.isApticReceiving ||
           (!draft && receivingBusinessState.isNewReceiving),
+        dateout: recFormData?.dateout ? dayjs(recFormData.dateout as string | number).format("YYYY-MM-DDTHH:mm:ss") : null,
       };
 
       try {

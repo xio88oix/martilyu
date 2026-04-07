@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Service Hooks - Auto-generated stubs from API documentation
@@ -10,7 +10,7 @@
  * Base URL: https://dev.hammerhead.cia/hammerhead
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 // ============================================================
 // Shared / Common Types
@@ -65,10 +65,10 @@ const mockBuildingsResponse: BuildingsResponse = {
   count: 227,
   data: [
     {
-      buildingCode: 'XXXX',
+      buildingCode: "XXXX",
       locb: false,
       count: 227,
-      buildingName: '9 PARKING LT',
+      buildingName: "9 PARKING LT",
       id: 900009999,
     },
   ],
@@ -76,10 +76,10 @@ const mockBuildingsResponse: BuildingsResponse = {
 
 // Legacy mock kept for backward compatibility with useFetchBuildings
 const MOCK_BUILDINGS = [
-  { id: 1, buildingName: 'Main Building' },
-  { id: 2, buildingName: 'Annex A' },
-  { id: 3, buildingName: 'Warehouse' },
-  { id: 4, buildingName: 'North Campus' },
+  { id: 1, buildingName: "Main Building" },
+  { id: 2, buildingName: "Annex A" },
+  { id: 3, buildingName: "Warehouse" },
+  { id: 4, buildingName: "North Campus" },
 ];
 
 // ============================================================
@@ -95,10 +95,10 @@ export interface Station {
 
 const MOCK_STATION = {
   id: 9,
-  stationName: 'XOC',
+  stationName: "XOC",
   stationNumber: "0903",
   active: true,
-}
+};
 
 export interface User {
   displayName: string;
@@ -113,10 +113,11 @@ export interface User {
 }
 
 const MOCK_USER: User = {
-  displayName: 'John Doe',
-  roles: ['Admin', 'User', 'Developer'],
+  displayName: "John Doe",
+  roles: ["Admin", "User", "Developer"],
   rolesAsString: "'Admin', 'User', 'Developer'",
-  preferencesAsJson: '{ "printReceivingLabel": "true", "showAptic": "true", "wmaUser": "false", "notifications": true }',
+  preferencesAsJson:
+    '{ "printReceivingLabel": "true", "showAptic": "true", "wmaUser": "false", "notifications": true }',
   currentStation: MOCK_STATION,
   currentBuilding: null,
   defaultTabToOpen: null,
@@ -232,13 +233,13 @@ const mockReceivingMovementsResponse: ReceivingMovementsResponse = {
       count: 1,
       shippingOrderId: 1019313,
       containsWeapons: false,
-      son: '01187893',
+      son: "01187893",
       route: null,
       statusId: 2,
       referenceNumber: null,
       bscDocNumber: null,
       containsHazmat: false,
-      finalDestinationName: 'FRANSUPT - 0679',
+      finalDestinationName: "FRANSUPT - 0679",
       receivedTime: null,
       locPackingRequired: null,
       id: 9019313,
@@ -250,8 +251,8 @@ const mockReceivingMovementsResponse: ReceivingMovementsResponse = {
         active: true,
         completed: false,
         id: 2,
-        longDescription: 'Submitted',
-        shortDescription: 'Submitted',
+        longDescription: "Submitted",
+        shortDescription: "Submitted",
         submitted: true,
       },
     },
@@ -263,7 +264,9 @@ const mockReceivingMovementsResponse: ReceivingMovementsResponse = {
  * Returns a filtered list of receiving movements.
  */
 export function useGetReceivingMovements(payload?: ReceivingMovementsPayload) {
-  const [data] = useState<ReceivingMovementsResponse>(mockReceivingMovementsResponse);
+  const [data] = useState<ReceivingMovementsResponse>(
+    mockReceivingMovementsResponse,
+  );
   const [loading] = useState(false);
   const [error] = useState<string | null>(null);
 
@@ -428,8 +431,8 @@ export interface ReceivingMovementDetailResponse {
 const mockReceivingMovementDetail: ReceivingMovementDetailResponse = {
   data: {
     indicator: null,
-    containsammo: 'NO',
-    final_destination: '0679',
+    containsammo: "NO",
+    final_destination: "0679",
     qty_adjustment_only: null,
     deliverydate: null,
     lineItems: [
@@ -439,94 +442,94 @@ const mockReceivingMovementDetail: ReceivingMovementDetailResponse = {
         total_qty_received: null,
         rec_uom_desc: null,
         receiptscomplete: 0,
-        linetype: ' ',
+        linetype: " ",
         lotnum: null,
         nsn: null,
-        description: 'line 1',
-        syscomments: ' ',
+        description: "line 1",
+        syscomments: " ",
         assetItems: [],
         respoffcode: null,
         line_id: 3850862,
-        transactiontype: ' ',
+        transactiontype: " ",
         receiveddate: null,
         genesis_id: 0,
-        partnum: ' ',
-        manufacturer: ' ',
+        partnum: " ",
+        manufacturer: " ",
         ord_qty: 100,
         boxnum: null,
-        polinecomment: ' ',
+        polinecomment: " ",
         line_number: 1,
-        pack_nbr: ' ',
+        pack_nbr: " ",
         rec_uom: null,
         orig_rec_qty: 0.0,
         conditioncode: null,
         clin: null,
-        comments: ' ',
-        storeloc: ' ',
-        modelnum: ' ',
+        comments: " ",
+        storeloc: " ",
+        modelnum: " ",
         genesis_line: 0,
         binnum: null,
-        enteredby: ' ',
+        enteredby: " ",
         lottype: null,
         venddeliverydate: null,
         boxItems: [],
         discrepancy: null,
-        extendeddescription: ' ',
+        extendeddescription: " ",
         rec_qty: null,
         rl_id: null,
         disc_cargo: null,
-        ord_uom: 'BOX',
+        ord_uom: "BOX",
       },
     ],
     genesis: null,
-    son: '01187893',
+    son: "01187893",
     status_id: null,
     handling_priority_type_id: null,
-    allow_packages: 'Y',
-    rcvfreezingreq: '0',
+    allow_packages: "Y",
+    rcvfreezingreq: "0",
     id: null,
-    tireq: 'No',
+    tireq: "No",
     receivingid: null,
-    refrigerationreq: 'NO',
+    refrigerationreq: "NO",
     taskreceivepieces: null,
     draftReceipts: [],
-    packing_slip_provided: null,
+    packing_slip_provided: "1",
     sonmaxboxid: 0,
-    secureshipmentreq: 'NO',
-    nolines: '0',
+    secureshipmentreq: "NO",
+    nolines: "0",
     sonid: 1019313,
     datereqatdest: null,
-    cps: '0',
-    rcvbfheld: '0',
-    nobox: '0',
+    cps: "0",
+    rcvbfheld: "0",
+    nobox: "0",
     weight: null,
     trackingNumbers: [],
     satellite_location: null,
     received: null,
-    containscrypto: 'NO',
-    rcvrefrigerationreq: '0',
-    receiving_completed: '0',
+    containscrypto: "NO",
+    rcvrefrigerationreq: "0",
+    receiving_completed: "0",
     taskutility: null,
     route: 12,
     previousReceipts: [],
-    containslithiumbatt: 'NO',
-    containsconcealmentdvc: 'NO',
+    containslithiumbatt: "NO",
+    containsconcealmentdvc: "NO",
     boxid: null,
     markpackship: null,
-    backhaul: '0',
+    backhaul: "0",
     purpose: null,
     licount: null,
-    freezingreq: 'NO',
-    containsweapons: 'NO',
+    freezingreq: "NO",
+    containsweapons: "NO",
     taskstatusid: null,
     receiveddate: new Date(1773912090000),
     pieces: null,
     carrier_id: null,
     esmtid: null,
     draftmaxboxid: 0,
-    handdelivery: '0',
+    handdelivery: "0",
     receivedfromincomincomingcargo: null,
-    containshazmat: 'NO',
+    containshazmat: "NO",
     track: null,
     genesispoid: null,
     prefixcode: null,
@@ -551,26 +554,26 @@ const mockReceivingMovementDetail: ReceivingMovementDetailResponse = {
       cubiscanType: {
         databaseLocation: null,
         id: 10,
-        longDescription: 'Cubiscans Located at Packing Area',
+        longDescription: "Cubiscans Located at Packing Area",
         selectBySonSQL: null,
         selectSQL: null,
-        shortDescription: 'Packing',
+        shortDescription: "Packing",
         updateSQL: null,
       },
       id: 22,
-      ipAddress: '10.50.128.89',
-      longDescription: 'Cubiscan at Pack Line 1',
-      shortDescription: 'Pack Line 1',
+      ipAddress: "10.50.128.89",
+      longDescription: "Cubiscan at Pack Line 1",
+      shortDescription: "Pack Line 1",
     },
     ponum: null,
     son_handling_priority_type_id: null,
     assetReceivedItems: [],
-    rcvcrypto: '0',
+    rcvcrypto: "0",
     sotypeid: 0,
     tasktypeid: null,
     remarks: null,
     deliveryrecipient: null,
-    containsbfheld: 'NO',
+    containsbfheld: "NO",
   },
 };
 
@@ -579,7 +582,9 @@ const mockReceivingMovementDetail: ReceivingMovementDetailResponse = {
  * Returns the full detail of a single receiving movement by receivingid/son.
  */
 export function useGetReceivingMovement(payload?: ReceivingMovementPayload) {
-  const [data] = useState<ReceivingMovementDetailResponse>(mockReceivingMovementDetail);
+  const [data] = useState<ReceivingMovementDetailResponse>(
+    mockReceivingMovementDetail,
+  );
   const [loading] = useState(false);
   const [error] = useState<string | null>(null);
 
@@ -759,8 +764,12 @@ const mockSubmitReceivingMovementResponse: SubmitReceivingMovementResponse = {
  * Stubs POST /receiving/movement
  * Submits a receiving movement and returns the created record id.
  */
-export function useSubmitReceivingMovement(payload?: SubmitReceivingMovementPayload) {
-  const [data] = useState<SubmitReceivingMovementResponse>(mockSubmitReceivingMovementResponse);
+export function useSubmitReceivingMovement(
+  payload?: SubmitReceivingMovementPayload,
+) {
+  const [data] = useState<SubmitReceivingMovementResponse>(
+    mockSubmitReceivingMovementResponse,
+  );
   const [loading] = useState(false);
   const [error] = useState<string | null>(null);
 
@@ -773,7 +782,7 @@ export function useSubmitReceivingMovement(payload?: SubmitReceivingMovementPayl
 
 export interface AppLogLevelPayload {
   _dc: number;
-  type: 'appLogLevel';
+  type: "appLogLevel";
   activeOnly: boolean;
   page: number;
   start: number;
@@ -798,8 +807,8 @@ const mockAppLogLevelResponse: AppLogLevelResponse = {
     {
       active: true,
       id: 1,
-      longDescription: 'Only administrators can see these notifications',
-      shortDescription: 'Admin',
+      longDescription: "Only administrators can see these notifications",
+      shortDescription: "Admin",
     },
   ],
 };
@@ -822,7 +831,7 @@ export function useGetAppLogLevels(payload?: AppLogLevelPayload) {
 
 export interface ReferenceNumberTypePayload {
   _dc: number;
-  type: 'referenceNumberType';
+  type: "referenceNumberType";
   page: number;
   start: number;
   limit: number;
@@ -846,8 +855,8 @@ const mockReferenceNumberTypeResponse: ReferenceNumberTypeResponse = {
     {
       id: 5,
       indicatorNumber: true,
-      longDescription: 'Test Indicator Number',
-      shortDescription: 'Test Indicator',
+      longDescription: "Test Indicator Number",
+      shortDescription: "Test Indicator",
     },
   ],
 };
@@ -856,8 +865,12 @@ const mockReferenceNumberTypeResponse: ReferenceNumberTypeResponse = {
  * Stubs GET /lookups.json?type=referenceNumberType
  * Returns available reference number type lookup values.
  */
-export function useGetReferenceNumberTypes(payload?: ReferenceNumberTypePayload) {
-  const [data] = useState<ReferenceNumberTypeResponse>(mockReferenceNumberTypeResponse);
+export function useGetReferenceNumberTypes(
+  payload?: ReferenceNumberTypePayload,
+) {
+  const [data] = useState<ReferenceNumberTypeResponse>(
+    mockReferenceNumberTypeResponse,
+  );
   const [loading] = useState(false);
   const [error] = useState<string | null>(null);
 
@@ -870,7 +883,7 @@ export function useGetReferenceNumberTypes(payload?: ReferenceNumberTypePayload)
 
 export interface ReceivingDiscrepancyPayload {
   _dc: number;
-  type: 'receivingDiscrepancy';
+  type: "receivingDiscrepancy";
   activeOnly: boolean;
   page: number;
   start: number;
@@ -895,10 +908,10 @@ const mockReceivingDiscrepancyResponse: ReceivingDiscrepancyResponse = {
   data: [
     {
       active: false,
-      discrepancyType: 'LIVE',
+      discrepancyType: "LIVE",
       id: 1,
-      longDescription: 'Test',
-      shortDescription: 'test',
+      longDescription: "Test",
+      shortDescription: "test",
     },
   ],
 };
@@ -907,8 +920,12 @@ const mockReceivingDiscrepancyResponse: ReceivingDiscrepancyResponse = {
  * Stubs GET /lookups.json?type=receivingDiscrepancy
  * Returns available receiving discrepancy lookup values.
  */
-export function useGetReceivingDiscrepancies(payload?: ReceivingDiscrepancyPayload) {
-  const [data] = useState<ReceivingDiscrepancyResponse>(mockReceivingDiscrepancyResponse);
+export function useGetReceivingDiscrepancies(
+  payload?: ReceivingDiscrepancyPayload,
+) {
+  const [data] = useState<ReceivingDiscrepancyResponse>(
+    mockReceivingDiscrepancyResponse,
+  );
   const [loading] = useState(false);
   const [error] = useState<string | null>(null);
 
@@ -921,7 +938,7 @@ export function useGetReceivingDiscrepancies(payload?: ReceivingDiscrepancyPaylo
 
 export interface RoutePayload {
   _dc: number;
-  type: 'route';
+  type: "route";
   activeOnly: boolean;
   page: number;
   start: number;
@@ -947,133 +964,133 @@ const mockRouteResponse: RouteResponse = {
       active: true,
       id: 12,
       longDescription: null,
-      shortDescription: 'GT',
+      shortDescription: "GT",
     },
     {
       active: false,
       id: 13,
       longDescription: null,
-      shortDescription: 'RCV',
+      shortDescription: "RCV",
     },
     {
       active: true,
       id: 16,
       longDescription: null,
-      shortDescription: 'FREIGHT FORWARDER',
+      shortDescription: "FREIGHT FORWARDER",
     },
     {
       active: false,
       id: 1,
       longDescription: null,
-      shortDescription: 'CSC',
+      shortDescription: "CSC",
     },
     {
       active: true,
       id: 2,
       longDescription: null,
-      shortDescription: 'DISCREPANT',
+      shortDescription: "DISCREPANT",
     },
     {
       active: true,
       id: 3,
       longDescription: null,
-      shortDescription: 'FFTS',
+      shortDescription: "FFTS",
     },
     {
       active: true,
       id: 4,
       longDescription: null,
-      shortDescription: 'LOT',
+      shortDescription: "LOT",
     },
     {
       active: false,
       id: 5,
       longDescription: null,
-      shortDescription: 'MASSY',
+      shortDescription: "MASSY",
     },
     {
       active: true,
       id: 6,
       longDescription: null,
-      shortDescription: 'PACKING',
+      shortDescription: "PACKING",
     },
     {
       active: false,
       id: 7,
       longDescription: null,
-      shortDescription: 'POUCH',
+      shortDescription: "POUCH",
     },
     {
       active: true,
       id: 8,
       longDescription: null,
-      shortDescription: 'PTI',
+      shortDescription: "PTI",
     },
     {
       active: false,
       id: 9,
       longDescription: null,
-      shortDescription: 'SF',
+      shortDescription: "SF",
     },
     {
       active: true,
       id: 10,
       longDescription: null,
-      shortDescription: 'STOCK',
+      shortDescription: "STOCK",
     },
     {
       active: false,
       id: 11,
       longDescription: null,
-      shortDescription: 'WEPON',
+      shortDescription: "WEPON",
     },
     {
       active: true,
       id: 15,
       longDescription: null,
-      shortDescription: 'CUSTOMER PICKUP',
+      shortDescription: "CUSTOMER PICKUP",
     },
     {
       active: true,
       id: 14,
       longDescription: null,
-      shortDescription: 'LOCAL DELIVERY',
+      shortDescription: "LOCAL DELIVERY",
     },
     {
       active: true,
       id: 17,
       longDescription: null,
-      shortDescription: 'LSB',
+      shortDescription: "LSB",
     },
     {
       active: true,
       id: 21,
       longDescription: null,
-      shortDescription: 'LOCAL ONLY',
+      shortDescription: "LOCAL ONLY",
     },
     {
       active: true,
       id: 18,
       longDescription: null,
-      shortDescription: 'PSB-POUCH',
+      shortDescription: "PSB-POUCH",
     },
     {
       active: true,
       id: 20,
       longDescription: null,
-      shortDescription: 'FIELD',
+      shortDescription: "FIELD",
     },
     {
       active: true,
       id: 22,
       longDescription: null,
-      shortDescription: 'ATRun',
+      shortDescription: "ATRun",
     },
     {
       active: true,
       id: 23,
       longDescription: null,
-      shortDescription: 'BXHELD',
+      shortDescription: "BXHELD",
     },
   ],
 };
@@ -1090,15 +1107,13 @@ export function useFetchAllRoute(payload?: RoutePayload) {
   return { data, loading, error };
 }
 
-
-
 // ============================================================
 // Lookups - Carrier
 // ============================================================
 
 export interface CarrierPayload {
   _dc: number;
-  type: 'carrier';
+  type: "carrier";
   activeOnly: boolean;
   page: number;
   start: number;
@@ -1124,43 +1139,43 @@ const mockCarrierResponse: CarrierResponse = {
       active: true,
       id: 8,
       longDescription: null,
-      shortDescription: 'Other',
+      shortDescription: "Other",
     },
     {
       active: false,
       id: 5,
       longDescription: null,
-      shortDescription: 'SON',
+      shortDescription: "SON",
     },
     {
       active: false,
       id: 11,
       longDescription: null,
-      shortDescription: 'DAUGHTER',
+      shortDescription: "DAUGHTER",
     },
     {
       active: false,
       id: 12,
       longDescription: null,
-      shortDescription: 'MOTHER',
+      shortDescription: "MOTHER",
     },
     {
       active: false,
       id: 13,
       longDescription: null,
-      shortDescription: 'FATHER',
+      shortDescription: "FATHER",
     },
     {
       active: false,
       id: 14,
       longDescription: null,
-      shortDescription: 'GRANDSON',
+      shortDescription: "GRANDSON",
     },
     {
       active: false,
       id: 15,
       longDescription: null,
-      shortDescription: 'GRANDDAUGHTER',
+      shortDescription: "GRANDDAUGHTER",
     },
   ],
 };
@@ -1176,8 +1191,6 @@ export function useFetchAllCarrier(payload?: CarrierPayload) {
 
   return { data, loading, error };
 }
-
-
 
 // ============================================================
 // Logs
@@ -1197,7 +1210,7 @@ export interface LogsPayload {
   start: number;
   limit: number;
   sort: string;
-  dir: 'ASC' | 'DESC';
+  dir: "ASC" | "DESC";
 }
 
 export interface LogEntry {
@@ -1211,7 +1224,7 @@ export interface LogsResponse {
 }
 
 const mockLogsResponse: LogsResponse = {
-  format: 'json',
+  format: "json",
   count: 0,
   data: [],
 };
@@ -1251,8 +1264,8 @@ export interface RespOffCodeResponse {
 const mockRespOffCodeResponse: RespOffCodeResponse = {
   data: [
     {
-      respoffcode: '99',
-      description: 'TESTING UNIVERSITY',
+      respoffcode: "99",
+      description: "TESTING UNIVERSITY",
     },
   ],
 };
@@ -1293,9 +1306,9 @@ export interface StoreLocResponse {
 const mockStoreLocResponse: StoreLocResponse = {
   data: [
     {
-      ms_location: 'TEST (BUILDING)',
+      ms_location: "TEST (BUILDING)",
       locationsid: 224856,
-      location: '0999_0999_1',
+      location: "0999_0999_1",
     },
   ],
 };
@@ -1335,8 +1348,8 @@ export interface ConditionsResponse {
 const mockConditionsResponse: ConditionsResponse = {
   data: [
     {
-      value: 'A',
-      description: 'TESTABLE SERVICE(TESTWITHOUTQUALIFICATION)',
+      value: "A",
+      description: "TESTABLE SERVICE(TESTWITHOUTQUALIFICATION)",
     },
   ],
 };
@@ -1376,8 +1389,8 @@ export interface BinsResponse {
 const mockBinsResponse: BinsResponse = {
   data: [
     {
-      binnum: '.B13-2013240G013',
-      location: '0303_0303_1',
+      binnum: ".B13-2013240G013",
+      location: "0303_0303_1",
     },
   ],
 };
@@ -1434,19 +1447,19 @@ const mockWcsConveyorSpursResponse: WcsConveyorSpursResponse = {
       active: true,
       destination: 900001546,
       id: 15218,
-      internalRouteDisplay: 'TEST DELIVERY',
+      internalRouteDisplay: "TEST DELIVERY",
       internalRouteId: 14,
       sort: {
         active: true,
         id: 1,
-        longDescription: 'WCS28954789562-01',
-        shortDescription: 'WCS28954789562-01',
+        longDescription: "WCS28954789562-01",
+        shortDescription: "WCS28954789562-01",
       },
       spur: {
         active: true,
         id: 1,
-        longDescription: 'C2-ST-01',
-        shortDescription: 'C2-ST-01',
+        longDescription: "C2-ST-01",
+        shortDescription: "C2-ST-01",
       },
     },
   ],
@@ -1457,7 +1470,9 @@ const mockWcsConveyorSpursResponse: WcsConveyorSpursResponse = {
  * Returns a list of WCS conveyor spur routing configurations.
  */
 export function useGetWcsConveyorSpurs(payload?: WcsConveyorSpursPayload) {
-  const [data] = useState<WcsConveyorSpursResponse>(mockWcsConveyorSpursResponse);
+  const [data] = useState<WcsConveyorSpursResponse>(
+    mockWcsConveyorSpursResponse,
+  );
   const [loading] = useState(false);
   const [error] = useState<string | null>(null);
 
@@ -1487,8 +1502,8 @@ export interface PrefixCodesResponse {
 const mockPrefixCodesResponse: PrefixCodesResponse = {
   data: [
     {
-      prefixcode: '999',
-      description: 'TEST (999)',
+      prefixcode: "999",
+      description: "TEST (999)",
     },
   ],
 };
@@ -1586,18 +1601,18 @@ const mockRackLocationsResponse: RackLocationsResponse = {
     {
       active: true,
       enterpriseLocationId: 900009938,
-      enterpriseLocationName: 'TEST - BUILDING B',
+      enterpriseLocationName: "TEST - BUILDING B",
       id: 103,
       lastEditDate: 1484691551635,
-      lastEditUser: 'Benjamin A. Button-Test-',
-      longDescription: 'A-20',
+      lastEditUser: "Benjamin A. Button-Test-",
+      longDescription: "A-20",
       rackLocationType: {
         active: true,
         id: 9,
-        longDescription: 'Pickup',
-        shortDescription: 'Pickup',
+        longDescription: "Pickup",
+        shortDescription: "Pickup",
       },
-      shortDescription: 'A-20',
+      shortDescription: "A-20",
     },
   ],
 };
@@ -1654,11 +1669,11 @@ const mockOfficersResponse: OfficersResponse = {
       createdLocation: {},
       enterpriseLocationId: 900009938,
       id: 20,
-      name: 'Adam W. Test-Test-',
+      name: "Adam W. Test-Test-",
       officerTeam: {
         id: 8,
-        longDescription: 'Testtic',
-        shortDescription: 'TESTTIC',
+        longDescription: "Testtic",
+        shortDescription: "TESTTIC",
       },
       officerTeamId: 8,
     },
@@ -1685,34 +1700,34 @@ const MOCK_MAILLOCATIONS = [
   {
     id: 1,
     active: true,
-    locationName: 'Main Building',
+    locationName: "Main Building",
     location: {
       buildingId: 1,
       address: null,
       locationType: { id: 1 },
-      name: 'Main Building',
+      name: "Main Building",
     },
   },
   {
     id: 2,
     active: true,
-    locationName: '123 Main St, Springfield IL 62701',
+    locationName: "123 Main St, Springfield IL 62701",
     location: {
       buildingId: null,
-      address: '123 Main St, Springfield IL 62701',
+      address: "123 Main St, Springfield IL 62701",
       locationType: { id: 3 },
-      name: '123 Main St, Springfield IL 62701',
+      name: "123 Main St, Springfield IL 62701",
     },
   },
   {
     id: 3,
     active: false,
-    locationName: 'Annex A',
+    locationName: "Annex A",
     location: {
       buildingId: 2,
       address: null,
       locationType: { id: 1 },
-      name: 'Annex A',
+      name: "Annex A",
     },
   },
 ];

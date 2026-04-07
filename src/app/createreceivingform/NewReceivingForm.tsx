@@ -76,7 +76,10 @@ function resolveRouteOption(routes: Route[], value: unknown): Route | null {
 
   const normalizedValue = normalizeRouteLabel(value);
   return (
-    routes.find((route) => normalizeRouteLabel(route.shortDescription) === normalizedValue) ?? null
+    routes.find(
+      (route) =>
+        normalizeRouteLabel(route.shortDescription) === normalizedValue,
+    ) ?? null
   );
 }
 
@@ -89,7 +92,13 @@ function getDefaultRouteId(bs: ReceivingBusinessState): number | null {
     return DEFAULT_ROUTE_ID.PSB_POUCH;
   }
 
-  if (bs.isNewReceiving && !bs.draft && bs.isWMADestination && !bs.isBfheld && !bs.isCrypto) {
+  if (
+    bs.isNewReceiving &&
+    !bs.draft &&
+    bs.isWMADestination &&
+    !bs.isBfheld &&
+    !bs.isCrypto
+  ) {
     return DEFAULT_ROUTE_ID.LOCAL_DELIVERY;
   }
 
@@ -150,24 +159,35 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
     onDataChange,
   } = props;
   const { isLOCUser, isWMAUser, isFranUser } = useUserContext();
-  const { data: routeLookupData, loading: routeLookupLoading } = useFetchAllRoute();
-  const { data: carrierLookupData, loading: carrierLookupLoading } = useFetchAllCarrier();
+  const { data: routeLookupData, loading: routeLookupLoading } =
+    useFetchAllRoute();
+  const { data: carrierLookupData, loading: carrierLookupLoading } =
+    useFetchAllCarrier();
 
   const routeOptions = routeLookupData?.data ?? [];
   const carrierOptions = carrierLookupData?.data ?? [];
   const routeRecordKey = useMemo(
-    () => JSON.stringify([data?.id, data?.receivingid, data?.sonid, data?.shippingOrderId]),
-    [data?.id, data?.receivingid, data?.sonid, data?.shippingOrderId]
+    () =>
+      JSON.stringify([
+        data?.id,
+        data?.receivingid,
+        data?.sonid,
+        data?.shippingOrderId,
+      ]),
+    [data?.id, data?.receivingid, data?.sonid, data?.shippingOrderId],
   );
 
-  const [bypassBox, setBypassBox] = useState(data?.nobox === "0" ? false : true);
+  const [bypassBox, setBypassBox] = useState(
+    data?.nobox === "0" ? false : true,
+  );
   const handleBypassBox = () => setBypassBox((prev) => !prev);
 
   const [nolines, setNoLines] = useState((data?.nolines as string) ?? "0");
-  const handleChangeLines = () => setNoLines((prev) => (prev === "0" ? "1" : "0"));
+  const handleChangeLines = () =>
+    setNoLines((prev) => (prev === "0" ? "1" : "0"));
 
   const [handdelivery, setHandDelivery] = useState(
-    (data?.handdelivery as string) ?? "0"
+    (data?.handdelivery as string) ?? "0",
   );
   const handleHandDelivery = () =>
     setHandDelivery((prev) => (prev === "0" ? "1" : "0"));
@@ -176,50 +196,46 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   const handleCPS = () => setCPS((prev) => (prev === "0" ? "1" : "0"));
 
   const [packingSlipProvided, setPackingSlipProvided] = useState(
-    (data?.packing_slip_provided as string) ?? "false"
+    (data?.packing_slip_provided as string) ?? "0",
   );
   const [refrigerationReq, setRefrigerationReq] = useState(
-    (data?.rcvrefrigerationreq as string) ?? "0"
+    (data?.rcvrefrigerationreq as string) ?? "0",
   );
   const [freezingReq, setFreezingReq] = useState(
-    (data?.rcvfreezingreq as string) ?? "0"
+    (data?.rcvfreezingreq as string) ?? "0",
   );
-  const [bfheld, setBfheld] = useState(
-    (data?.rcvbfheld as string) ?? "0"
-  );
-  const [crypto, setCrypto] = useState(
-    (data?.rcvcrypto as string) ?? "0"
-  );
+  const [bfheld, setBfheld] = useState((data?.rcvbfheld as string) ?? "0");
+  const [crypto, setCrypto] = useState((data?.rcvcrypto as string) ?? "0");
 
   const [dateIn, setDateIn] = useState(
-    data?.receiveddate ? dayjs(data.receiveddate as string) : null
+    data?.receiveddate ? dayjs(data.receiveddate as string) : null,
   );
   const [pieces, setPieces] = useState((data?.pieces as string) ?? "");
   const [weight, setWeight] = useState((data?.weight as string) ?? "");
   const [prefixCode, setPrefixCode] = useState(
-    (data?.prefixcode as string) ?? ""
+    (data?.prefixcode as string) ?? "",
   );
   const [deliveryDate, setDeliveryDate] = useState(
-    data?.deliverydate ? dayjs(data.deliverydate as string) : null
+    data?.deliverydate ? dayjs(data.deliverydate as string) : null,
   );
   const [deliveryRecipient, setDeliveryRecipient] = useState(
-    (data?.deliveryrecipient as string) ?? ""
+    (data?.deliveryrecipient as string) ?? "",
   );
   const [qtyAdjOnly, setQtyAdjOnly] = useState(
-    (data?.qty_adjustment_only as string) ?? "0"
+    (data?.qty_adjustment_only as string) ?? "0",
   );
   const [remarks, setRemarks] = useState((data?.remarks as string) ?? "");
 
   const existingRoute = useMemo(
     () => resolveRouteOption(routeOptions, data?.route),
-    [routeOptions, data?.route]
+    [routeOptions, data?.route],
   );
 
   const defaultRoute = useMemo(() => {
     const defaultRouteId = getDefaultRouteId(bs);
     return defaultRouteId === null
       ? null
-      : routeOptions.find((route) => route.id === defaultRouteId) ?? null;
+      : (routeOptions.find((route) => route.id === defaultRouteId) ?? null);
   }, [bs, routeOptions]);
 
   const [selectedRoute, setSelectedRoute] = useState<Route | null>(null);
@@ -237,7 +253,10 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
     setSelectedRoute(existingRoute ?? defaultRoute ?? null);
   }, [defaultRoute, existingRoute, routeOverridden]);
 
-  const handleRouteChange = (_event: React.SyntheticEvent, newValue: Route | null) => {
+  const handleRouteChange = (
+    _event: React.SyntheticEvent,
+    newValue: Route | null,
+  ) => {
     setRouteOverridden(true);
     setSelectedRoute(newValue);
   };
@@ -245,12 +264,14 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   // Carrier — auto-select "SON" carrier on new receiving per ExtJS behavior
   const existingCarrier = useMemo(
     () => carrierOptions.find((c) => c.id === data?.carrier_id) ?? null,
-    [carrierOptions, data?.carrier_id]
+    [carrierOptions, data?.carrier_id],
   );
 
   const defaultCarrier = useMemo(
-    () => carrierOptions.find((c) => c.shortDescription.toUpperCase() === "SON") ?? null,
-    [carrierOptions]
+    () =>
+      carrierOptions.find((c) => c.shortDescription.toUpperCase() === "SON") ??
+      null,
+    [carrierOptions],
   );
 
   const [selectedCarrier, setSelectedCarrier] = useState<Carrier | null>(null);
@@ -259,7 +280,10 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
     setSelectedCarrier(existingCarrier ?? defaultCarrier ?? null);
   }, [existingCarrier, defaultCarrier]);
 
-  const handleCarrierChange = (_event: React.SyntheticEvent, newValue: Carrier | null) => {
+  const handleCarrierChange = (
+    _event: React.SyntheticEvent,
+    newValue: Carrier | null,
+  ) => {
     setSelectedCarrier(newValue);
   };
 
@@ -274,14 +298,25 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
     if (!pieces || Number(pieces) <= 0) return false;
     if (!weight || Number(weight) <= 0) return false;
     if (!selectedRoute) return false;
-    if (isLOCUser && !packingSlipProvided) return false;
+    if (isLOCUser && packingSlipProvided === "0") return false;
     if (handdelivery === "1") {
       if (!deliveryRecipient) return false;
       if (!deliveryDate) return false;
     }
     if (type === "b1" && !prefixCode) return false;
     return true;
-  }, [pieces, weight, selectedRoute, isLOCUser, packingSlipProvided, handdelivery, deliveryRecipient, deliveryDate, type, prefixCode]);
+  }, [
+    pieces,
+    weight,
+    selectedRoute,
+    isLOCUser,
+    packingSlipProvided,
+    handdelivery,
+    deliveryRecipient,
+    deliveryDate,
+    type,
+    prefixCode,
+  ]);
 
   useEffect(() => {
     onFormValidityChange?.(formValid);
@@ -299,7 +334,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
       route: selectedRoute?.id ?? null,
       carrier_id: selectedCarrier?.id ?? null,
       handdelivery,
-      deliverydate: deliveryDate ? deliveryDate.valueOf() : null,
+      deliverydate: deliveryDate ? deliveryDate.format("YYYY-MM-DDTHH:mm:ss") : null,
       deliveryrecipient: deliveryRecipient,
       rcvrefrigerationreq: refrigerationReq,
       rcvfreezingreq: freezingReq,
@@ -312,7 +347,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
       qty_adjustment_only: qtyAdjOnly,
       prefixcode: prefixCode || null,
       remarks,
-      receiveddate: dateIn ? dateIn.valueOf() : null,
+      receiveddate: dateIn ? dateIn.format("YYYY-MM-DDTHH:mm:ss") : null,
     };
 
     const key = JSON.stringify(payload);
@@ -353,15 +388,16 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   // Pieces — complex disable logic
   const piecesDisabled =
     (bs.apticReceiving && bs.received && !bs.draft) ||
-    (((bs.hhLite || isWMAUser || routeLabel === LOCAL_DELIVERY) ||
+    ((bs.hhLite ||
+      isWMAUser ||
+      routeLabel === LOCAL_DELIVERY ||
       (type === "b1" && !isLOCUser)) &&
       !bs.cpsReceiving &&
       !bs.draft) ||
     (bs.draft && bs.boxIdOutOfSync && !bs.apticReceiving);
 
   // Weight — disabled for hhLite, WMA users, or b3 (unless draft)
-  const weightDisabled =
-    bs.hhLite || isWMAUser || (type === "b3" && !bs.draft);
+  const weightDisabled = bs.hhLite || isWMAUser || (type === "b3" && !bs.draft);
 
   // Route — only LOC users can edit, under specific conditions
   const routeEnabled =
@@ -417,9 +453,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                 <MyDatePicker
                   label={"Date/Time Out:"}
                   className="dialog-field-width"
-                  value={
-                    data?.dateout ? dayjs(data.dateout as string) : null
-                  }
+                  value={data?.dateout ? dayjs(data.dateout as string) : null}
                   isDisabled={true}
                 />
               </Grid2>
@@ -445,7 +479,14 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   </Grid2>
                 </>
               )}
-              <Grid2 sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
+              <Grid2
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
                 <CustomTextField
                   className="dialog-field-width"
                   label={"Pieces"}
@@ -454,7 +495,9 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   type="number"
                   inputProps={{ min: 0, step: 1 }}
                   value={pieces}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPieces(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setPieces(e.target.value)
+                  }
                   disabled={piecesDisabled}
                   onKeyDown={(e: React.KeyboardEvent) => {
                     if (["e", "E", ".", "-", "+"].includes(e.key)) {
@@ -476,7 +519,9 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   type="number"
                   inputProps={{ min: 0, step: "any" }}
                   value={weight}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWeight(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setWeight(e.target.value)
+                  }
                   disabled={weightDisabled}
                   onKeyDown={(e: React.KeyboardEvent) => {
                     if (["e", "E", "-", "+"].includes(e.key)) {
@@ -513,7 +558,9 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   value={selectedRoute}
                   onChange={handleRouteChange}
                   getOptionLabel={(option) => option.shortDescription}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
                   loading={routeLookupLoading}
                   disabled={!routeEnabled || routeLookupLoading}
                   renderInput={(params) => (
@@ -542,7 +589,9 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   value={selectedCarrier}
                   onChange={handleCarrierChange}
                   getOptionLabel={(option) => option.shortDescription}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
                   loading={carrierLookupLoading}
                   renderInput={(params) => (
                     <StyledTextField
@@ -573,7 +622,13 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
           <Grid2 columnGap={1} columnSpacing={2} rowSpacing={1} container>
             <Stack flexGrow={1}>
               {/* Packing List Provided? */}
-              <Grid2 sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+              <Grid2
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
                 <FormControl
                   sx={{ flexDirection: "row", alignItems: "center" }}
                   className="section-useredit__general-form"
@@ -615,7 +670,11 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                 <>
                   <Grid2>
                     <FormControl
-                      sx={{ flexDirection: "row", alignItems: "center", width: "100%" }}
+                      sx={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
                       className="section-useredit__general-form"
                     >
                       <FormLabel
@@ -647,7 +706,11 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
 
                   <Grid2>
                     <FormControl
-                      sx={{ flexDirection: "row", alignItems: "center", width: "100%" }}
+                      sx={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
                       className="section-useredit__general-form"
                     >
                       <FormLabel
@@ -679,7 +742,11 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
 
                   <Grid2>
                     <FormControl
-                      sx={{ flexDirection: "row", alignItems: "center", width: "100%" }}
+                      sx={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
                       className="section-useredit__general-form"
                     >
                       <FormLabel
@@ -711,7 +778,11 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
 
                   <Grid2>
                     <FormControl
-                      sx={{ flexDirection: "row", alignItems: "center", width: "100%" }}
+                      sx={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
                       className="section-useredit__general-form"
                     >
                       <FormLabel
@@ -776,7 +847,13 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
             {/* Bypass Box/Piece — LOC only */}
             {showLocOnlyFields && (
               <Stack flexGrow={1}>
-                <Grid2 sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                <Grid2
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
                   <FormControlLabel
                     disabled={noboxDisabled}
                     key="checkbox-nobox"
@@ -818,7 +895,9 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                       control={
                         <CheckboxLarge
                           checked={qtyAdjOnly === "1"}
-                          onChange={() => setQtyAdjOnly((prev) => (prev === "0" ? "1" : "0"))}
+                          onChange={() =>
+                            setQtyAdjOnly((prev) => (prev === "0" ? "1" : "0"))
+                          }
                         />
                       }
                       label={"Do Not Send To Genesis:"}
@@ -830,7 +909,10 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                     key="checkbox-cps"
                     className="text-onbackground"
                     control={
-                      <CheckboxLarge checked={cps === "1"} onChange={handleCPS} />
+                      <CheckboxLarge
+                        checked={cps === "1"}
+                        onChange={handleCPS}
+                      />
                     }
                     label={"DVV Receiving:"}
                     title="Select for DVV Receiving"
@@ -859,7 +941,9 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                     className="dialog-field-width"
                     required={isHandDelivery}
                     value={deliveryDate}
-                    onChange={(val: unknown) => setDeliveryDate(val as typeof deliveryDate)}
+                    onChange={(val: unknown) =>
+                      setDeliveryDate(val as typeof deliveryDate)
+                    }
                     isDisabled={!isHandDelivery}
                   />
                 </Grid2>
@@ -870,7 +954,11 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                     title="Only available for field receiving process."
                     fullWidth={true}
                     value={deliveryRecipient}
-                    handleChange={(e: unknown) => setDeliveryRecipient((e as React.ChangeEvent<HTMLInputElement>).target.value)}
+                    handleChange={(e: unknown) =>
+                      setDeliveryRecipient(
+                        (e as React.ChangeEvent<HTMLInputElement>).target.value,
+                      )
+                    }
                     disable={!isHandDelivery}
                     required={isHandDelivery}
                   />
@@ -891,7 +979,9 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
             variant="filled"
             fullWidth
             value={remarks}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRemarks(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setRemarks(e.target.value)
+            }
           />
         </div>
       </Box>

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 /**
  * ReceivingFormController
  *
@@ -23,7 +23,7 @@
  *   <ReceivingFormController rec={receivingRecord} type="b1" editable={true} />
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -36,22 +36,22 @@ import {
   Tab,
   Tabs,
   Typography,
-} from '@mui/material';
+} from "@mui/material";
 
-import ShippingInformation from './ShippingInformation';
-import NewReceivingForm from './NewReceivingForm';
-import ReferenceTrackingGridController from './ReferenceTrackingGridController';
-import LineItemsGridController from './LineItemsGridController';
-import BoxAttributesGridController from './BoxAttributesGridController';
-import PreviousReceiptsController from './PreviousReceiptsController';
-import DraftReceiptsController from './DraftReceiptsController';
+import ShippingInformation from "./ShippingInformation";
+import NewReceivingForm from "./NewReceivingForm";
+import ReferenceTrackingGridController from "./ReferenceTrackingGridController";
+import LineItemsGridController from "./LineItemsGridController";
+import BoxAttributesGridController from "./BoxAttributesGridController";
+import PreviousReceiptsController from "./PreviousReceiptsController";
+import DraftReceiptsController from "./DraftReceiptsController";
 
 import {
   INTERNAL_ROUTE,
   MARK_PACK_SHIP_MESSAGES,
   TOOLBAR_ACTIONS,
   VALIDATION_MESSAGES,
-} from './receivingFormConstants';
+} from "./receivingFormConstants";
 
 import type {
   BoxAttribute,
@@ -63,7 +63,7 @@ import type {
   SaveReceivingResponse,
   TrackingLookupResult,
   TrackingNumberPayload,
-} from './receivingFormTypes';
+} from "./receivingFormTypes";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -79,7 +79,11 @@ interface ReceivingFormControllerProps {
   /** Base API URL — replaces Hammerhead.data.BASE_URL. */
   baseUrl?: string;
   /** Called after a successful submit (non-draft). */
-  onViewReceiving?: (params: { id: number; son: string; type: ReceivingType }) => void;
+  onViewReceiving?: (params: {
+    id: number;
+    son: string;
+    type: ReceivingType;
+  }) => void;
   /** Called after a successful cancel. */
   onCancelComplete?: () => void;
 }
@@ -92,26 +96,38 @@ interface ReceivingFormControllerProps {
  * Derives the special-handling banner message from the record.
  * Mirrors the if/else-if chain in initComponent (pages 3–4 of the PDF).
  */
-function deriveMarkPackShipMsg(rec: ReceivingRecord): { msg: string | null; cls: string } {
-  if (rec.tireq === 'WEA') {
-    return { msg: MARK_PACK_SHIP_MESSAGES[0].message, cls: 'markpackship-red' };
+function deriveMarkPackShipMsg(rec: ReceivingRecord): {
+  msg: string | null;
+  cls: string;
+} {
+  if (rec.tireq === "WEA") {
+    return { msg: MARK_PACK_SHIP_MESSAGES[0].message, cls: "markpackship-red" };
   }
-  if (rec.refrigerationreq === 'YES' || rec.freezingreq === 'YES') {
-    return { msg: MARK_PACK_SHIP_MESSAGES[1].message, cls: 'markpackship-blue' };
+  if (rec.refrigerationreq === "YES" || rec.freezingreq === "YES") {
+    return {
+      msg: MARK_PACK_SHIP_MESSAGES[1].message,
+      cls: "markpackship-blue",
+    };
   }
-  if (rec.containshazmat === 'YES') {
-    return { msg: MARK_PACK_SHIP_MESSAGES[2].message, cls: 'markpackship-yellow' };
+  if (rec.containshazmat === "YES") {
+    return {
+      msg: MARK_PACK_SHIP_MESSAGES[2].message,
+      cls: "markpackship-yellow",
+    };
   }
-  if (rec.containsbfheld === 'YES') {
-    return { msg: MARK_PACK_SHIP_MESSAGES[3].message, cls: '' };
+  if (rec.containsbfheld === "YES") {
+    return { msg: MARK_PACK_SHIP_MESSAGES[3].message, cls: "" };
   }
-  if (rec.containscrypto === 'YES') {
-    return { msg: MARK_PACK_SHIP_MESSAGES[4].message, cls: '' };
+  if (rec.containscrypto === "YES") {
+    return { msg: MARK_PACK_SHIP_MESSAGES[4].message, cls: "" };
   }
-  if (rec.secureshipmentreq === 'YES') {
-    return { msg: MARK_PACK_SHIP_MESSAGES[5].message, cls: 'markpackship-green' };
+  if (rec.secureshipmentreq === "YES") {
+    return {
+      msg: MARK_PACK_SHIP_MESSAGES[5].message,
+      cls: "markpackship-green",
+    };
   }
-  return { msg: null, cls: '' };
+  return { msg: null, cls: "" };
 }
 
 /**
@@ -131,10 +147,7 @@ function isNewReceiving(rec: ReceivingRecord): boolean {
  * Mirrors isPreviousReceiving() (page 17).
  */
 function isPreviousReceiving(rec: ReceivingRecord): boolean {
-  return (
-    rec.id !== null &&
-    (rec.status_id === null || rec.status_id === 2)
-  );
+  return rec.id !== null && (rec.status_id === null || rec.status_id === 2);
 }
 
 /**
@@ -143,7 +156,10 @@ function isPreviousReceiving(rec: ReceivingRecord): boolean {
  *
  * Accepts formats:  "m/d/Y h:i A"  or  "m/d/Y H:i"  (12-hour and 24-hour).
  */
-export function parseLambdaDateTime(dateStr: string, timeStr: string): Date | null {
+export function parseLambdaDateTime(
+  dateStr: string,
+  timeStr: string,
+): Date | null {
   if (!dateStr || !timeStr) return null;
 
   const combined = `${dateStr} ${timeStr}`.trim();
@@ -153,7 +169,8 @@ export function parseLambdaDateTime(dateStr: string, timeStr: string): Date | nu
   if (!isNaN(fast.getTime())) return fast;
 
   // Manual parse: m/d/Y or m-d-Y + H:i + optional AM/PM
-  const re = /^\s*(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})\s+(\d{1,2}):(\d{1,2})(?:\s*([AaPp][Mm]))?\s*$/;
+  const re =
+    /^\s*(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})\s+(\d{1,2}):(\d{1,2})(?:\s*([AaPp][Mm]))?\s*$/;
   const m = re.exec(combined);
   if (!m) return null;
 
@@ -165,15 +182,20 @@ export function parseLambdaDateTime(dateStr: string, timeStr: string): Date | nu
   const ampm = m[6] ? m[6].toUpperCase() : null;
 
   if (year < 100) year += 2000;
-  if (ampm === 'AM' && hour === 12) hour = 0;
-  else if (ampm === 'PM' && hour < 12) hour += 12;
+  if (ampm === "AM" && hour === 12) hour = 0;
+  else if (ampm === "PM" && hour < 12) hour += 12;
 
   if (
-    month < 1 || month > 12 ||
-    day < 1 || day > 31 ||
-    hour < 0 || hour > 23 ||
-    minute < 0 || minute > 59
-  ) return null;
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    day > 31 ||
+    hour < 0 ||
+    hour > 23 ||
+    minute < 0 ||
+    minute > 59
+  )
+    return null;
 
   const d = new Date(year, month - 1, day, hour, minute, 0, 0);
   // Rollover check
@@ -183,7 +205,8 @@ export function parseLambdaDateTime(dateStr: string, timeStr: string): Date | nu
     d.getDate() !== day ||
     d.getHours() !== hour ||
     d.getMinutes() !== minute
-  ) return null;
+  )
+    return null;
 
   return d;
 }
@@ -195,11 +218,7 @@ export function parseLambdaDateTime(dateStr: string, timeStr: string): Date | nu
 function checkBoxAttributes(attrs: BoxAttribute[]): boolean {
   return attrs.every(
     (g) =>
-      g !== null &&
-      g.length > 0 &&
-      g.width > 0 &&
-      g.height > 0 &&
-      g.weight > 0,
+      g !== null && g.length > 0 && g.width > 0 && g.height > 0 && g.weight > 0,
   );
 }
 
@@ -207,9 +226,14 @@ function checkBoxAttributes(attrs: BoxAttribute[]): boolean {
  * Validates that every reference number row has a non-empty referenceNumber.
  * Mirrors checkEmptyReferenceNumber() (page 37).
  */
-function checkEmptyReferenceNumber(rows: Array<{ referenceNumber?: string } | null>): boolean {
+function checkEmptyReferenceNumber(
+  rows: Array<{ referenceNumber?: string } | null>,
+): boolean {
   for (const g of rows) {
-    if (g !== null && (!g.referenceNumber || g.referenceNumber.trim().length === 0)) {
+    if (
+      g !== null &&
+      (!g.referenceNumber || g.referenceNumber.trim().length === 0)
+    ) {
       return false;
     }
   }
@@ -224,11 +248,10 @@ export default function ReceivingFormController({
   rec,
   type,
   editable,
-  baseUrl = '',
+  baseUrl = "",
   onViewReceiving,
   onCancelComplete,
 }: ReceivingFormControllerProps) {
-
   // -------------------------------------------------------------------------
   // Derive initial state from record (mirrors initComponent, pages 1–3)
   // -------------------------------------------------------------------------
@@ -236,10 +259,10 @@ export default function ReceivingFormController({
   const initialState = useMemo<ReceivingFormState>(() => {
     const received = !isNewReceiving(rec);
     const draft = rec.status_id !== null && rec.status_id === 1;
-    const bcsReceiving = type === 'b1';
+    const bcsReceiving = type === "b1";
     const cpsReceiving =
-      type === 'b3' ||
-      ((rec.status_id !== null && rec.status_id === 1) && !!rec.cps);
+      type === "b3" ||
+      (rec.status_id !== null && rec.status_id === 1 && !!rec.cps);
     const apticReceiving =
       !!rec.sotypeid &&
       rec.sotypeid === 1 &&
@@ -250,19 +273,19 @@ export default function ReceivingFormController({
       (rec.sonmaxboxid !== null ? rec.sonmaxboxid : 0) >
         (rec.draftmaxboxid !== null ? rec.draftmaxboxid : 0);
     const isBfheld =
-      rec.rcvbfheld_display !== null && rec.rcvbfheld_display === '1';
+      rec.rcvbfheld_display !== null && rec.rcvbfheld_display === "1";
     const isCrypto =
-      rec.rcvcrypto_display !== null && rec.rcvcrypto_display === '1';
-    const existingDiscrepant =
-      rec.route === INTERNAL_ROUTE.DISCREPANT;
+      rec.rcvcrypto_display !== null && rec.rcvcrypto_display === "1";
+    const existingDiscrepant = rec.route === INTERNAL_ROUTE.DISCREPANT;
     const fromIncomingCargo =
       rec.receivedfromincominggcargo === null
         ? null
-        : rec.receivedfromincominggcargo === 'Y'
-        ? 'Yes'
-        : 'No';
+        : rec.receivedfromincominggcargo === "Y"
+          ? "Yes"
+          : "No";
 
-    const { msg: markPackShipMsg, cls: markPackShipCls } = deriveMarkPackShipMsg(rec);
+    const { msg: markPackShipMsg, cls: markPackShipCls } =
+      deriveMarkPackShipMsg(rec);
 
     return {
       received,
@@ -298,8 +321,8 @@ export default function ReceivingFormController({
   const [weight, setWeight] = useState<number | null>(rec.weight);
   const [route, setRoute] = useState<string | null>(rec.route);
   const [carrierId, setCarrierId] = useState<number | null>(rec.carrier_id);
-  const [nolines, setNolines] = useState<'0' | '1'>(rec.nolines);
-  const [nobox, setNobox] = useState<'0' | '1'>(rec.nobox);
+  const [nolines, setNolines] = useState<"0" | "1">(rec.nolines);
+  const [nobox, setNobox] = useState<"0" | "1">(rec.nobox);
   const [packingSlipProvided, setPackingSlipProvided] = useState(
     rec.packing_slip_provided,
   );
@@ -309,7 +332,7 @@ export default function ReceivingFormController({
   );
   const [deliverydate, setDeliverydate] = useState(rec.deliverydate);
   const [cps, setCps] = useState(rec.cps);
-  const [remarks, setRemarks] = useState(rec.remarks ?? '');
+  const [remarks, setRemarks] = useState(rec.remarks ?? "");
   const [rcvrefrigerationreq, setRcvrefrigerationreq] = useState(
     rec.rcvrefrigerationreq,
   );
@@ -332,17 +355,24 @@ export default function ReceivingFormController({
 
   // Snackbar / alert state
   const [alertMsg, setAlertMsg] = useState<string | null>(null);
-  const [alertSeverity, setAlertSeverity] = useState<'error' | 'warning' | 'info' | 'success'>('info');
+  const [alertSeverity, setAlertSeverity] = useState<
+    "error" | "warning" | "info" | "success"
+  >("info");
 
   // Print menu anchor
-  const [printMenuAnchor, setPrintMenuAnchor] = useState<null | HTMLElement>(null);
+  const [printMenuAnchor, setPrintMenuAnchor] = useState<null | HTMLElement>(
+    null,
+  );
 
   // -------------------------------------------------------------------------
   // Notification alerts (mirrors notifyUser* methods, pages 16–19)
   // -------------------------------------------------------------------------
 
   const showAlert = useCallback(
-    (message: string, severity: 'error' | 'warning' | 'info' | 'success' = 'info') => {
+    (
+      message: string,
+      severity: "error" | "warning" | "info" | "success" = "info",
+    ) => {
       setAlertMsg(message);
       setAlertSeverity(severity);
     },
@@ -352,11 +382,11 @@ export default function ReceivingFormController({
   useEffect(() => {
     // Notify user of special handling on mount (mirrors initComponent, p.16)
     if (formState.markPackShipMsg) {
-      showAlert(formState.markPackShipMsg, 'warning');
+      showAlert(formState.markPackShipMsg, "warning");
     }
     // Notify of accountable property
     if (rec.containsaccountableproperty) {
-      showAlert('Contains Accountable Property', 'warning');
+      showAlert("Contains Accountable Property", "warning");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -365,33 +395,30 @@ export default function ReceivingFormController({
   // Hand delivery handler (mirrors onHandDelivery, page 28)
   // -------------------------------------------------------------------------
 
-  const handleHandDeliveryChange = useCallback(
-    (newValue: '0' | '1') => {
-      setHanddelivery(newValue);
-      const isHandDelivery = newValue === '1';
-      if (!isHandDelivery) {
-        setDeliverydate(null);
-        setDeliveryrecipient(null);
-      }
-    },
-    [],
-  );
+  const handleHandDeliveryChange = useCallback((newValue: "0" | "1") => {
+    setHanddelivery(newValue);
+    const isHandDelivery = newValue === "1";
+    if (!isHandDelivery) {
+      setDeliverydate(null);
+      setDeliveryrecipient(null);
+    }
+  }, []);
 
   // -------------------------------------------------------------------------
   // No-line-item receiving handler (mirrors onNoLineItemChange, page 23)
   // -------------------------------------------------------------------------
 
   const handleNoLineItemChange = useCallback((checked: boolean) => {
-    setNolines(checked ? '1' : '0');
+    setNolines(checked ? "1" : "0");
   }, []);
 
   // -------------------------------------------------------------------------
   // Backhaul handler (mirrors onBackhaul, page 28)
   // -------------------------------------------------------------------------
 
-  const handleBackhaulChange = useCallback((newValue: '0' | '1') => {
+  const handleBackhaulChange = useCallback((newValue: "0" | "1") => {
     setBackhaul(newValue);
-    if (newValue === '0') {
+    if (newValue === "0") {
       setFrommos(null);
     }
   }, []);
@@ -418,47 +445,42 @@ export default function ReceivingFormController({
     const piececount = pieces ?? 0;
     const boxid = rec.receivingid ?? 1;
 
-    const isRcvBfheld = rcvbfheld === 'YES';
-    const isRcvCrypto = rcvcrypto === 'YES';
+    const isRcvBfheld = rcvbfheld === "YES";
+    const isRcvCrypto = rcvcrypto === "YES";
     const isRoutePSC = route === INTERNAL_ROUTE.PSB;
     const validateBfheld = isRcvBfheld && isRoutePSC;
     const validateCrypto = isRcvCrypto && isRoutePSC;
 
     // Route must change to resolve discrepancy
-    if (
-      formState.existingDiscrepant &&
-      route === INTERNAL_ROUTE.DISCREPANT
-    ) {
+    if (formState.existingDiscrepant && route === INTERNAL_ROUTE.DISCREPANT) {
       // Check that the submission actually contains discrepancy lines
       const anyDiscrepancyLines = lineItems.some(
-        (li) => li.disc_cargo !== null && li.disc_cargo !== '',
+        (li) => li.disc_cargo !== null && li.disc_cargo !== "",
       );
       if (!anyDiscrepancyLines) {
         return VALIDATION_MESSAGES.routeMustChange;
       }
     }
 
-    if (lineItems.some((li) => li.disc_cargo !== null && li.disc_cargo !== '') &&
-        route !== INTERNAL_ROUTE.DISCREPANT) {
+    if (
+      lineItems.some((li) => li.disc_cargo !== null && li.disc_cargo !== "") &&
+      route !== INTERNAL_ROUTE.DISCREPANT
+    ) {
       return VALIDATION_MESSAGES.missingDiscrepantReason;
     }
 
     // Line item existence check
     const hasLineItems = lineItems.length > 0;
-    const isNoLineItem = nolines === '1';
+    const isNoLineItem = nolines === "1";
 
     if (!hasLineItems && !isNoLineItem) {
-      return ''; // grid provides its own message
+      return ""; // grid provides its own message
     }
 
     // Box/piece mismatch
-    if (
-      !isNoLineItem &&
-      piececount > 0 &&
-      nobox !== '1'
-    ) {
+    if (!isNoLineItem && piececount > 0 && nobox !== "1") {
       for (let i = boxid; i < piececount + boxid; i++) {
-        const bi = ('00' + i).slice(-3);
+        const bi = ("00" + i).slice(-3);
         let found = 0;
         lineItems.forEach((rec) => {
           rec.boxItems.forEach((bItem) => {
@@ -474,17 +496,17 @@ export default function ReceivingFormController({
     }
 
     // Asset validation (rotating lines)
-    if (!isNoLineItem && piececount > 0 && cps === '1') {
+    if (!isNoLineItem && piececount > 0 && cps === "1") {
       let errorAssetCount = 0;
       lineItems.forEach((li) => {
         if (
           li.rec_qty !== null &&
           li.rec_qty > 0 &&
-          (li.rotating as string) === 'Yes' &&
+          (li.rotating as string) === "Yes" &&
           !(li.genesis_id !== null && li.genesis_id > 0)
         ) {
           const checkAssetCount = li.assetItems.filter(
-            (a) => a.serialnum !== null && a.serialnum !== '',
+            (a) => a.serialnum !== null && a.serialnum !== "",
           ).length;
           if (checkAssetCount !== li.rec_qty) {
             errorAssetCount++;
@@ -497,9 +519,14 @@ export default function ReceivingFormController({
     }
 
     // Box attribute validation for RPGHELD / Crypto
-    const totalBoxes = boxAttributes.reduce((sum, b) => sum + (b.boxId > 0 ? 1 : 0), 0);
+    const totalBoxes = boxAttributes.reduce(
+      (sum, b) => sum + (b.boxId > 0 ? 1 : 0),
+      0,
+    );
     if (
-      (validateBfheld || validateCrypto || (totalBoxes !== null && totalBoxes > 0)) &&
+      (validateBfheld ||
+        validateCrypto ||
+        (totalBoxes !== null && totalBoxes > 0)) &&
       pieces !== null &&
       pieces !== (totalBoxes ?? 0)
     ) {
@@ -508,7 +535,10 @@ export default function ReceivingFormController({
       return VALIDATION_MESSAGES.totalBoxMismatch;
     }
 
-    if ((validateBfheld || validateCrypto) && !checkBoxAttributes(boxAttributes)) {
+    if (
+      (validateBfheld || validateCrypto) &&
+      !checkBoxAttributes(boxAttributes)
+    ) {
       return validateBfheld
         ? VALIDATION_MESSAGES.rpgheldDimsMissing
         : VALIDATION_MESSAGES.cryptoDimsMissing;
@@ -518,15 +548,15 @@ export default function ReceivingFormController({
     const missingBins: string[] = [];
     lineItems.forEach((li) => {
       if (
-        li.linetype === 'LOT' &&
-        (!li.binnum || li.binnum === '') &&
-        (!li.lotnum || li.lotnum === '')
+        li.linetype === "LOT" &&
+        (!li.binnum || li.binnum === "") &&
+        (!li.lotnum || li.lotnum === "")
       ) {
         missingBins.push(String(li.line_number));
       }
     });
     if (missingBins.length > 0) {
-      return VALIDATION_MESSAGES.missingBinLot + missingBins.join(', ') + '].';
+      return VALIDATION_MESSAGES.missingBinLot + missingBins.join(", ") + "].";
     }
 
     return null;
@@ -552,8 +582,8 @@ export default function ReceivingFormController({
     async (openHandReceipt: boolean, draft: boolean) => {
       if (!draft) {
         const validationMessage = advancedValidationIssues();
-        if (validationMessage !== null && validationMessage !== '') {
-          showAlert(validationMessage, 'error');
+        if (validationMessage !== null && validationMessage !== "") {
+          showAlert(validationMessage, "error");
           return;
         }
       }
@@ -571,7 +601,7 @@ export default function ReceivingFormController({
       const boxAttributePayload = boxAttributes.map((r) => ({
         id: r.id,
         boxId: r.boxId > 0 ? r.boxId : 0,
-        boxType: r.boxType || ' ',
+        boxType: r.boxType || " ",
         length: r.length > 0 ? r.length : 0,
         width: r.width > 0 ? r.width : 0,
         height: r.height > 0 ? r.height : 0,
@@ -590,12 +620,7 @@ export default function ReceivingFormController({
         handdelivery,
         deliveryrecipient,
         deliverydate,
-        cps:
-          type === 'b3'
-            ? '1'
-            : cps === '1'
-            ? '1'
-            : '0',
+        cps: type === "b3" ? "1" : cps === "1" ? "1" : "0",
         qty_adjustment_only: qtyAdjustmentOnly,
         remarks,
         rcvrefrigerationreq,
@@ -607,8 +632,7 @@ export default function ReceivingFormController({
         frommos,
         draft,
         routingneeded:
-          formState.apticReceiving ||
-          (!draft && isNewReceiving(rec)),
+          formState.apticReceiving || (!draft && isNewReceiving(rec)),
         isSubmitted: !openHandReceipt && !draft,
         trackingNumbers,
         boxAttributes: boxAttributePayload,
@@ -617,17 +641,20 @@ export default function ReceivingFormController({
 
       try {
         const res = await fetch(`${baseUrl}receiving/movement`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
         const data: SaveReceivingResponse = await res.json();
 
         if (data.success) {
           if (draft) {
-            showAlert('Receiving saved as draft.', 'success');
+            showAlert("Receiving saved as draft.", "success");
           } else {
-            showAlert('Your receiving has been successfully submitted.', 'success');
+            showAlert(
+              "Your receiving has been successfully submitted.",
+              "success",
+            );
             if (onViewReceiving && data.responseObject.id) {
               setTimeout(() => {
                 onViewReceiving({
@@ -639,10 +666,10 @@ export default function ReceivingFormController({
             }
           }
         } else {
-          showAlert('Save failed. Please try again.', 'error');
+          showAlert("Save failed. Please try again.", "error");
         }
       } catch {
-        showAlert('Network error. Please try again.', 'error');
+        showAlert("Network error. Please try again.", "error");
       }
     },
     [
@@ -683,36 +710,30 @@ export default function ReceivingFormController({
   // -------------------------------------------------------------------------
 
   const handleCancelRecord = useCallback(async () => {
-    const id =
-      rec.draft && rec.receivingid !== null
-        ? rec.receivingid
-        : rec.id;
+    const id = rec.draft && rec.receivingid !== null ? rec.receivingid : rec.id;
 
     const comment = window.prompt(
-      'Cancel Receiving Request - Comment Required\nPlease enter a reason for cancelling:',
+      "Cancel Receiving Request - Comment Required\nPlease enter a reason for cancelling:",
     );
     if (comment === null) return; // user dismissed prompt
 
-    const confirmed = window.confirm('Are you sure you want to continue?');
+    const confirmed = window.confirm("Are you sure you want to continue?");
     if (!confirmed) return;
 
     try {
       const res = await fetch(
         `${baseUrl}receiving/movements/delete?recId=${id}&comment=${encodeURIComponent(comment)}`,
-        { method: 'GET' },
+        { method: "GET" },
       );
       const data = await res.json();
       if (data.success) {
-        showAlert('Record cancelled successfully.', 'success');
+        showAlert("Record cancelled successfully.", "success");
         setTimeout(() => onCancelComplete?.(), 1000);
       } else {
-        showAlert(
-          data.errorDescription || 'Unable to cancel record',
-          'error',
-        );
+        showAlert(data.errorDescription || "Unable to cancel record", "error");
       }
     } catch {
-      showAlert('Network error while cancelling. Please try again.', 'error');
+      showAlert("Network error while cancelling. Please try again.", "error");
     }
   }, [baseUrl, onCancelComplete, rec, showAlert]);
 
@@ -727,17 +748,20 @@ export default function ReceivingFormController({
           `${baseUrl}receiving/tracking/${encodeURIComponent(refNum)}`,
         );
         if (!res.ok) {
-          showAlert('Could not fetch tracking information', 'error');
+          showAlert("Could not fetch tracking information", "error");
           return;
         }
         const result: TrackingLookupResult = await res.json();
         if (result.error) {
-          showAlert(result.error || result.message || 'Error from server', 'error');
+          showAlert(
+            result.error || result.message || "Error from server",
+            "error",
+          );
           return;
         }
         const dateObj = parseLambdaDateTime(result.date, result.time);
         if (!dateObj || isNaN(dateObj.getTime())) {
-          showAlert('Invalid Date/Time returned from tracking server', 'error');
+          showAlert("Invalid Date/Time returned from tracking server", "error");
           return;
         }
         // Update receiveddate only if the parsed date is earlier than the
@@ -745,7 +769,7 @@ export default function ReceivingFormController({
         // In a real app this would dispatch to Redux or call a ref on the
         // date picker child component.
       } catch {
-        showAlert('Network error while checking tracking number.', 'error');
+        showAlert("Network error while checking tracking number.", "error");
       }
     },
     [baseUrl, showAlert],
@@ -772,7 +796,15 @@ export default function ReceivingFormController({
     if (!editable) {
       // Receipt bar (view-mode) — "Go To..." button only
       return (
-        <Box sx={{ display: 'flex', gap: 1, p: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1,
+            p: 1,
+            borderBottom: "1px solid",
+            borderColor: "divider",
+          }}
+        >
           <Button variant="outlined" size="small">
             Go To... SON
           </Button>
@@ -781,7 +813,16 @@ export default function ReceivingFormController({
     }
 
     return (
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 1,
+          p: 1,
+          borderBottom: "1px solid",
+          borderColor: "divider",
+        }}
+      >
         <Button
           variant="contained"
           size="small"
@@ -793,11 +834,7 @@ export default function ReceivingFormController({
         <Button
           variant="outlined"
           size="small"
-          disabled={
-            formState.locUser ||
-            !rec.receivingid ||
-            !rec.handdelivery
-          }
+          disabled={formState.locUser || !rec.receivingid || !rec.handdelivery}
           onClick={() => onSave(true, false)}
         >
           {TOOLBAR_ACTIONS.HAND_RECEIPT.text}
@@ -832,7 +869,7 @@ export default function ReceivingFormController({
             {TOOLBAR_ACTIONS.PRINT_RECEIVING_LABEL.text}
           </MenuItem>
           <MenuItem
-            disabled={type !== 'b3'}
+            disabled={type !== "b3"}
             onClick={() => setPrintMenuAnchor(null)}
           >
             {TOOLBAR_ACTIONS.PRINT_DVV_LABEL.text}
@@ -905,8 +942,9 @@ export default function ReceivingFormController({
             color="error"
             disabled={
               (rec.genesispoid !== null &&
-                (formState.isPreviousReceipt || (rec.status_id !== null && rec.status_id !== 1))) ||
-              formState.fromIncomingCargo === 'Yes'
+                (formState.isPreviousReceipt ||
+                  (rec.status_id !== null && rec.status_id !== 1))) ||
+              formState.fromIncomingCargo === "Yes"
             }
             onClick={handleCancelRecord}
           >
@@ -921,22 +959,22 @@ export default function ReceivingFormController({
   // Tab panel content
   // -------------------------------------------------------------------------
 
-  const newReceivingTabLabel = formState.isPreviousReceipt ? 'Receiving' : 'New Receiving';
+  const newReceivingTabLabel = formState.isPreviousReceipt
+    ? "Receiving"
+    : "New Receiving";
 
   // -------------------------------------------------------------------------
   // Render
   // -------------------------------------------------------------------------
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: "100%" }}>
       {/* Mark-pack-ship special handling banner */}
       {formState.markPackShipMsg && (
         <Alert
           severity="warning"
           sx={{ mb: 1 }}
-          onClose={() =>
-            setFormState((s) => ({ ...s, markPackShipMsg: null }))
-          }
+          onClose={() => setFormState((s) => ({ ...s, markPackShipMsg: null }))}
         >
           {formState.markPackShipMsg}
         </Alert>
@@ -960,7 +998,10 @@ export default function ReceivingFormController({
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         <ReferenceTrackingGridController
           data={rec.referenceNumbers ?? []}
-          {...({ editable, onReferenceNumberEntered: handleReferenceNumberEntered } as any)}
+          {...({
+            editable,
+            onReferenceNumberEntered: handleReferenceNumberEntered,
+          } as any)}
         />
       </Box>
 
@@ -969,18 +1010,14 @@ export default function ReceivingFormController({
         <Tabs
           value={activeTab}
           onChange={(_, v) => setActiveTab(v)}
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
+          sx={{ borderBottom: 1, borderColor: "divider" }}
         >
           <Tab label={newReceivingTabLabel} />
-          {!formState.isPreviousReceipt && (
-            <Tab label="Previous Receipts" />
-          )}
+          {!formState.isPreviousReceipt && <Tab label="Previous Receipts" />}
           {!formState.isPreviousReceipt && formState.draft && (
             <Tab label="Draft Receipts" />
           )}
-          {formState.isPreviousReceipt && (
-            <Tab label="Processed Files" />
-          )}
+          {formState.isPreviousReceipt && <Tab label="Processed Files" />}
           <Tab label="Logs & Comments" />
         </Tabs>
 
@@ -993,7 +1030,7 @@ export default function ReceivingFormController({
                 nobox: rec.nobox,
                 nolines,
                 handdelivery,
-                cps: cps ?? '0',
+                cps: cps ?? "0",
                 datein: rec.receiveddate ?? undefined,
                 dateout: rec.dateout ?? undefined,
                 pieces: pieces ?? undefined,
@@ -1001,7 +1038,7 @@ export default function ReceivingFormController({
                 licount: rec.licount ?? undefined,
                 lilist: rec.lilist ?? undefined,
                 route,
-                carrier: String(carrierId ?? ''),
+                carrier: String(carrierId ?? ""),
                 packing_slip_provided: packingSlipProvided ?? undefined,
                 rcvrefrigerationreq: rcvrefrigerationreq ?? undefined,
                 rcvfreezingreq: rcvfreezingreq ?? undefined,
@@ -1032,7 +1069,11 @@ export default function ReceivingFormController({
                 safely ignored by the grid. onUpdate and other props forwarded as any
                 until LineItemsGridController widens its interface. */}
             <LineItemsGridController
-              data={lineItems as unknown as Parameters<typeof LineItemsGridController>[0]['data']}
+              data={
+                lineItems as unknown as Parameters<
+                  typeof LineItemsGridController
+                >[0]["data"]
+              }
               {...({
                 editable,
                 received: formState.received,
@@ -1041,7 +1082,7 @@ export default function ReceivingFormController({
                 cpsReceiving: formState.cpsReceiving,
                 type,
                 onUpdate: handleLineItemUpdate,
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
               } as any)}
             />
           </Box>
@@ -1077,12 +1118,12 @@ export default function ReceivingFormController({
         open={Boolean(alertMsg)}
         autoHideDuration={6000}
         onClose={() => setAlertMsg(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
           severity={alertSeverity}
           onClose={() => setAlertMsg(null)}
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
         >
           {alertMsg}
         </Alert>
