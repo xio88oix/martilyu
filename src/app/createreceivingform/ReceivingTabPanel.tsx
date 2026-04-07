@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Tab, Tabs } from "@mui/material";
+import { Badge, Box, Tab, Tabs } from "@mui/material";
 import { ReactNode, useEffect, useState } from "react";
 import ShippingInformation from "./ShippingInformation";
 import NewReceivingForm, {
@@ -181,7 +181,7 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
         <Tab label="Shipping Information" {...allyProps(0)} />
         <Tab label="New Receiving" {...allyProps(1)} />
         <Tab label="Previous Receipts" {...allyProps(2)} />
-        <Tab label="Draft Receipts" {...allyProps(3)} />
+        <Tab label={<span style={{ display: "flex", alignItems: "center", gap: 16 }}>Draft Receipts{(props.data?.draftReceipts?.length ?? 0) > 0 && <Badge badgeContent={props.data?.draftReceipts?.length} color="primary" />}</span>} {...allyProps(3)} />
         <Tab label="Box Attributes" {...allyProps(4)} />
         <Tab label="Line Items" {...allyProps(5)} />
       </Tabs>
