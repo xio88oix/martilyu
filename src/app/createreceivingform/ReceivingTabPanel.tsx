@@ -180,9 +180,9 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
       >
         <Tab label="Shipping Information" {...allyProps(0)} />
         <Tab label="New Receiving" {...allyProps(1)} />
-        <Tab label="Previous Receipts" {...allyProps(2)} />
-        <Tab label={<span style={{ display: "flex", alignItems: "center", gap: 16 }}>Draft Receipts{(props.data?.draftReceipts?.length ?? 0) > 0 && <Badge badgeContent={props.data?.draftReceipts?.length} color="primary" />}</span>} {...allyProps(3)} />
-        <Tab label="Box Attributes" {...allyProps(4)} />
+        <Tab label={<Badge badgeContent={props.data?.previousReceipts?.length ?? 0} color="primary" showZero={false}>Previous Receipts</Badge>} {...allyProps(2)} />
+        <Tab label={<Badge badgeContent={props.data?.draftReceipts?.length ?? 0} color="primary" showZero={false}>Draft Receipts</Badge>} {...allyProps(3)} />
+        <Tab label={<Badge badgeContent={props.data?.boxAttributes?.length ?? 0} color="primary" showZero={false}>Box Attributes</Badge>} {...allyProps(4)} />
         <Tab label="Line Items" {...allyProps(5)} />
       </Tabs>
       <ReceivingPanel value={value} index={0} flex={true}>
