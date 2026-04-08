@@ -43,6 +43,7 @@ function useApiUrl(path: string): string {
 
 interface BoxAttributesGridControllerProps {
   data: any[]; // TODO: improve typing once BoxAttributeRow interface is defined
+  active?: boolean;
 }
 
 export default function BoxAttributesGridController(
@@ -490,17 +491,19 @@ export default function BoxAttributesGridController(
       <Box className="simpleGrid__headerBox">
         <h4>Box Attributes</h4>
       </Box>
-      <BoxAttributesGrid
-        rowsData={rows}
-        cols={cols}
-        rowModesModel={rowModesModel}
-        setRowModesModel={setRowModesModel}
-        setRows={setRows}
-        handleRowModesModelChange={handleRowModesModelChange}
-        toolbar={EditToolbar}
-        handleRowEditStop={handleRowEditStop}
-        // handleProcessRowUpdate={handleProcessRowUpdate}
-      />
+      {props.active !== false && (
+        <BoxAttributesGrid
+          rowsData={rows}
+          cols={cols}
+          rowModesModel={rowModesModel}
+          setRowModesModel={setRowModesModel}
+          setRows={setRows}
+          handleRowModesModelChange={handleRowModesModelChange}
+          toolbar={EditToolbar}
+          handleRowEditStop={handleRowEditStop}
+          // handleProcessRowUpdate={handleProcessRowUpdate}
+        />
+      )}
       <CustomFooter />
     </Box>
   );

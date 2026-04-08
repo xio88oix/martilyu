@@ -19,6 +19,7 @@ import DraftReceiptGrid from "./DraftReceiptsGrid";
 interface DraftReceiptsControllerProps {
   data: any[]; // TODO: improve typing — replace with the actual row interface
   type?: string | null;
+  active?: boolean;
 }
 
 // NOTE: DraftReceiptsGrid is not yet converted. A minimal stub is provided below
@@ -161,19 +162,21 @@ export default function DraftReceiptsController(
       <Box className="simpleGrid__headerBox">
         <h1>Draft Receipts</h1>
       </Box>
-      <DraftReceiptGrid
-        rowsData={rows}
-        cols={cols}
-        rowModesModel={rowModesModel}
-        setRowModesModel={setRowModesModel}
-        setRows={setRows}
-        onRowDoubleClick={(params) => {
-          const row = params.row;
-          window.open(
-            `/createreceivingform?recId=${row.receivingid ?? row.id}&son=${row.son}&poNumber=${row.ponum ?? ""}&type=${props.type ?? ""}`,
-          );
-        }}
-      />
+      {props.active !== false && (
+        <DraftReceiptGrid
+          rowsData={rows}
+          cols={cols}
+          rowModesModel={rowModesModel}
+          setRowModesModel={setRowModesModel}
+          setRows={setRows}
+          onRowDoubleClick={(params) => {
+            const row = params.row;
+            window.open(
+              `/createreceivingform?recId=${row.receivingid ?? row.id}&son=${row.son}&poNumber=${row.ponum ?? ""}&type=${props.type ?? ""}`,
+            );
+          }}
+        />
+      )}
       <CustomFooter />
     </Box>
   );

@@ -42,6 +42,7 @@ interface ReferenceTrackingRow {
 
 export default function ReferenceTrackingGridController(props: {
   data: any[];
+  active?: boolean;
 }) {
   // const { count, data, loading } = useFetchShippingRegions();
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
@@ -428,17 +429,19 @@ export default function ReferenceTrackingGridController(props: {
       <Box className="simpleGrid__headerBox">
         <h4>Reference/Tracking Numbers</h4>
       </Box>
-      <ReferenceTrackingGrid
-        rowsData={rows}
-        cols={cols}
-        rowModesModel={rowModesModel}
-        setRowModesModel={setRowModesModel}
-        setRows={setRows}
-        handleRowModesModelChange={handleRowModesModelChange}
-        toolbar={EditToolbar}
-        handleRowEditStop={handleRowEditStop}
-        // handleProcessRowUpdate={handleProcessRowUpdate}
-      />
+      {props.active !== false && (
+        <ReferenceTrackingGrid
+          rowsData={rows}
+          cols={cols}
+          rowModesModel={rowModesModel}
+          setRowModesModel={setRowModesModel}
+          setRows={setRows}
+          handleRowModesModelChange={handleRowModesModelChange}
+          toolbar={EditToolbar}
+          handleRowEditStop={handleRowEditStop}
+          // handleProcessRowUpdate={handleProcessRowUpdate}
+        />
+      )}
     </Box>
   );
 }

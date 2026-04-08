@@ -51,6 +51,7 @@ interface LineItemRow {
 
 interface LineItemsGridControllerProps {
   data: LineItemRow[];
+  active?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -421,16 +422,18 @@ export default function LineItemsGridController(
       <Box className="simpleGrid__headerBox">
         <h4>Line Items</h4>
       </Box>
-      <LineItemsGrid
-        rowsData={rows}
-        cols={cols}
-        rowModesModel={rowModesModel}
-        setRowModesModel={setRowModesModel}
-        setRows={setRows}
-        handleRowModesModelChange={handleRowModesModelChange}
-        toolbar={EditToolbar}
-        handleRowEditStop={handleRowEditStop}
-      />
+      {props.active !== false && (
+        <LineItemsGrid
+          rowsData={rows}
+          cols={cols}
+          rowModesModel={rowModesModel}
+          setRowModesModel={setRowModesModel}
+          setRows={setRows}
+          handleRowModesModelChange={handleRowModesModelChange}
+          toolbar={EditToolbar}
+          handleRowEditStop={handleRowEditStop}
+        />
+      )}
     </Box>
   );
 }

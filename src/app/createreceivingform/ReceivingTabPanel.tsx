@@ -232,26 +232,29 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
         />
       </ReceivingPanel>
       <ReceivingPanel value={value} index={2}>
-        <LineItemsGridController data={(props.data?.lineItems ?? []) as any} />
+        <LineItemsGridController data={(props.data?.lineItems ?? []) as any} active={value === 2} />
       </ReceivingPanel>
       <ReceivingPanel value={value} index={3}>
         <ReferenceTrackingGridController
           data={(props.data?.trackingNumbers as unknown[]) ?? []}
+          active={value === 3}
         />
       </ReceivingPanel>
       <ReceivingPanel value={value} index={4}>
-        <BoxAttributesGridController data={props.data?.boxAttributes ?? []} />
+        <BoxAttributesGridController data={props.data?.boxAttributes ?? []} active={value === 4} />
       </ReceivingPanel>
       <ReceivingPanel value={value} index={5}>
         <PreviousReceiptsController
           data={props.data?.previousReceipts ?? []}
           type={props.type}
+          active={value === 5}
         />
       </ReceivingPanel>
       <ReceivingPanel value={value} index={6}>
         <DraftReceiptsController
           data={props.data?.draftReceipts ?? []}
           type={props.type}
+          active={value === 6}
         />
       </ReceivingPanel>
     </Box>
