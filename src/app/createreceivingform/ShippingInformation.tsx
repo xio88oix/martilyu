@@ -85,12 +85,12 @@ export default function ShippingInformation({
           >
             <Stack flexGrow={1}>
               <Grid2>
-                <CustomTextField label="SON:" value={data?.son} disabled />
+                <CustomTextField label="SON:" value={data?.son ?? ""} disabled />
               </Grid2>
               <Grid2>
                 <CustomTextField
                   label="T&I Required:"
-                  value={data?.tireq}
+                  value={data?.tireq ?? ""}
                   disabled
                 />
               </Grid2>
@@ -108,7 +108,7 @@ export default function ShippingInformation({
               <Grid2>
                 <CustomTextField
                   label="Destination:"
-                  value={data?.final_destination}
+                  value={data?.final_destination ?? ""}
                   disabled
                 />
               </Grid2>
@@ -117,7 +117,7 @@ export default function ShippingInformation({
               <Grid2 sx={type !== "b1" ? { display: "none" } : {}}>
                 <CustomTextField
                   label="Contract #:"
-                  value={data?.bscdocnumber}
+                  value={data?.bscdocnumber ?? ""}
                   disabled
                 />
               </Grid2>
@@ -137,21 +137,21 @@ export default function ShippingInformation({
               <Grid2>
                 <CustomTextField
                   label="Address:"
-                  value={data?.address}
+                  value={data?.address ?? ""}
                   disabled
                 />
               </Grid2>
               <Grid2>
                 <CustomTextField
                   label="Purpose:"
-                  value={data?.purpose}
+                  value={data?.purpose ?? ""}
                   disabled
                 />
               </Grid2>
               <Grid2>
                 <CustomTextField
                   label="Shipping & Handling Comments:"
-                  value={data?.markpackship}
+                  value={data?.markpackship ?? ""}
                   disabled
                 />
               </Grid2>
@@ -171,21 +171,21 @@ export default function ShippingInformation({
               >
                 <CustomTextField
                   label="ESMT Number:"
-                  value={data?.esmtid}
+                  value={data?.esmtid ?? ""}
                   disabled
                 />
               </Grid2>
               <Grid2 sx={!data?.shiptoname ? { display: "none" } : {}}>
                 <CustomTextField
                   label="Vendor Delivery Location:"
-                  value={data?.shiptoname}
+                  value={data?.shiptoname ?? ""}
                   disabled
                 />
               </Grid2>
               <Grid2>
                 <CustomTextField
                   label="Satellite Location:"
-                  value={data?.satellite_location}
+                  value={data?.satellite_location ?? ""}
                   disabled
                 />
               </Grid2>
@@ -205,14 +205,14 @@ export default function ShippingInformation({
               <Grid2>
                 <CustomTextField
                   label="Special Handling Requirements:"
-                  value={data?.handling_priority_type_id}
+                  value={data?.handling_priority_type_id ?? ""}
                   disabled
                 />
               </Grid2>
               <Grid2>
                 <CustomTextField
                   label="Crypto:"
-                  value={data?.containscrypto}
+                  value={data?.containscrypto ?? ""}
                   disabled
                 />
               </Grid2>
@@ -226,21 +226,21 @@ export default function ShippingInformation({
               <Grid2>
                 <CustomTextField
                   label="Weapons:"
-                  value={data?.containsweapons}
+                  value={data?.containsweapons ?? ""}
                   disabled
                 />
               </Grid2>
               <Grid2>
                 <CustomTextField
                   label="Ammo:"
-                  value={data?.containsammo}
+                  value={data?.containsammo ?? ""}
                   disabled
                 />
               </Grid2>
               <Grid2>
                 <CustomTextField
                   label="BFHELD:"
-                  value={data?.containsbfheld}
+                  value={data?.containsbfheld ?? ""}
                   disabled
                 />
               </Grid2>
@@ -249,28 +249,28 @@ export default function ShippingInformation({
               <Grid2>
                 <CustomTextField
                   label="Hazmat:"
-                  value={data?.containshazmat}
+                  value={data?.containshazmat ?? ""}
                   disabled
                 />
               </Grid2>
               <Grid2>
                 <CustomTextField
                   label="Lithium Batteries:"
-                  value={data?.containslithiumbatt}
+                  value={data?.containslithiumbatt ?? ""}
                   disabled
                 />
               </Grid2>
               <Grid2>
                 <CustomTextField
                   label="Refrigeration Required:"
-                  value={data?.refrigerationreq}
+                  value={data?.refrigerationreq ?? ""}
                   disabled
                 />
               </Grid2>
               <Grid2>
                 <CustomTextField
                   label="Freezing Required:"
-                  value={data?.freezingreq}
+                  value={data?.freezingreq ?? ""}
                   disabled
                 />
               </Grid2>

@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge, Box, Tab, Tabs } from "@mui/material";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import ShippingInformation from "./ShippingInformation";
 import NewReceivingForm, {
   type ReceivingBusinessState,
@@ -43,14 +43,19 @@ interface TabPanelProps {
 }
 
 function ReceivingPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, flex, ...other } = props;
   const active = index === value;
+  const hasBeenActive = useRef(active);
+  if (active) hasBeenActive.current = true;
+
+  if (!hasBeenActive.current) return null;
+
   return (
     <div
       role="tabpanel"
       hidden={!active}
       id={"receiving-tab-panel-" + index}
-      className={props.flex ? "panel__flex" : "panel"}
+      className={flex ? "panel__flex" : "panel"}
       style={!active ? { display: "none" } : undefined}
       {...other}
     >

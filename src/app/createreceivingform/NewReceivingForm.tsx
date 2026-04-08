@@ -333,18 +333,18 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
       weight: Number.isFinite(parsedWeight) ? parsedWeight : null,
       route: selectedRoute?.id ?? null,
       carrier_id: selectedCarrier?.id ?? null,
-      handdelivery,
+      handdelivery: handdelivery === "1",
       deliverydate: deliveryDate ? deliveryDate.format("YYYY-MM-DDTHH:mm:ss") : null,
       deliveryrecipient: deliveryRecipient,
-      rcvrefrigerationreq: refrigerationReq,
-      rcvfreezingreq: freezingReq,
-      rcvbfheld: bfheld,
-      rcvcrypto: crypto,
-      packing_slip_provided: packingSlipProvided,
-      nobox: bypassBox ? "1" : "0",
-      nolines,
-      cps,
-      qty_adjustment_only: qtyAdjOnly,
+      rcvrefrigerationreq: refrigerationReq === "1",
+      rcvfreezingreq: freezingReq === "1",
+      rcvbfheld: bfheld === "1",
+      rcvcrypto: crypto === "1",
+      packing_slip_provided: packingSlipProvided === "1" || packingSlipProvided === "true",
+      nobox: bypassBox,
+      nolines: nolines === "1",
+      cps: cps === "1",
+      qty_adjustment_only: qtyAdjOnly === "1",
       prefixcode: prefixCode || null,
       remarks,
       receiveddate: dateIn ? dateIn.format("YYYY-MM-DDTHH:mm:ss") : null,
@@ -464,7 +464,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                       sx={{ minWidth: 220 }}
                       label={"Total Received Pieces"}
                       variant="filled"
-                      value={data?.taskreceivepieces}
+                      value={data?.taskreceivepieces ?? ""}
                       disabled
                     />
                   </Grid2>
@@ -473,7 +473,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                       sx={{ minWidth: 220 }}
                       label={"Tasking Package Pieces"}
                       variant="filled"
-                      value={data?.taskpackages}
+                      value={data?.taskpackages ?? ""}
                       disabled
                     />
                   </Grid2>
@@ -538,7 +538,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   className="dialog-field-width"
                   label={"Item Count"}
                   variant="filled"
-                  value={data?.licount}
+                  value={data?.licount ?? ""}
                   disabled
                 />
               </Grid2>
@@ -547,7 +547,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                   className="dialog-field-width"
                   label={"Item List"}
                   variant="filled"
-                  value={data?.lilist}
+                  value={data?.lilist ?? ""}
                   disabled
                 />
               </Grid2>
