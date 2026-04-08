@@ -4,7 +4,6 @@ import { CustomTextField } from "@/components/CustomComponents";
 import { Box, Typography, Stack } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import dayjs from "dayjs";
-import ReferenceTrackingGridController from "./ReferenceTrackingGridController";
 
 interface TrackingNumber {
   [key: string]: unknown;
@@ -288,7 +287,6 @@ export default function ShippingInformation({
           </Grid2>
         </div>
 
-        <ReferenceTrackingGridController data={data?.trackingNumbers ?? []} />
       </Box>
     </>
   );

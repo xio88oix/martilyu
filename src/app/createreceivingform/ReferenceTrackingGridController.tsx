@@ -416,7 +416,7 @@ export default function ReferenceTrackingGridController(props: {
     //     </Box>
     //   </>
     // ) :
-    <Box className="simpleGrid-small" sx={{ marginLeft: "1rem" }}>
+    <Box className="simpleGrid" sx={{ margin: "0", marginLeft: "1rem", height: "40vh" }}>
       <MySnackbar
         open={openSnackbar}
         onClose={handleClose}

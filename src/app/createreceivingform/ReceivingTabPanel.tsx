@@ -10,6 +10,7 @@ import PreviousReceiptsController from "./PreviousReceiptsController";
 import DraftReceiptsController from "./DraftReceiptsController";
 import BoxAttributesGridController from "./BoxAttributesGridController";
 import LineItemsGridController from "./LineItemsGridController";
+import ReferenceTrackingGridController from "./ReferenceTrackingGridController";
 import { WarningAlert } from "@/components/CustomComponents";
 
 // ---------------------------------------------------------------------------
@@ -45,18 +46,14 @@ interface TabPanelProps {
 function ReceivingPanel(props: TabPanelProps) {
   const { children, value, index, flex, ...other } = props;
   const active = index === value;
-  const hasBeenActive = useRef(active);
-  if (active) hasBeenActive.current = true;
 
-  if (!hasBeenActive.current) return null;
+  if (!active) return null;
 
   return (
     <div
       role="tabpanel"
-      hidden={!active}
       id={"receiving-tab-panel-" + index}
       className={flex ? "panel__flex" : "panel"}
-      style={!active ? { display: "none" } : undefined}
       {...other}
     >
       {children}
@@ -179,6 +176,7 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
         <Tab label="Shipping Information" {...allyProps(0)} />
         <Tab label="New Receiving" {...allyProps(1)} />
         <Tab label="Line Items" {...allyProps(2)} />
+        <Tab label="Reference/Tracking Numbers" {...allyProps(3)} />
         <Tab
           label={
             <Badge
@@ -189,7 +187,7 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
               Box Attributes
             </Badge>
           }
-          {...allyProps(3)}
+          {...allyProps(4)}
         />
         <Tab
           label={
@@ -201,7 +199,7 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
               Previous Receipts
             </Badge>
           }
-          {...allyProps(4)}
+          {...allyProps(5)}
         />
         <Tab
           label={
@@ -213,7 +211,7 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
               Draft Receipts
             </Badge>
           }
-          {...allyProps(5)}
+          {...allyProps(6)}
         />
       </Tabs>
       <ReceivingPanel value={value} index={0} flex={true}>
@@ -233,15 +231,20 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
         <LineItemsGridController data={(props.data?.lineItems ?? []) as any} />
       </ReceivingPanel>
       <ReceivingPanel value={value} index={3}>
-        <BoxAttributesGridController data={props.data?.boxAttributes ?? []} />
+        <ReferenceTrackingGridController
+          data={(props.data?.trackingNumbers as unknown[]) ?? []}
+        />
       </ReceivingPanel>
       <ReceivingPanel value={value} index={4}>
+        <BoxAttributesGridController data={props.data?.boxAttributes ?? []} />
+      </ReceivingPanel>
+      <ReceivingPanel value={value} index={5}>
         <PreviousReceiptsController
           data={props.data?.previousReceipts ?? []}
           type={props.type}
         />
       </ReceivingPanel>
-      <ReceivingPanel value={value} index={5}>
+      <ReceivingPanel value={value} index={6}>
         <DraftReceiptsController
           data={props.data?.draftReceipts ?? []}
           type={props.type}
