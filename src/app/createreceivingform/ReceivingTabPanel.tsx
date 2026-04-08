@@ -178,6 +178,19 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
       >
         <Tab label="Shipping Information" {...allyProps(0)} />
         <Tab label="New Receiving" {...allyProps(1)} />
+        <Tab label="Line Items" {...allyProps(2)} />
+        <Tab
+          label={
+            <Badge
+              badgeContent={props.data?.boxAttributes?.length ?? 0}
+              color="default"
+              showZero={false}
+            >
+              Box Attributes
+            </Badge>
+          }
+          {...allyProps(3)}
+        />
         <Tab
           label={
             <Badge
@@ -188,7 +201,7 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
               Previous Receipts
             </Badge>
           }
-          {...allyProps(2)}
+          {...allyProps(4)}
         />
         <Tab
           label={
@@ -200,21 +213,8 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
               Draft Receipts
             </Badge>
           }
-          {...allyProps(3)}
+          {...allyProps(5)}
         />
-        <Tab
-          label={
-            <Badge
-              badgeContent={props.data?.boxAttributes?.length ?? 0}
-              color="default"
-              showZero={false}
-            >
-              Box Attributes
-            </Badge>
-          }
-          {...allyProps(4)}
-        />
-        <Tab label="Line Items" {...allyProps(5)} />
       </Tabs>
       <ReceivingPanel value={value} index={0} flex={true}>
         <ShippingInformation data={props.data} type={props.type} />
@@ -230,22 +230,22 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
         />
       </ReceivingPanel>
       <ReceivingPanel value={value} index={2}>
+        <LineItemsGridController data={(props.data?.lineItems ?? []) as any} />
+      </ReceivingPanel>
+      <ReceivingPanel value={value} index={3}>
+        <BoxAttributesGridController data={props.data?.boxAttributes ?? []} />
+      </ReceivingPanel>
+      <ReceivingPanel value={value} index={4}>
         <PreviousReceiptsController
           data={props.data?.previousReceipts ?? []}
           type={props.type}
         />
       </ReceivingPanel>
-      <ReceivingPanel value={value} index={3}>
+      <ReceivingPanel value={value} index={5}>
         <DraftReceiptsController
           data={props.data?.draftReceipts ?? []}
           type={props.type}
         />
-      </ReceivingPanel>
-      <ReceivingPanel value={value} index={4}>
-        <BoxAttributesGridController data={props.data?.boxAttributes ?? []} />
-      </ReceivingPanel>
-      <ReceivingPanel value={value} index={5}>
-        <LineItemsGridController data={(props.data?.lineItems ?? []) as any} />
       </ReceivingPanel>
     </Box>
   );
