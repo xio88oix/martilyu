@@ -44,25 +44,18 @@ interface TabPanelProps {
 
 function ReceivingPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
-  return index === value ? (
+  const active = index === value;
+  return (
     <div
       role="tabpanel"
-      hidden={value !== index}
+      hidden={!active}
       id={"receiving-tab-panel-" + index}
       className={props.flex ? "panel__flex" : "panel"}
-      // style={{
-      //   margin: "1rem 0rem",
-      //   width: "100%",
-      //   display: "flex",
-      //   maxHeight: "45vh",
-      //   overflow: "auto",
-      // }}
+      style={!active ? { display: "none" } : undefined}
       {...other}
     >
       {children}
     </div>
-  ) : (
-    ""
   );
 }
 
@@ -180,9 +173,42 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
       >
         <Tab label="Shipping Information" {...allyProps(0)} />
         <Tab label="New Receiving" {...allyProps(1)} />
-        <Tab label={<Badge badgeContent={props.data?.previousReceipts?.length ?? 0} color="primary" showZero={false}>Previous Receipts</Badge>} {...allyProps(2)} />
-        <Tab label={<Badge badgeContent={props.data?.draftReceipts?.length ?? 0} color="primary" showZero={false}>Draft Receipts</Badge>} {...allyProps(3)} />
-        <Tab label={<Badge badgeContent={props.data?.boxAttributes?.length ?? 0} color="primary" showZero={false}>Box Attributes</Badge>} {...allyProps(4)} />
+        <Tab
+          label={
+            <Badge
+              badgeContent={props.data?.previousReceipts?.length ?? 0}
+              color="default"
+              showZero={false}
+            >
+              Previous Receipts
+            </Badge>
+          }
+          {...allyProps(2)}
+        />
+        <Tab
+          label={
+            <Badge
+              badgeContent={props.data?.draftReceipts?.length ?? 0}
+              color="default"
+              showZero={false}
+            >
+              Draft Receipts
+            </Badge>
+          }
+          {...allyProps(3)}
+        />
+        <Tab
+          label={
+            <Badge
+              badgeContent={props.data?.boxAttributes?.length ?? 0}
+              color="default"
+              showZero={false}
+            >
+              Box Attributes
+            </Badge>
+          }
+          {...allyProps(4)}
+        />
         <Tab label="Line Items" {...allyProps(5)} />
       </Tabs>
       <ReceivingPanel value={value} index={0} flex={true}>
@@ -199,10 +225,16 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
         />
       </ReceivingPanel>
       <ReceivingPanel value={value} index={2}>
-        <PreviousReceiptsController data={props.data?.previousReceipts ?? []} type={props.type} />
+        <PreviousReceiptsController
+          data={props.data?.previousReceipts ?? []}
+          type={props.type}
+        />
       </ReceivingPanel>
       <ReceivingPanel value={value} index={3}>
-        <DraftReceiptsController data={props.data?.draftReceipts ?? []} type={props.type} />
+        <DraftReceiptsController
+          data={props.data?.draftReceipts ?? []}
+          type={props.type}
+        />
       </ReceivingPanel>
       <ReceivingPanel value={value} index={4}>
         <BoxAttributesGridController data={props.data?.boxAttributes ?? []} />
