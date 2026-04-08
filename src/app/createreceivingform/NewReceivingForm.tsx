@@ -210,6 +210,16 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   const [dateIn, setDateIn] = useState(
     data?.receiveddate ? dayjs(data.receiveddate as string) : null,
   );
+
+  // Clear dateIn on startup for LOC users creating a new (non-draft) receiving
+  const dateInCleared = useRef(false);
+  useEffect(() => {
+    if (!dateInCleared.current && isLOCUser && bs.isNewReceiving && !bs.draft) {
+      setDateIn(null);
+      dateInCleared.current = true;
+    }
+  }, [isLOCUser, bs.isNewReceiving, bs.draft]);
+
   const [pieces, setPieces] = useState((data?.pieces as string) ?? "");
   const [weight, setWeight] = useState((data?.weight as string) ?? "");
   const [prefixCode, setPrefixCode] = useState(
