@@ -174,7 +174,7 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
         }}
       >
         <Tab label="Shipping Information" {...allyProps(0)} />
-        <Tab label="New Receiving" {...allyProps(1)} />
+        <Tab label="Receiving" {...allyProps(1)} />
         <Tab label="Line Items" {...allyProps(2)} />
         <Tab label="Reference/Tracking Numbers" {...allyProps(3)} />
         <Tab
