@@ -79,6 +79,7 @@ interface ReceivingTabPanelProps {
   data: ReceivingData | null;
   type: string | null;
   receivingBusinessState: ReceivingBusinessState;
+  isBusinessStateReady?: boolean;
   onFormValidityChange?: (valid: boolean) => void;
   onDataChange?: (changes: Partial<Record<string, unknown>>) => void;
 }
@@ -238,6 +239,7 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
           data={(props.data ?? {}) as Record<string, unknown>}
           type={props.type ?? undefined}
           receivingBusinessState={props.receivingBusinessState}
+          isBusinessStateReady={props.isBusinessStateReady ?? false}
           onFormValidityChange={props.onFormValidityChange}
           onDataChange={props.onDataChange}
         />

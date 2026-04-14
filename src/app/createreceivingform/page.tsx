@@ -438,8 +438,25 @@ export default function ReceivingFormPage() {
     setRecFormData(formData.data);
   }, [recFormLoading, formData]);
 
+  const businessStateSource = recFormData ?? formData?.data ?? null;
+
+  const isBusinessStateReady = useMemo(() => {
+    if (!businessStateSource) {
+      return false;
+    }
+
+    const record = businessStateSource as Record<string, unknown>;
+    return (
+      hasValue(record.id) ||
+      hasValue(record.sonid) ||
+      hasValue(record.status_id) ||
+      hasValue(record.receivingid) ||
+      hasValue(record.recid)
+    );
+  }, [businessStateSource]);
+
   const receivingBusinessState = useMemo(() => {
-    const record = (recFormData ?? {}) as Record<string, unknown>;
+    const record = (businessStateSource ?? {}) as Record<string, unknown>;
 
     const statusId = toNumber(record.status_id);
     const sotypeId = toNumber(
@@ -509,7 +526,7 @@ export default function ReceivingFormPage() {
         tasktypeId === 1,
     };
   }, [
-    recFormData,
+    businessStateSource,
     type,
     showAptic,
     isLOCUser,
@@ -813,6 +830,7 @@ export default function ReceivingFormPage() {
           data={formData?.data ?? null}
           type={type}
           receivingBusinessState={receivingBusinessState}
+          isBusinessStateReady={isBusinessStateReady}
           onFormValidityChange={setFormValid}
           onDataChange={handleFormDataChange}
         />

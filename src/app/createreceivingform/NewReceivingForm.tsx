@@ -142,6 +142,7 @@ interface NewReceivingFormProps {
   data: Record<string, unknown>;
   type?: string;
   receivingBusinessState: ReceivingBusinessState;
+  isBusinessStateReady: boolean;
   onFormValidityChange?: (valid: boolean) => void;
   onDataChange?: (changes: Partial<Record<string, unknown>>) => void;
 }
@@ -155,6 +156,7 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
     data,
     type,
     receivingBusinessState: bs,
+    isBusinessStateReady,
     onFormValidityChange,
     onDataChange,
   } = props;
@@ -214,11 +216,21 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
   // Clear dateIn on startup for LOC users creating a new (non-draft) receiving
   const dateInCleared = useRef(false);
   useEffect(() => {
-    if (!dateInCleared.current && isLOCUser && bs.isNewReceiving && !bs.draft) {
-      setDateIn(null);
-      dateInCleared.current = true;
+    if (!isBusinessStateReady) {
+      return;
     }
-  }, [isLOCUser, bs.isNewReceiving, bs.draft]);
+
+    // Only clear dateIn for new LOC receiving (non-draft)
+    if (isLOCUser && bs.isNewReceiving && !bs.draft) {
+      if (!dateInCleared.current) {
+        setDateIn(null);
+        dateInCleared.current = true;
+      }
+    } else {
+      // Reset the flag if we're no longer in the "clear" conditions
+      dateInCleared.current = false;
+    }
+  }, [isBusinessStateReady, isLOCUser, bs.isNewReceiving, bs.draft]);
 
   const [pieces, setPieces] = useState((data?.pieces as string) ?? "");
   const [weight, setWeight] = useState((data?.weight as string) ?? "");
