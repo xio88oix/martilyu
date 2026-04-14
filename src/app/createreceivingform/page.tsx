@@ -324,7 +324,18 @@ function useFetchReceivingForm(
           prefixcode: null,
           lilist: null,
           shiptoname: null,
-          boxAttributes: [],
+          boxAttributes: [
+            {
+            box_id: 1,
+            box_type: " ",
+            objid: 604,
+            length: 1,
+            width: 2,
+            weight: 4,
+            receivingid: 113805,
+            height: 3 
+            }
+          ],
           rack: null,
           address:
             "123 Town Center Drive\nCorner Avenue\nDowntown City\nCloud Willow Oaks, Room: 36\r\nJohn Doe/PhL 5551234567\r\nAB/DEFG/HIJK/LMN\r\n\r\n",
@@ -786,7 +797,7 @@ export default function ReceivingFormPage() {
   return !recFormLoading ? (
     <Box className="pageTitle form__section">
       <Box className="pageTitle__headerBox">
-        <h1>{`New Receiving- ${son} (${displayName})`}</h1>
+        <h1>{(receivingBusinessState.isPreviousReceipt ? `Edit Receipt-` : `New Receiving-`) + `${son} (${displayName})`}</h1>
       </Box>
       <CustomToolbar readOnlyData={[]} buttons={buttons} smallButtons={true} />
       <Box

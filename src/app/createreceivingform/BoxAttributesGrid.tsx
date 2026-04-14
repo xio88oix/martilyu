@@ -44,6 +44,7 @@ export default function BoxAttributesGrid(props: {
       <MyDataGrid
         rows={props.rowsData}
         cols={props.cols}
+        getRowId={(row: any) => row.box_id ?? row.id}
         initialState={{
           // sorting: {
           //   sortModel: [{ field: "shortDescription", sort: "asc" }],
