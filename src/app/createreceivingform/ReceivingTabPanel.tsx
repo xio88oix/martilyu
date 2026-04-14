@@ -85,6 +85,7 @@ interface ReceivingTabPanelProps {
 
 export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
   const [value, setValue] = useState(1);
+  const hideHistoryPanels = props.receivingBusinessState.isPreviousReceiving;
   const [prevRecieptsWarningOpen, setPrevRecieptsWarningOpen] = useState(false);
   const handlePrevRecieptWarningClose = () => {
     setPrevRecieptsWarningOpen(false);
@@ -101,6 +102,12 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  useEffect(() => {
+    if (hideHistoryPanels && value > 4) {
+      setValue(4);
+    }
+  }, [hideHistoryPanels, value]);
 
   useEffect(() => {
     let markPackShipMsg = "";
@@ -193,30 +200,34 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
           }
           {...allyProps(4)}
         />
-        <Tab
-          label={
-            <Badge
-              badgeContent={props.data?.previousReceipts?.length ?? 0}
-              color="default"
-              showZero={false}
-            >
-              Previous Receipts
-            </Badge>
-          }
-          {...allyProps(5)}
-        />
-        <Tab
-          label={
-            <Badge
-              badgeContent={props.data?.draftReceipts?.length ?? 0}
-              color="default"
-              showZero={false}
-            >
-              Draft Receipts
-            </Badge>
-          }
-          {...allyProps(6)}
-        />
+        {!hideHistoryPanels && (
+          <Tab
+            label={
+              <Badge
+                badgeContent={props.data?.previousReceipts?.length ?? 0}
+                color="default"
+                showZero={false}
+              >
+                Previous Receipts
+              </Badge>
+            }
+            {...allyProps(5)}
+          />
+        )}
+        {!hideHistoryPanels && (
+          <Tab
+            label={
+              <Badge
+                badgeContent={props.data?.draftReceipts?.length ?? 0}
+                color="default"
+                showZero={false}
+              >
+                Draft Receipts
+              </Badge>
+            }
+            {...allyProps(6)}
+          />
+        )}
       </Tabs>
       <ReceivingPanel value={value} index={0} flex={true}>
         <ShippingInformation data={props.data} type={props.type} />
@@ -243,20 +254,24 @@ export default function ReceivingTabPanel(props: ReceivingTabPanelProps) {
       <ReceivingPanel value={value} index={4}>
         <BoxAttributesGridController data={props.data?.boxAttributes ?? []} active={value === 4} />
       </ReceivingPanel>
-      <ReceivingPanel value={value} index={5}>
-        <PreviousReceiptsController
-          data={props.data?.previousReceipts ?? []}
-          type={props.type}
-          active={value === 5}
-        />
-      </ReceivingPanel>
-      <ReceivingPanel value={value} index={6}>
-        <DraftReceiptsController
-          data={props.data?.draftReceipts ?? []}
-          type={props.type}
-          active={value === 6}
-        />
-      </ReceivingPanel>
+      {!hideHistoryPanels && (
+        <>
+          <ReceivingPanel value={value} index={5}>
+            <PreviousReceiptsController
+              data={props.data?.previousReceipts ?? []}
+              type={props.type}
+              active={value === 5}
+            />
+          </ReceivingPanel>
+          <ReceivingPanel value={value} index={6}>
+            <DraftReceiptsController
+              data={props.data?.draftReceipts ?? []}
+              type={props.type}
+              active={value === 6}
+            />
+          </ReceivingPanel>
+        </>
+      )}
     </Box>
   );
 }
