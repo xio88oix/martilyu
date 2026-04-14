@@ -472,11 +472,16 @@ export default function NewReceivingForm(props: NewReceivingFormProps) {
                 />
               </Grid2>
               <Grid2>
-                <MyDatePicker
+                <CustomTextField
                   label={"Date/Time Out:"}
                   className="dialog-field-width"
-                  value={data?.dateout ? dayjs(data.dateout as string) : null}
-                  isDisabled={true}
+                  variant="filled"
+                  value={
+                    data?.dateout
+                      ? dayjs(data.dateout as string).format("MM/DD/YYYY HH:mm")
+                      : ""
+                  }
+                  disabled
                 />
               </Grid2>
               {bs.apticReceiving && (
